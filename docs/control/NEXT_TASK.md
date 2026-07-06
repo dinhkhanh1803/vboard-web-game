@@ -2,25 +2,24 @@
 
 ## Current Recommended Next Step
 
-Start Phase 10 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: connect the first playable Connect 4 web gameplay path.
+Start Phase 11 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: add the Caro MVP after Connect 4 has a working local gameplay path.
 
 ## Exact First Task
 
-Connect the match UI to a local official public-state adapter first, then use the same state shape that Phase 9 writes before adding realtime Firebase subscriptions.
+Add Caro state and board-size tests in `game-engine/` before implementing five-in-row result logic or UI.
 
 ## Scope
 
-- Keep the first pass UI/local-state driven.
-- Reuse `game-engine/src/games/connect4/connect4Module.ts` and the Phase 9 match public state shape.
-- Add the PixiJS board interaction behind the existing match board boundary.
-- Do not connect live Firebase realtime listeners until the UI path is stable.
+- Keep Caro logic pure and game-engine first.
+- Reuse the `GameModule` contract from Phase 8.
+- Do not copy Connect 4 code blindly; extract shared helpers only if duplication becomes meaningful.
+- Do not connect Caro UI, Firebase, realtime listeners, or Cloud Functions yet.
 - Do not create, select, or configure any real Firebase project until the owner explicitly approves that step.
 
 ## Expected Files
 
-- `src/features/match/`
-- `src/features/games/`
-- `game-engine/src/games/connect4/`
+- `game-engine/src/games/caro/`
+- `game-engine/test/`
 - `docs/control/PROGRESS.md`
 
 ## Verification

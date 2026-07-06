@@ -63,14 +63,14 @@ describe("App shell", () => {
     expect(screen.getByRole("button", { name: "Copy invite link" })).toBeDisabled();
   });
 
-  it("renders the match shell with PixiJS canvas boundary", () => {
+  it("renders the playable match shell with PixiJS board controls", () => {
     renderApp("/matches/demo-match");
 
     expect(screen.getByRole("heading", { name: "Connect 4 Match" })).toBeInTheDocument();
-    expect(screen.getByLabelText("PixiJS board mount")).toBeInTheDocument();
+    expect(screen.getByLabelText("Interactive Connect 4 PixiJS board")).toBeInTheDocument();
     expect(screen.getByText("Move Log")).toBeInTheDocument();
-    expect(screen.getByText("Canvas placeholder")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Resign match" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Drop disc in column 4" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Reset local match" })).toBeInTheDocument();
   });
 
   it("renders leaderboard, profile, protected admin, and content shells", () => {

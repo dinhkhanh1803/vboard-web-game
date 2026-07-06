@@ -41,7 +41,7 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] Add UI-only labels for disabled lobby actions and match canvas placeholder.
 - [ ] Add empty/loading/error states for frontend-only screens.
 - [ ] Add local lobby form validation.
-- [ ] Add non-interactive PixiJS board renderer prototype.
+- [x] Add non-interactive PixiJS board renderer prototype.
 
 ## Phase 5: Firebase Local Foundation
 
@@ -78,3 +78,10 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] Implement startMatch through tests.
 - [x] Implement submitMove for Connect 4 through tests.
 - [x] Add timeout contract before timeout implementation.
+
+## Phase 10: Connect 4 Web Gameplay
+
+- [x] Connect match UI to official public state.
+- [x] Add interactive Connect 4 PixiJS board UI.
+- [x] Add realtime match subscription boundary.
+- [x] Add result screen path.

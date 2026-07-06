@@ -68,7 +68,7 @@ Goal: finish the frontend feel before backend work begins.
 - [ ] Add form validation behavior for lobby inputs locally.
   - Files: `src/features/lobby/`.
   - Done when: room code validation works without network calls.
-- [ ] Add first PixiJS renderer prototype behind the match board boundary.
+- [x] Add first PixiJS renderer prototype behind the match board boundary.
   - Files: `src/features/match/`, `src/features/games/`.
   - Done when: PixiJS renders a non-interactive Connect 4 board placeholder.
 
@@ -142,10 +142,10 @@ Owner review: verify no client writes official match fields directly.
 
 Goal: connect the first playable game to official realtime state with PixiJS rendering the board.
 
-- [ ] Connect match UI to official public state.
-- [ ] Add interactive Connect 4 PixiJS board UI.
-- [ ] Add realtime match subscription boundary.
-- [ ] Add result screen path.
+- [x] Connect match UI to official public state.
+- [x] Add interactive Connect 4 PixiJS board UI.
+- [x] Add realtime match subscription boundary.
+- [x] Add result screen path.
 
 Owner review: play flow should feel clear on mobile before adding Caro.
 
