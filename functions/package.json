@@ -1,0 +1,7 @@
+{
+  "name": "@vboard/functions",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Firebase Cloud Functions workspace for VBoard Arena."
+}

@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "foundation:check",
+      "type": "shell",
+      "command": "npm run foundation:check",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "git status",
+      "type": "shell",
+      "command": "git status --short",
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}

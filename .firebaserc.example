@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "dev": "vboard-arena-dev",
+    "staging": "vboard-arena-staging",
+    "prod": "vboard-arena-prod"
+  }
+}

@@ -1,0 +1,8 @@
+---
+description: VBoard Arena architecture and AI workflow rules
+alwaysApply: true
+---
+
+Read `AGENTS.md` before editing. Keep changes tied to one checklist item in `docs/control/PROGRESS.md`. The React client lives in `src/`, Firebase Functions live in `functions/`, pure game rules live in `game-engine/`, and Firebase rules live in `firebase/`.
+
+Never let client code write official match results, leaderboard data, timer state, or opponent private state. Use Cloud Functions and tests for those paths.

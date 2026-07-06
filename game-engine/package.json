@@ -1,0 +1,7 @@
+{
+  "name": "@vboard/game-engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Pure game rules and shared match helpers for VBoard Arena."
+}
