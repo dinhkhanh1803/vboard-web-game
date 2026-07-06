@@ -15,7 +15,8 @@
     "paths": {
       "@/*": ["src/*"],
       "@engine/*": ["game-engine/src/*"],
-      "@functions/*": ["functions/src/*"]
+      "@functions/*": ["functions/src/*"],
+      "@contracts/*": ["contracts/*"]
     },
     "ignoreDeprecations": "6.0"
   }

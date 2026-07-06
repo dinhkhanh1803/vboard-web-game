@@ -50,3 +50,10 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] Add Firebase Admin boundary for functions.
 - [x] Add emulator/rules test structure.
 - [x] Keep rules closed by default.
+
+## Phase 6: Shared Product Contracts
+
+- [x] Define user/profile contracts for users and profilesPublic.
+- [ ] Define game catalog contracts.
+- [ ] Define room and match contracts.
+- [ ] Define analytics event names.

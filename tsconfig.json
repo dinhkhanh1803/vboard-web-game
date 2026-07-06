@@ -3,6 +3,7 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./functions/tsconfig.json" },
-    { "path": "./game-engine/tsconfig.json" }
+    { "path": "./game-engine/tsconfig.json" },
+    { "path": "./tsconfig.contracts.json" }
   ]
 }

@@ -8,8 +8,8 @@ Own sign-in, sign-out, guest entry, profile shell, and protected route state fro
 
 - May read authentication state through the Firebase client boundary after Phase 3.
 - Must not write roles, coins, level, ban state, ranking, or match history directly.
-- Keep profile UI here; shared user contracts can move only when functions also need them.
+- Keep profile UI here; shared user/profile contracts live in `contracts/userProfile.ts`.
 
 ## Next Task
 
-After Firebase local foundation exists, add the auth UI shell with email, Google, and guest-mode stubs.
+After shared product contracts are complete, add the auth UI shell with email, Google, and guest-mode stubs.

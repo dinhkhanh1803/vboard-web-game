@@ -10,6 +10,7 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       "@engine": fileURLToPath(new URL("./game-engine/src", import.meta.url)),
       "@functions": fileURLToPath(new URL("./functions/src", import.meta.url)),
+      "@contracts": fileURLToPath(new URL("./contracts", import.meta.url)),
     },
   },
   test: {
