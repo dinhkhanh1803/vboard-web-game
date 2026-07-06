@@ -63,7 +63,7 @@ describe("App shell", () => {
     expect(screen.getByRole("button", { name: "Copy invite link" })).toBeDisabled();
   });
 
-  it("renders the playable match shell with PixiJS board controls", () => {
+  it("renders the playable match shells with PixiJS board controls", () => {
     renderApp("/matches/demo-match");
 
     expect(screen.getByRole("heading", { name: "Connect 4 Match" })).toBeInTheDocument();
@@ -71,6 +71,12 @@ describe("App shell", () => {
     expect(screen.getByText("Move Log")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Drop disc in column 4" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Reset local match" })).toBeInTheDocument();
+
+    renderApp("/matches/demo-caro");
+
+    expect(screen.getByRole("heading", { name: "Caro Match" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Interactive Caro PixiJS board")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Place stone at row 8 column 8" })).toBeEnabled();
   });
 
   it("renders leaderboard, profile, protected admin, and content shells", () => {

@@ -27,4 +27,39 @@ describe("MatchPage gameplay", () => {
     expect(screen.getByText("Khanh wins")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Reset local match" })).toBeInTheDocument();
   });
+  it("renders a local Caro gameplay state and accepts cell moves", () => {
+    render(<MatchPage initialGameId="caro" />);
+
+    expect(screen.getByRole("heading", { name: "Caro Match" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Interactive Caro PixiJS board")).toBeInTheDocument();
+    expect(screen.getAllByText("Turn: Khanh").length).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByRole("button", { name: "Place stone at row 8 column 8" }));
+
+    expect(screen.getAllByText("Turn: Arena Bot").length).toBeGreaterThan(0);
+    expect(screen.getByText("Black R8 C8")).toBeInTheDocument();
+  });
+
+  it("shows the Caro result panel when the local match completes", () => {
+    render(<MatchPage initialGameId="caro" />);
+
+    for (const [row, column] of [
+      [8, 8],
+      [9, 8],
+      [8, 9],
+      [9, 9],
+      [8, 10],
+      [9, 10],
+      [8, 11],
+      [9, 11],
+      [8, 12],
+    ]) {
+      fireEvent.click(
+        screen.getByRole("button", { name: `Place stone at row ${row} column ${column}` }),
+      );
+    }
+
+    expect(screen.getByText("Khanh wins")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reset local match" })).toBeInTheDocument();
+  });
 });

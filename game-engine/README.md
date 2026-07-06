@@ -19,7 +19,12 @@ This folder contains pure TypeScript game rules. It should be easy to test witho
 
 ## Current Core Contract
 
-`src/core/gameModule.ts` defines the shared `GameModule<TState, TMove>` contract. Game modules own metadata, initial state creation, move validation, immutable move application, result evaluation, and compact public state serialization. `src/games/connect4/connect4Module.ts` now implements the first concrete module with pure Connect 4 state, validation, move application, win/draw evaluation, and public-state serialization.
+`src/core/gameModule.ts` defines the shared `GameModule<TState, TMove>` contract. Game modules own metadata, initial state creation, move validation, immutable move application, result evaluation, and compact public state serialization.
+
+Current modules:
+
+- `src/games/connect4/connect4Module.ts`: pure Connect 4 state, validation, move application, win/draw evaluation, and public-state serialization.
+- `src/games/caro/caroModule.ts`: pure 15x15 Caro state, move validation, immutable stone placement, five-in-row win detection, draw evaluation, and public-state serialization.
 
 ## Planned Layout
 

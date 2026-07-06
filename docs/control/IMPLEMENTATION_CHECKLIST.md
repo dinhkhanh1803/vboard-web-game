@@ -153,12 +153,12 @@ Owner review: play flow should feel clear on mobile before adding Caro.
 
 Goal: add the second game after the platform path works.
 
-- [ ] Add Caro state and board-size tests.
-- [ ] Add five-in-row result tests.
-- [ ] Add Caro move validation tests.
-- [ ] Add Caro match UI using the same match shell.
+- [x] Add Caro state and board-size tests.
+- [x] Add five-in-row result tests.
+- [x] Add Caro move validation tests.
+- [x] Add Caro match UI using the same match shell.
 
-Owner review: confirm Connect 4 patterns are reused rather than copied blindly.
+Owner review: confirm Connect 4 patterns are reused through the shared game module and local match source shape.
 
 ## Phase 12: Ranking, History, And Progression
 

@@ -21,6 +21,7 @@ export function App() {
           <Route path="/games" element={<GameCatalogPage />} />
           <Route path="/lobby" element={<LobbyPage />} />
           <Route path="/rooms/:roomId" element={<WaitingRoomPage />} />
+          <Route path="/matches/demo-caro" element={<MatchPage initialGameId="caro" />} />
           <Route path="/matches/:matchId" element={<MatchPage />} />
           <Route path="/profile/:userId?" element={<ProfilePage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />

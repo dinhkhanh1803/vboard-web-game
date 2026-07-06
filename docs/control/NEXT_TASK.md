@@ -2,24 +2,27 @@
 
 ## Current Recommended Next Step
 
-Start Phase 11 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: add the Caro MVP after Connect 4 has a working local gameplay path.
+Start Phase 12 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: add ranking, history, and progression after Connect 4 and Caro both have local playable paths.
 
 ## Exact First Task
 
-Add Caro state and board-size tests in `game-engine/` before implementing five-in-row result logic or UI.
+Add Elo helper tests before implementing ranking writes, match history writes, or leaderboard persistence.
 
 ## Scope
 
-- Keep Caro logic pure and game-engine first.
-- Reuse the `GameModule` contract from Phase 8.
-- Do not copy Connect 4 code blindly; extract shared helpers only if duplication becomes meaningful.
-- Do not connect Caro UI, Firebase, realtime listeners, or Cloud Functions yet.
+- Keep Phase 12 contract/helper-first, with pure tests before UI or Firebase writes.
+- Reuse existing `contracts/`, `functions/`, and feature README boundaries.
 - Do not create, select, or configure any real Firebase project until the owner explicitly approves that step.
+- Do not add reward economy or monetization logic in this phase.
+- Keep leaderboard/profile stats compatible with current local UI and future Cloud Functions writes.
 
 ## Expected Files
 
-- `game-engine/src/games/caro/`
-- `game-engine/test/`
+- `contracts/`
+- `functions/src/domain/`
+- `functions/test/`
+- `src/features/leaderboard/`
+- `src/features/auth/`
 - `docs/control/PROGRESS.md`
 
 ## Verification

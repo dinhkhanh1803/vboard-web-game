@@ -85,3 +85,10 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] Add interactive Connect 4 PixiJS board UI.
 - [x] Add realtime match subscription boundary.
 - [x] Add result screen path.
+
+## Phase 11: Caro MVP
+
+- [x] Add pure Caro game-engine module with 15x15 board state.
+- [x] Add Caro move validation and five-in-row result tests.
+- [x] Add local Caro match source using the shared MatchDocument public state shape.
+- [x] Add playable Caro PixiJS board UI and demo route.
