@@ -12,19 +12,18 @@ Use this file as the owner's control board. AI assistants should update it when 
 
 ## Phase 1: Toolchain
 
-- [ ] Install and configure Vite React TypeScript.
-- [ ] Install and configure linting and formatting.
-- [ ] Install and configure Vitest.
-- [ ] Configure TypeScript project references or scoped configs.
-- [ ] Make root `build`, `lint`, `test`, and `typecheck` scripts meaningful.
+- [x] Install and configure Vite React TypeScript with PixiJS dependency.
+- [x] Install and configure linting and formatting.
+- [x] Install and configure Vitest.
+- [x] Configure TypeScript scoped configs for web, functions, and game engine.
+- [x] Make root `build`, `lint`, `test`, and `typecheck` scripts meaningful.
 
-## Phase 2: Core Platform Shell
+## Phase 2: Web App Shell
 
-- [ ] Add Firebase client config for development.
-- [ ] Add Authentication shell.
-- [ ] Add profile shell.
-- [ ] Add game catalog contract.
-- [ ] Add lobby and room contract drafts.
+- [ ] Add route map and app provider shell.
+- [ ] Add global styles and design tokens.
+- [ ] Add feature READMEs for MVP feature folders.
+- [ ] Add a development-only navigation layout.
 
 ## Phase 3: Server-Authoritative Path
 

@@ -19,13 +19,13 @@ Clients may preview local UI state for responsiveness, but Firestore state writt
 
 ## Runtime Responsibilities
 
-| Area | Responsibility |
-| --- | --- |
-| `src/` React web app | Render UI, subscribe to narrow realtime data, submit intent, never decide official match results. |
-| `functions/` Cloud Functions | Validate room actions, moves, timeouts, ranking, moderation, and cleanup. |
-| Firestore | Store users, rooms, matches, moves, leaderboards, reports, config, and admin logs. |
-| Realtime Database | Presence and disconnect-aware lobby signals. |
-| `game-engine/` | Pure rules and state transitions, reusable by functions and web previews. |
+| Area                         | Responsibility                                                                                    |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- |
+| `src/` React web app         | Render UI, subscribe to narrow realtime data, submit intent, never decide official match results. |
+| `functions/` Cloud Functions | Validate room actions, moves, timeouts, ranking, moderation, and cleanup.                         |
+| Firestore                    | Store users, rooms, matches, moves, leaderboards, reports, config, and admin logs.                |
+| Realtime Database            | Presence and disconnect-aware lobby signals.                                                      |
+| `game-engine/`               | Pure rules and state transitions, reusable by functions and web previews.                         |
 
 ## Module Boundaries
 

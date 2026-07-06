@@ -20,13 +20,13 @@
 
 ## Package Ownership
 
-| Path | Owner |
-| --- | --- |
-| `src` | Browser UI, Firebase client reads, and intent submission. |
-| `functions` | Server-side validation and official state writes. |
-| `game-engine` | Pure game rules, state transitions, result detection, and Elo helpers. |
-| `firebase` | Firebase rules, indexes, emulator config, and deployment wiring. |
-| `docs/control` | Owner and AI workflow control. |
+| Path           | Owner                                                                  |
+| -------------- | ---------------------------------------------------------------------- |
+| `src`          | Browser UI, Firebase client reads, and intent submission.              |
+| `functions`    | Server-side validation and official state writes.                      |
+| `game-engine`  | Pure game rules, state transitions, result detection, and Elo helpers. |
+| `firebase`     | Firebase rules, indexes, emulator config, and deployment wiring.       |
+| `docs/control` | Owner and AI workflow control.                                         |
 
 ## MVP Guardrails
 

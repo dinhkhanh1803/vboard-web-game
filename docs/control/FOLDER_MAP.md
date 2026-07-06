@@ -4,17 +4,17 @@ This is the source of truth for where code belongs.
 
 ## Top-Level Folders
 
-| Folder | Purpose | Rule |
-| --- | --- | --- |
-| `src/` | React web client | UI, routes, hooks, Firebase client reads, and intent submission only. |
-| `functions/` | Firebase Cloud Functions | Server-authoritative validation and official writes. |
-| `game-engine/` | Pure game rules | No React imports, no Firebase imports, deterministic unit tests. |
-| `firebase/` | Firebase rules and indexes | Start closed; open access only with tests. |
-| `docs/control/` | Owner and AI control panel | Must stay short, current, and easy to scan. |
-| `docs/` | Product and architecture docs | Longer background and decisions. |
-| `ops/` | Operations notes | Deploy, monitoring, backups, production readiness. |
-| `scripts/` | Local automation | Add only when repeated manual work exists. |
-| `tests/` | Cross-area tests | Emulator, e2e, and smoke tests that span areas. |
+| Folder          | Purpose                       | Rule                                                                  |
+| --------------- | ----------------------------- | --------------------------------------------------------------------- |
+| `src/`          | React web client              | UI, routes, hooks, Firebase client reads, and intent submission only. |
+| `functions/`    | Firebase Cloud Functions      | Server-authoritative validation and official writes.                  |
+| `game-engine/`  | Pure game rules               | No React imports, no Firebase imports, deterministic unit tests.      |
+| `firebase/`     | Firebase rules and indexes    | Start closed; open access only with tests.                            |
+| `docs/control/` | Owner and AI control panel    | Must stay short, current, and easy to scan.                           |
+| `docs/`         | Product and architecture docs | Longer background and decisions.                                      |
+| `ops/`          | Operations notes              | Deploy, monitoring, backups, production readiness.                    |
+| `scripts/`      | Local automation              | Add only when repeated manual work exists.                            |
+| `tests/`        | Cross-area tests              | Emulator, e2e, and smoke tests that span areas.                       |
 
 ## Web Feature Layout
 

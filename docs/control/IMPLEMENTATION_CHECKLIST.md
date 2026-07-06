@@ -13,19 +13,19 @@ This is the working checklist for the next development phases. Keep each task sm
 
 Goal: make the scaffold a real React + Vite + TypeScript project with PixiJS installed, without product features.
 
-- [ ] Install Vite React TypeScript and PixiJS at the repo root.
+- [x] Install Vite React TypeScript and PixiJS at the repo root.
   - Files: `package.json`, `index.html`, `src/`, `public/`.
   - Done when: `npm run dev` can start a blank app locally and `pixi.js` is available for later canvas work.
-- [ ] Add root TypeScript configs for web, functions, and game engine.
+- [x] Add root TypeScript configs for web, functions, and game engine.
   - Files: `tsconfig.json`, `tsconfig.app.json`, `functions/tsconfig.json`, `game-engine/tsconfig.json`.
   - Done when: `npm run typecheck` checks all active TS projects.
-- [ ] Add ESLint and Prettier.
+- [x] Add ESLint and Prettier.
   - Files: `eslint.config.*`, `.prettierrc`, `package.json`.
   - Done when: `npm run lint` reports real lint status.
-- [ ] Add Vitest test runner.
+- [x] Add Vitest test runner.
   - Files: `vitest.config.*`, `src/test/`, `game-engine/test/`, `package.json`.
   - Done when: `npm run test` runs at least one smoke test.
-- [ ] Add Firebase CLI scripts without connecting production secrets.
+- [x] Add Firebase CLI scripts without connecting production secrets.
   - Files: `package.json`, `firebase.json`, `firebase/README.md`.
   - Done when: emulator and deploy commands are documented but production remains unconfigured.
 

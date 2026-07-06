@@ -6,14 +6,14 @@ Firebase rules start closed. Every future read or write path should be opened on
 
 ## Client Permissions
 
-| Data | Client May Do | Client Must Not Do |
-| --- | --- | --- |
-| Profile | Update own safe display fields. | Change role, coins, level, ban status, or admin flags. |
-| Room | Request create, join, leave, or ready through functions. | Directly set room status or player slots. |
-| Match | Read own active match state. | Write board, winner, turn, timer, or result directly. |
-| Move | Submit intent through functions. | Write moves subcollections directly. |
-| Leaderboard | Read public ranking data. | Update Elo, rank, wins, losses, or rewards. |
-| Private state | Read only own private state when needed. | Read opponent hidden data. |
+| Data          | Client May Do                                            | Client Must Not Do                                     |
+| ------------- | -------------------------------------------------------- | ------------------------------------------------------ |
+| Profile       | Update own safe display fields.                          | Change role, coins, level, ban status, or admin flags. |
+| Room          | Request create, join, leave, or ready through functions. | Directly set room status or player slots.              |
+| Match         | Read own active match state.                             | Write board, winner, turn, timer, or result directly.  |
+| Move          | Submit intent through functions.                         | Write moves subcollections directly.                   |
+| Leaderboard   | Read public ranking data.                                | Update Elo, rank, wins, losses, or rewards.            |
+| Private state | Read only own private state when needed.                 | Read opponent hidden data.                             |
 
 ## Abuse Controls To Add With Implementation
 

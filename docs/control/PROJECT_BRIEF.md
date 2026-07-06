@@ -24,6 +24,7 @@ The owner is solo. AI is expected to write most implementation work, while the o
 4. Room create/join.
 5. Connect 4 server-authoritative path.
 6. Caro after Connect 4 proves the path.
+
 ## Tech Decision
 
 MVP uses React + Vite + TypeScript for the web app, PixiJS for game canvas rendering, Firebase for backend services, Cloud Functions TypeScript for server-authoritative writes, and Vitest for early tests. Next.js is deferred until SEO/content needs justify it.
