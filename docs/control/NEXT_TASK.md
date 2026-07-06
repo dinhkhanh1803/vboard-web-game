@@ -2,23 +2,24 @@
 
 ## Current Recommended Next Step
 
-Continue Phase 6 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: define analytics event names before gameplay or Firebase writes depend on tracking language.
+Start Phase 7 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: add the Auth UI shell before wiring live Firebase providers.
 
 ## Exact First Task
 
-Define TypeScript contracts for analytics event names and minimal event payload shapes.
+Add an Auth UI shell with email, Google, and guest-mode states using static/local state only.
 
 ## Scope
 
-- Define stable event names for auth, lobby, room, match, game catalog, and UI navigation milestones.
-- Keep analytics contract-only; do not wire Firebase Analytics or any tracking SDK calls yet.
+- Build visible auth entry states that match the existing profile/auth route style.
+- Use the shared user/profile contracts for labels and future data shape alignment where useful.
+- Keep Firebase Auth provider wiring out of scope until the owner approves real provider setup.
 - Do not create or configure any real Firebase project yet.
-- Keep gameplay implementation, Cloud Functions writes, and realtime listeners out of scope.
+- Keep room, match, and Cloud Functions workflows out of scope.
 
 ## Expected Files
 
-- `contracts/`
-- `docs/firebase-model.md`
+- `src/features/auth/`
+- `src/app/` or `src/routes/` if route shell needs small support
 - `docs/control/PROGRESS.md`
 
 ## Verification

@@ -101,7 +101,7 @@ Goal: define the data language before writing workflows.
 - [x] Define user/profile contracts.
 - [x] Define game catalog contracts.
 - [x] Define room and match contracts.
-- [ ] Define analytics event names.
+- [x] Define analytics event names.
 
 Owner review: approve field names before Firebase writes exist.
 

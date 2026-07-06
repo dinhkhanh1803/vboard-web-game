@@ -169,3 +169,48 @@ Auditable move log entry stored outside the compact match document.
 | `stateVersionBefore` | `number`                  | Match state version before applying the move. |
 | `stateVersionAfter`  | `number`                  | Match state version after applying the move.  |
 | `createdAtMs`        | `number`                  | Unix epoch milliseconds.                      |
+
+## Analytics Event Contracts
+
+Phase 6.4 pins product analytics event language in `contracts/analyticsEvents.ts`. These contracts are TypeScript-only for now; no Firebase Analytics SDK calls or event writes exist yet.
+
+### Event Envelope
+
+| Field         | Type                     | Notes                                            |
+| ------------- | ------------------------ | ------------------------------------------------ |
+| `name`        | `AnalyticsEventName`     | Stable snake_case event identifier.              |
+| `category`    | `AnalyticsEventCategory` | Broad product area for filtering and dashboards. |
+| `payload`     | `AnalyticsEventPayload`  | Event-specific typed payload.                    |
+| `createdAtMs` | `number`                 | Unix epoch milliseconds from the caller.         |
+
+### Categories
+
+| Category       | Initial Purpose                        |
+| -------------- | -------------------------------------- |
+| `navigation`   | Route visibility and app navigation.   |
+| `auth`         | Auth entry and provider selection.     |
+| `profile`      | Profile visibility.                    |
+| `game_catalog` | Catalog views and game selection.      |
+| `lobby`        | Lobby view and quick-match intent.     |
+| `room`         | Room create, join, and ready state.    |
+| `match`        | Match view, start, moves, and results. |
+
+### Initial Event Names
+
+| Event Name               | Category       |
+| ------------------------ | -------------- |
+| `app_route_viewed`       | `navigation`   |
+| `auth_entry_viewed`      | `auth`         |
+| `auth_provider_selected` | `auth`         |
+| `profile_viewed`         | `profile`      |
+| `game_catalog_viewed`    | `game_catalog` |
+| `game_selected`          | `game_catalog` |
+| `lobby_viewed`           | `lobby`        |
+| `quick_match_clicked`    | `lobby`        |
+| `room_created`           | `room`         |
+| `room_joined`            | `room`         |
+| `room_ready_changed`     | `room`         |
+| `match_viewed`           | `match`        |
+| `match_started`          | `match`        |
+| `match_move_submitted`   | `match`        |
+| `match_completed`        | `match`        |

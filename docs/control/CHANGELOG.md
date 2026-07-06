@@ -21,3 +21,4 @@
 - Started Phase 6 shared product contracts with root contracts/ boundary and user/profile shapes for users and profilesPublic.
 - Continued Phase 6 shared contracts with games/{gameId} catalog metadata, Connect 4/Caro availability, routes, player counts, and PixiJS renderer key.
 - Continued Phase 6 shared contracts with rooms/{roomId}, matches/{matchId}, move logs, turn metadata, stateVersion, and result shapes.
+- Completed Phase 6 shared contracts with stable analytics event names, categories, typed payloads, and contract-only event envelopes.
