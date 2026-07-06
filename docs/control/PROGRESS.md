@@ -1,6 +1,6 @@
 # Progress Checklist
 
-Use this file as the owner's control board. AI assistants should update it when work changes status.
+Use this file as the owner's control board. AI assistants should update it when work changes status. Detailed tasks live in `docs/control/IMPLEMENTATION_CHECKLIST.md`.
 
 ## Phase 0: Foundation
 
