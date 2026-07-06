@@ -45,8 +45,8 @@ Use this file as the owner's control board. AI assistants should update it when 
 
 ## Phase 5: Firebase Local Foundation
 
-- [ ] Ask owner before creating or configuring any real Firebase project.
-- [ ] Add Firebase client initialization boundary.
-- [ ] Add Firebase Admin boundary for functions.
-- [ ] Add emulator test structure.
-- [ ] Keep rules closed by default.
+- [x] Confirm no real Firebase project was created or configured.
+- [x] Add Firebase client initialization boundary.
+- [x] Add Firebase Admin boundary for functions.
+- [x] Add emulator/rules test structure.
+- [x] Keep rules closed by default.

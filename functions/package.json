@@ -3,5 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Firebase Cloud Functions workspace for VBoard Arena."
+  "description": "Firebase Cloud Functions workspace for VBoard Arena.",
+  "dependencies": {
+    "firebase-admin": "^13.10.0",
+    "firebase-functions": "^7.2.5"
+  }
 }

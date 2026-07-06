@@ -78,17 +78,17 @@ Owner review: confirm UI is ready before Firebase project/config steps.
 
 Goal: connect Firebase safely through local/emulator-first boundaries only after owner approval.
 
-- [ ] Ask owner before creating or configuring any real Firebase project.
-- [ ] Create Firebase client initialization boundary.
+- [x] Confirm no real Firebase project is created or configured in this phase.
+- [x] Create Firebase client initialization boundary.
   - Files: `src/firebase/`.
   - Done when: config is read from `.env.example` keys and emulator toggles are isolated.
-- [ ] Create Firebase Admin boundary for functions.
+- [x] Create Firebase Admin boundary for functions.
   - Files: `functions/src/integrations/`.
   - Done when: backend code has a single place to initialize Admin SDK later.
-- [ ] Add emulator test structure.
+- [x] Add emulator test structure.
   - Files: `tests/`, `functions/test/`, `firebase/`.
   - Done when: security/function tests have a documented run command.
-- [ ] Keep Firestore, Storage, and Realtime Database rules closed.
+- [x] Keep Firestore, Storage, and Realtime Database rules closed.
   - Files: `firebase/*.rules*`.
   - Done when: tests prove closed-by-default access remains closed.
 

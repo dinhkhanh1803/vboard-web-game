@@ -2,24 +2,24 @@
 
 ## Current Recommended Next Step
 
-Continue Phase 4 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: add frontend-only empty, loading, and error states before backend/Firebase work begins.
+Start Phase 6 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: define shared product contracts before writing Firebase workflows.
 
 ## Exact First Task
 
-Create reusable UI state sections for screens that will later depend on Firebase data, without connecting Firebase.
+Define user/profile contracts that match the Firebase data model and can be shared by frontend and functions code later.
 
 ## Scope
 
-- Add empty/loading/error display contracts for lobby rooms, leaderboard rows, match state, and profile history.
-- Keep all backend actions disabled or local-only.
+- Define `users` and `profilesPublic` TypeScript shapes.
+- Keep this contract-only; do not write Firestore documents yet.
 - Do not create or configure any real Firebase project yet.
-- Keep PixiJS renderer prototype for a later Phase 4 task unless the owner asks for it next.
+- Keep gameplay, auth provider wiring, and Cloud Functions callables out of scope.
 
 ## Expected Files
 
-- `src/shared/components/`
-- `src/features/*`
-- `src/app/App.test.tsx`
+- `src/features/auth/`
+- `functions/src/core/` or a shared contract folder chosen before implementation
+- `docs/firebase-model.md`
 - `docs/control/PROGRESS.md`
 
 ## Verification

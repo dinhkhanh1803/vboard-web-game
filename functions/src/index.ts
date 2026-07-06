@@ -1,1 +1,1 @@
-export {};
+﻿export { getFirebaseAdminApp } from "./integrations/firebaseAdmin";
