@@ -108,3 +108,64 @@ Current MVP catalog entries:
 | ----------- | ------------- | ------- | ------------ | ---------- |
 | `connect-4` | `available`   | `true`  | `connect4`   | 10 minutes |
 | `caro`      | `coming-soon` | `false` | `caro`       | 15 minutes |
+
+## Room And Match Contracts
+
+Phase 6.3 pins the lobby and official match data language in `contracts/roomMatch.ts`. These contracts are TypeScript-only for now; no Firestore writes exist yet.
+
+### `rooms/{roomId}`
+
+Waiting room document used before a match starts.
+
+| Field         | Type                                                       | Notes                                             |
+| ------------- | ---------------------------------------------------------- | ------------------------------------------------- |
+| `id`          | `string`                                                   | Firestore document ID.                            |
+| `code`        | `string`                                                   | Short invite/join code shown in UI.               |
+| `gameId`      | `"connect-4" \| "caro"`                                    | Shared game identifier.                           |
+| `status`      | `"open" \| "full" \| "starting" \| "in-match" \| "closed"` | Room lifecycle before official match state.       |
+| `visibility`  | `"public" \| "private"`                                    | Public rooms may appear in lobby queries.         |
+| `hostUid`     | `string`                                                   | Host account UID.                                 |
+| `maxPlayers`  | `number`                                                   | Player seat capacity; MVP defaults to `2`.        |
+| `matchId`     | `string \| null`                                           | Set when the room transitions into a match later. |
+| `playerSlots` | `RoomPlayerSlot[]`                                         | Seat order, ready state, host flag, and occupant. |
+| `createdAtMs` | `number`                                                   | Unix epoch milliseconds.                          |
+| `updatedAtMs` | `number`                                                   | Unix epoch milliseconds.                          |
+| `expiresAtMs` | `number`                                                   | Room cleanup deadline.                            |
+
+### `matches/{matchId}`
+
+Official public match document. Server workflows will own writes later.
+
+| Field           | Type                                                              | Notes                                            |
+| --------------- | ----------------------------------------------------------------- | ------------------------------------------------ |
+| `id`            | `string`                                                          | Firestore document ID.                           |
+| `roomId`        | `string`                                                          | Source room ID.                                  |
+| `gameId`        | `"connect-4" \| "caro"`                                           | Shared game identifier.                          |
+| `status`        | `"pending" \| "active" \| "paused" \| "completed" \| "abandoned"` | Official match lifecycle.                        |
+| `players`       | `MatchPlayer[]`                                                   | Seat order, UID, display name, connection.       |
+| `turn`          | `MatchTurn`                                                       | Active seat, turn number, and deadline fields.   |
+| `result`        | `MatchResult`                                                     | Winner and completion reason, null while live.   |
+| `publicState`   | `Record<string, unknown> \| null`                                 | Compact renderer/rules state per game.           |
+| `stateVersion`  | `number`                                                          | Monotonic version incremented by official moves. |
+| `createdAtMs`   | `number`                                                          | Unix epoch milliseconds.                         |
+| `updatedAtMs`   | `number`                                                          | Unix epoch milliseconds.                         |
+| `startedAtMs`   | `number \| null`                                                  | Null before active play starts.                  |
+| `completedAtMs` | `number \| null`                                                  | Null until completion.                           |
+
+### `matches/{matchId}/moves/{moveId}`
+
+Auditable move log entry stored outside the compact match document.
+
+| Field                | Type                      | Notes                                         |
+| -------------------- | ------------------------- | --------------------------------------------- |
+| `id`                 | `string`                  | Firestore document ID.                        |
+| `matchId`            | `string`                  | Parent match ID.                              |
+| `gameId`             | `"connect-4" \| "caro"`   | Shared game identifier.                       |
+| `sequence`           | `number`                  | Monotonic move order within a match.          |
+| `actorUid`           | `string`                  | UID that submitted the move.                  |
+| `actorSeatIndex`     | `number`                  | Seat index used by the rules engine.          |
+| `moveType`           | `string`                  | Game-specific move verb, such as `drop-disc`. |
+| `payload`            | `Record<string, unknown>` | Game-specific move payload.                   |
+| `stateVersionBefore` | `number`                  | Match state version before applying the move. |
+| `stateVersionAfter`  | `number`                  | Match state version after applying the move.  |
+| `createdAtMs`        | `number`                  | Unix epoch milliseconds.                      |

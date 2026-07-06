@@ -2,18 +2,18 @@
 
 ## Current Recommended Next Step
 
-Continue Phase 6 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: define room and match contracts before any Firebase writes exist.
+Continue Phase 6 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: define analytics event names before gameplay or Firebase writes depend on tracking language.
 
 ## Exact First Task
 
-Define TypeScript contracts for `rooms/{roomId}`, `matches/{matchId}`, and match move log entries.
+Define TypeScript contracts for analytics event names and minimal event payload shapes.
 
 ## Scope
 
-- Define room status, player slot, match status, turn metadata, result metadata, `stateVersion`, and move log shapes.
-- Keep this contract-only; do not write Firestore documents yet.
+- Define stable event names for auth, lobby, room, match, game catalog, and UI navigation milestones.
+- Keep analytics contract-only; do not wire Firebase Analytics or any tracking SDK calls yet.
 - Do not create or configure any real Firebase project yet.
-- Keep Cloud Functions callables, matchmaking writes, realtime listeners, and gameplay rules implementation out of scope.
+- Keep gameplay implementation, Cloud Functions writes, and realtime listeners out of scope.
 
 ## Expected Files
 

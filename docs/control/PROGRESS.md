@@ -55,5 +55,5 @@ Use this file as the owner's control board. AI assistants should update it when 
 
 - [x] Define user/profile contracts for users and profilesPublic.
 - [x] Define game catalog contracts.
-- [ ] Define room and match contracts.
+- [x] Define room and match contracts.
 - [ ] Define analytics event names.

@@ -12,4 +12,5 @@ This folder owns TypeScript contracts that describe product data before Firebase
 ## Current Contracts
 
 - `userProfile.ts`: `users/{uid}` private account documents and `profilesPublic/{uid}` public profile documents.
-- gameCatalog.ts: games/{gameId} metadata for Connect 4, Caro, route contracts, player counts, renderer, and availability.
+- `gameCatalog.ts`: `games/{gameId}` metadata for Connect 4, Caro, route contracts, player counts, renderer, and availability.
+- `roomMatch.ts`: `rooms/{roomId}`, `matches/{matchId}`, and `matches/{matchId}/moves/{moveId}` lifecycle contracts.

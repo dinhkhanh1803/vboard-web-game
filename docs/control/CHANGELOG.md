@@ -20,3 +20,4 @@
 - Completed Phase 5 Firebase local foundation with web config parsing, client SDK boundary, Functions Admin boundary, rules baseline tests, and no real Firebase project configuration.
 - Started Phase 6 shared product contracts with root contracts/ boundary and user/profile shapes for users and profilesPublic.
 - Continued Phase 6 shared contracts with games/{gameId} catalog metadata, Connect 4/Caro availability, routes, player counts, and PixiJS renderer key.
+- Continued Phase 6 shared contracts with rooms/{roomId}, matches/{matchId}, move logs, turn metadata, stateVersion, and result shapes.
