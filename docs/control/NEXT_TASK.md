@@ -2,24 +2,25 @@
 
 ## Current Recommended Next Step
 
-Continue Phase 8 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: add Connect 4 initial state tests before implementing full move validation.
+Start Phase 9 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: implement `createRoom` through tests.
 
 ## Exact First Task
 
-Define the Connect 4 state shape and initial state factory under `game-engine/src/games/connect4/`, with tests covering board dimensions, empty cells, starting turn, and compact public state serialization.
+Add Cloud Functions/domain tests for the server-authoritative `createRoom` path, using the shared room and game catalog contracts before adding any Firebase writes.
 
 ## Scope
 
-- Keep logic pure and framework-neutral.
-- Use the `GameModule` contract from `game-engine/src/core/gameModule.ts`.
-- Do not connect PixiJS rendering, Firebase, Cloud Functions, or realtime listeners yet.
-- Do not implement full win detection or illegal move validation in this task unless the test requires a minimal placeholder boundary.
-- Do not create or configure any real Firebase project yet.
+- Keep the first pass local and test-driven.
+- Reuse contracts from `contracts/roomMatch.ts` and `contracts/gameCatalog.ts`.
+- Keep official room/match writes behind server-side boundaries only.
+- Do not connect the web client to live room creation yet.
+- Do not create, select, or configure any real Firebase project until the owner explicitly approves that step.
 
 ## Expected Files
 
-- `game-engine/src/games/connect4/`
-- `game-engine/test/`
+- `functions/src/`
+- `functions/test/`
+- `contracts/`
 - `docs/control/PROGRESS.md`
 
 ## Verification

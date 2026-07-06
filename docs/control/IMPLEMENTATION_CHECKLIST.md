@@ -120,9 +120,9 @@ Owner review: confirm auth UX before wiring live Firebase providers.
 Goal: prove the pure game-rule path before UI and backend rely on it.
 
 - [x] Define `GameModule` contract.
-- [ ] Add Connect 4 initial state tests.
-- [ ] Add Connect 4 move validation tests.
-- [ ] Add Connect 4 result tests.
+- [x] Add Connect 4 initial state tests.
+- [x] Add Connect 4 move validation tests.
+- [x] Add Connect 4 result tests.
 
 Owner review: inspect tests first; rule implementation should be boring after tests pass.
 
