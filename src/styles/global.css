@@ -479,6 +479,23 @@ p {
   font-weight: 900;
 }
 
+.auth-required-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.button-link {
+  display: inline-grid;
+  width: fit-content;
+  min-height: 42px;
+  align-items: center;
+  border: 1px solid #c9d2e4;
+  border-radius: 8px;
+  background: #162033;
+  color: #ffffff;
+  font-weight: 800;
+  padding: 10px 14px;
+}
 @media (max-width: 880px) {
   .game-grid,
   .two-column-layout,
@@ -545,6 +562,24 @@ p {
   .table-like {
     min-width: 520px;
   }
+}
+
+.auth-required-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.button-link {
+  display: inline-grid;
+  width: fit-content;
+  min-height: 42px;
+  align-items: center;
+  border: 1px solid #c9d2e4;
+  border-radius: 8px;
+  background: #162033;
+  color: #ffffff;
+  font-weight: 800;
+  padding: 10px 14px;
 }
 @media (max-width: 880px) {
   .auth-form,

@@ -2,24 +2,24 @@
 
 ## Current Recommended Next Step
 
-Continue Phase 7 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: connect the profile view more directly to the shared profile contract while staying local/static.
+Start Phase 8 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: define the pure `GameModule` contract before Connect 4 rules are implemented.
 
 ## Exact First Task
 
-Refactor the profile summary and stats UI to read from a typed local `PublicProfile` fixture created through the shared contract helpers.
+Define the `GameModule` contract in `game-engine` with tests for module metadata, initial state creation, move validation, and result evaluation boundaries.
 
 ## Scope
 
-- Keep Firebase Auth provider wiring out of scope until the owner approves real provider setup.
-- Keep profile data local/static; do not read or write Firestore yet.
-- Use `contracts/userProfile.ts` as the source of truth for profile shape and defaults.
-- Preserve the new Auth UI shell and existing profile route.
+- Keep game rules pure and framework-neutral.
+- Do not connect PixiJS rendering, Firebase, Cloud Functions, or realtime listeners yet.
+- Define the shared interface that Connect 4 and Caro will implement later.
+- Keep the first implementation minimal; Connect 4 rule logic comes after the contract is pinned.
 - Do not create or configure any real Firebase project yet.
 
 ## Expected Files
 
-- `src/features/auth/`
-- `src/shared/constants/` if a reusable fixture boundary is useful
+- `game-engine/src/`
+- `game-engine/README.md`
 - `docs/control/PROGRESS.md`
 
 ## Verification

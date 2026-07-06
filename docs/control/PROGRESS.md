@@ -61,5 +61,5 @@ Use this file as the owner's control board. AI assistants should update it when 
 ## Phase 7: Auth And Profile Flow
 
 - [x] Add Auth UI shell with email, Google, and guest-mode states.
-- [ ] Add profile view connected to the shared profile contract.
-- [ ] Add protected-route behavior.
+- [x] Add profile view connected to the shared profile contract.
+- [x] Add protected-route behavior.

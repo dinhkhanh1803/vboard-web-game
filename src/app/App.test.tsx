@@ -73,7 +73,7 @@ describe("App shell", () => {
     expect(screen.getByRole("button", { name: "Resign match" })).toBeDisabled();
   });
 
-  it("renders leaderboard, profile, admin, and content shells", () => {
+  it("renders leaderboard, profile, protected admin, and content shells", () => {
     renderApp("/leaderboard");
     expect(screen.getByRole("heading", { name: "Leaderboard" })).toBeInTheDocument();
     expect(screen.getByText("Season Rank")).toBeInTheDocument();
@@ -83,8 +83,12 @@ describe("App shell", () => {
     expect(screen.getByText("Recent Matches")).toBeInTheDocument();
 
     renderApp("/admin");
-    expect(screen.getByRole("heading", { name: "Admin Console" })).toBeInTheDocument();
-    expect(screen.getByText("Feature Flags")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Sign in required" })).toBeInTheDocument();
+    expect(screen.getByText("Admin Console")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Go to auth shell" })).toHaveAttribute(
+      "href",
+      "/profile/me",
+    );
 
     renderApp("/privacy-policy");
     expect(screen.getByRole("heading", { name: "Privacy Policy" })).toBeInTheDocument();

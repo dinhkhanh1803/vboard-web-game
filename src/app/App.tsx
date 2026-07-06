@@ -4,6 +4,7 @@ import { DevNavigation } from "@/app/DevNavigation";
 import { HomePage } from "@/app/HomePage";
 import { AdminPage } from "@/features/admin/AdminPage";
 import { ProfilePage } from "@/features/auth/ProfilePage";
+import { RequireAuthPreview } from "@/features/auth/RequireAuthPreview";
 import { ContentPage } from "@/features/content/ContentPage";
 import { GameCatalogPage } from "@/features/games/GameCatalogPage";
 import { LeaderboardPage } from "@/features/leaderboard/LeaderboardPage";
@@ -23,7 +24,14 @@ export function App() {
           <Route path="/matches/:matchId" element={<MatchPage />} />
           <Route path="/profile/:userId?" element={<ProfilePage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route
+            path="/admin"
+            element={
+              <RequireAuthPreview routeName="Admin Console">
+                <AdminPage />
+              </RequireAuthPreview>
+            }
+          />
           <Route path="/privacy-policy" element={<ContentPage routeId="privacy" />} />
           <Route path="/terms" element={<ContentPage routeId="terms" />} />
           <Route path="/contact" element={<ContentPage routeId="contact" />} />

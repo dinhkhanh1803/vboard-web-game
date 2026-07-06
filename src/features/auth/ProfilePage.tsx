@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import { supportedAuthProviders } from "@contracts/userProfile";
 
+import { demoProfilePrimaryGameId, demoPublicProfile } from "@/shared/constants/profileFixtures";
+
 type AuthPreviewMode = "Email password" | "Google provider" | "Guest player";
 
 const authModes = [
@@ -21,6 +23,9 @@ const authModes = [
     detail: "Future temporary player profile for quick lobby entry.",
   },
 ] as const;
+
+const primaryStats = demoPublicProfile.statsByGame[demoProfilePrimaryGameId];
+const primaryRecord = `${primaryStats.wins}W ${primaryStats.losses}L`;
 
 export function ProfilePage() {
   const [selectedMode, setSelectedMode] = useState<AuthPreviewMode>("Email password");
@@ -99,8 +104,10 @@ export function ProfilePage() {
             VA
           </div>
           <div>
-            <h2>Khanh</h2>
-            <p>Level 1 - 320 XP</p>
+            <h2>{demoPublicProfile.displayName}</h2>
+            <p>
+              Level {demoPublicProfile.level} - {demoPublicProfile.xp} XP
+            </p>
           </div>
         </section>
 
@@ -109,11 +116,15 @@ export function ProfilePage() {
           <dl className="compact-facts">
             <div>
               <dt>Elo</dt>
-              <dd>1240</dd>
+              <dd>{primaryStats.elo}</dd>
             </div>
             <div>
               <dt>Record</dt>
-              <dd>12W 3L</dd>
+              <dd>{primaryRecord}</dd>
+            </div>
+            <div>
+              <dt>Games</dt>
+              <dd>{primaryStats.gamesPlayed} games</dd>
             </div>
           </dl>
         </section>
