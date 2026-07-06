@@ -1,5 +1,7 @@
+import { gameCatalogEntries, type GameId } from "@contracts/gameCatalog";
+
 export type StaticGame = {
-  id: "connect-4" | "caro";
+  id: GameId;
   name: string;
   status: string;
   players: string;
@@ -23,22 +25,25 @@ export type LeaderboardPlayer = {
   record: string;
 };
 
+const connect4 = gameCatalogEntries["connect-4"];
+const caro = gameCatalogEntries.caro;
+
 export const staticGames: StaticGame[] = [
   {
-    id: "connect-4",
-    name: "Connect 4",
+    id: connect4.id,
+    name: connect4.displayName,
     status: "UI ready, rules next",
-    players: "2 players",
-    roundTime: "10 min match",
-    summary: "Drop discs into a seven-column board and connect four before your opponent.",
+    players: `${connect4.minPlayers} players`,
+    roundTime: `${connect4.estimatedRoundMinutes} min match`,
+    summary: connect4.summary,
   },
   {
-    id: "caro",
-    name: "Caro",
+    id: caro.id,
+    name: caro.displayName,
     status: "Planned after Connect 4",
-    players: "2 players",
-    roundTime: "15 min match",
-    summary: "Five-in-row tactical board game prepared for the shared match shell.",
+    players: `${caro.minPlayers} players`,
+    roundTime: `${caro.estimatedRoundMinutes} min match`,
+    summary: caro.summary,
   },
 ];
 

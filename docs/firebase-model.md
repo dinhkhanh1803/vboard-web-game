@@ -76,3 +76,35 @@ Public profile document for lobbies, leaderboards, match panels, and profile pag
 | `updatedAtMs` | `number`                                                | Unix epoch milliseconds.                      |
 
 Default per-game stats start with Elo `1000`, zero wins/losses/draws, zero games played, and zero streaks.
+
+## Game Catalog Contracts
+
+Phase 6.2 pins the game catalog data language in `contracts/gameCatalog.ts`. These contracts are TypeScript-only for now; no Firestore writes exist yet.
+
+### `games/{gameId}`
+
+Catalog document for public game discovery, lobby filtering, and feature flag decisions.
+
+| Field                   | Type                                         | Notes                                              |
+| ----------------------- | -------------------------------------------- | -------------------------------------------------- |
+| `id`                    | `"connect-4" \| "caro"`                      | Firestore document ID and shared game identifier.  |
+| `displayName`           | `string`                                     | Full UI label.                                     |
+| `shortName`             | `string`                                     | Compact UI label.                                  |
+| `summary`               | `string`                                     | Short catalog/lobby copy.                          |
+| `status`                | `"available" \| "coming-soon" \| "disabled"` | Public availability state.                         |
+| `enabled`               | `boolean`                                    | Whether users may enter matchmaking/lobby flows.   |
+| `minPlayers`            | `number`                                     | Minimum seats required to start.                   |
+| `maxPlayers`            | `number`                                     | Maximum player seats.                              |
+| `estimatedRoundMinutes` | `number`                                     | UI estimate for catalog and lobby cards.           |
+| `renderer`              | `"pixi"`                                     | Frontend renderer boundary.                        |
+| `rulesEngineKey`        | `string`                                     | Pure rules engine key used later by `game-engine`. |
+| `rulesRoute`            | `string`                                     | Public rules/how-to-play route.                    |
+| `lobbyRoute`            | `string`                                     | UI entry route for this game.                      |
+| `matchRoutePattern`     | `string`                                     | Shared match route pattern.                        |
+
+Current MVP catalog entries:
+
+| Game ID     | Status        | Enabled | Rules Engine | Round      |
+| ----------- | ------------- | ------- | ------------ | ---------- |
+| `connect-4` | `available`   | `true`  | `connect4`   | 10 minutes |
+| `caro`      | `coming-soon` | `false` | `caro`       | 15 minutes |

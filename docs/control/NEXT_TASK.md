@@ -2,18 +2,18 @@
 
 ## Current Recommended Next Step
 
-Continue Phase 6 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: define game catalog contracts before any Firestore writes exist.
+Continue Phase 6 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: define room and match contracts before any Firebase writes exist.
 
 ## Exact First Task
 
-Define TypeScript contracts for `games/{gameId}` metadata covering Connect 4 and Caro.
+Define TypeScript contracts for `rooms/{roomId}`, `matches/{matchId}`, and match move log entries.
 
 ## Scope
 
-- Define game IDs, game status, player counts, rules route, enabled flag, and display metadata.
+- Define room status, player slot, match status, turn metadata, result metadata, `stateVersion`, and move log shapes.
 - Keep this contract-only; do not write Firestore documents yet.
 - Do not create or configure any real Firebase project yet.
-- Keep gameplay rules, PixiJS rendering, matchmaking, and Cloud Functions callables out of scope.
+- Keep Cloud Functions callables, matchmaking writes, realtime listeners, and gameplay rules implementation out of scope.
 
 ## Expected Files
 

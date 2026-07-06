@@ -1,4 +1,9 @@
-﻿export const userCollectionPaths = {
+import { gameIds, type GameId } from "./gameCatalog";
+
+export { gameIds };
+export type { GameId };
+
+export const userCollectionPaths = {
   privateUsers: "users",
   publicProfiles: "profilesPublic",
 } as const;
@@ -11,9 +16,6 @@ export type UserRole = (typeof userRoles)[number];
 
 export const userAccountStatuses = ["active", "suspended", "deleted"] as const;
 export type UserAccountStatus = (typeof userAccountStatuses)[number];
-
-export const gameIds = ["connect-4", "caro"] as const;
-export type GameId = (typeof gameIds)[number];
 
 export type UserPrivate = {
   uid: string;

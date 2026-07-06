@@ -99,7 +99,7 @@ Owner review: confirm no production Firebase project IDs or secrets were committ
 Goal: define the data language before writing workflows.
 
 - [x] Define user/profile contracts.
-- [ ] Define game catalog contracts.
+- [x] Define game catalog contracts.
 - [ ] Define room and match contracts.
 - [ ] Define analytics event names.
 

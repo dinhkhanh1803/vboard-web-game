@@ -19,3 +19,4 @@
 - Stabilized Vitest full-suite runs on Windows/Codex by using the thread pool instead of the default fork worker pool.
 - Completed Phase 5 Firebase local foundation with web config parsing, client SDK boundary, Functions Admin boundary, rules baseline tests, and no real Firebase project configuration.
 - Started Phase 6 shared product contracts with root contracts/ boundary and user/profile shapes for users and profilesPublic.
+- Continued Phase 6 shared contracts with games/{gameId} catalog metadata, Connect 4/Caro availability, routes, player counts, and PixiJS renderer key.
