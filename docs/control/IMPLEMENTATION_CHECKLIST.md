@@ -59,7 +59,7 @@ Owner review: approve static UI flow before adding real gameplay rendering or ba
 
 Goal: finish the frontend feel before backend work begins.
 
-- [ ] Review desktop and mobile route layout in browser.
+- [x] Review desktop and mobile route layout in browser.
   - Files: `src/styles/`, `src/features/*`.
   - Done when: no overlapping text, awkward overflow, or broken mobile layouts remain.
 - [ ] Add empty/loading/error states for frontend-only screens.

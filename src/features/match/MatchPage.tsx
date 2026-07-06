@@ -26,6 +26,7 @@ export function MatchPage() {
         </aside>
 
         <div className="board-stage" aria-label="PixiJS board mount">
+          <div className="board-stage-label">Canvas placeholder</div>
           <div className="board-preview" aria-hidden="true">
             {Array.from({ length: 42 }, (_, index) => (
               <span
@@ -39,8 +40,8 @@ export function MatchPage() {
         <aside className="panel move-panel" aria-labelledby="move-log-title">
           <h2 id="move-log-title">Move Log</h2>
           <ol>
-            {demoMoves.map((move) => (
-              <li key={move}>{move}</li>
+            {demoMoves.map((move, index) => (
+              <li key={`${move}-${index}`}>{move}</li>
             ))}
           </ol>
           <button type="button" disabled>

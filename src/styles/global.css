@@ -99,6 +99,11 @@ input {
   gap: 6px;
   align-items: center;
   overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.dev-nav-links::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-link {
@@ -118,14 +123,19 @@ input {
 
 .app-shell {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   min-height: calc(100vh - 65px);
+  justify-items: center;
+  overflow-x: clip;
   padding: 24px;
 }
 
 .app-hero,
 .route-panel,
 .screen {
-  width: min(1120px, 100%);
+  width: 100%;
+  max-width: 1120px;
+  min-width: 0;
   margin: 0 auto;
 }
 
@@ -231,6 +241,7 @@ p {
 }
 
 .panel {
+  min-width: 0;
   padding: 18px;
 }
 
@@ -242,6 +253,7 @@ p {
 .game-grid,
 .two-column-layout {
   display: grid;
+  min-width: 0;
   gap: 16px;
 }
 
@@ -258,6 +270,30 @@ p {
 .stack-panel {
   display: grid;
   gap: 16px;
+}
+
+.panel-title-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.status-pill {
+  flex: 0 0 auto;
+  border: 1px solid #c9d2e4;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #526078;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 5px 8px;
+  text-transform: uppercase;
+}
+
+.field-help {
+  margin-top: 8px;
+  font-size: 0.88rem;
 }
 
 .meta-label,
@@ -289,10 +325,12 @@ p {
 }
 
 .table-panel {
+  max-width: 100%;
   overflow-x: auto;
 }
 
 .table-like {
+  width: max-content;
   min-width: 620px;
 }
 
@@ -330,6 +368,7 @@ p {
 
 .match-layout {
   display: grid;
+  min-width: 0;
   grid-template-columns: minmax(180px, 0.85fr) minmax(320px, 1.5fr) minmax(180px, 0.85fr);
   gap: 16px;
   align-items: stretch;
@@ -350,6 +389,18 @@ p {
   border-radius: 8px;
   background: #14213d;
   padding: 18px;
+}
+
+.board-stage-label {
+  justify-self: start;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  color: #dbeafe;
+  font-size: 0.72rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  padding: 5px 8px;
+  text-transform: uppercase;
 }
 
 .board-preview {
@@ -418,11 +469,13 @@ p {
 
   .dev-nav-links {
     width: 100%;
+    max-width: 100%;
+    padding-bottom: 2px;
   }
 
   .app-shell {
     min-height: calc(100vh - 112px);
-    padding: 20px;
+    padding: 18px 16px 24px;
   }
 
   .stack-list div {
@@ -431,7 +484,31 @@ p {
   }
 
   h1 {
-    font-size: 2.6rem;
+    font-size: 2.35rem;
+  }
+
+  .screen-header p {
+    margin: 16px 0 22px;
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  .panel-title-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .board-stage {
+    min-height: 300px;
+    padding: 12px;
+  }
+
+  .board-preview {
+    gap: 6px;
+    padding: 10px;
   }
 
   .table-like {

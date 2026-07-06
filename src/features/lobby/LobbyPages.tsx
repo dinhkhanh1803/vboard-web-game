@@ -14,7 +14,10 @@ export function LobbyPage() {
 
       <div className="two-column-layout">
         <section className="panel" aria-labelledby="quick-match-title">
-          <h2 id="quick-match-title">Quick Match</h2>
+          <div className="panel-title-row">
+            <h2 id="quick-match-title">Quick Match</h2>
+            <span className="status-pill">UI-only preview</span>
+          </div>
           <p>Matchmaking placeholder for the first Connect 4 queue.</p>
           <button type="button" disabled>
             Find quick match
@@ -22,11 +25,17 @@ export function LobbyPage() {
         </section>
 
         <section className="panel" aria-labelledby="join-room-title">
-          <h2 id="join-room-title">Join By Code</h2>
+          <div className="panel-title-row">
+            <h2 id="join-room-title">Join By Code</h2>
+            <span className="status-pill">UI-only preview</span>
+          </div>
           <label className="field-label" htmlFor="room-code">
             Room code
           </label>
           <input id="room-code" name="room-code" placeholder="VB-1042" />
+          <p className="field-help">
+            Use format VB-1042. Joining stays disabled until backend wiring starts.
+          </p>
           <button type="button" disabled>
             Join room
           </button>

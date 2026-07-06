@@ -15,3 +15,5 @@
 - Reordered the roadmap so UI screens come before Firebase/backend setup.
 - Completed Phase 3 UI screen foundation with static game catalog, lobby, waiting room, match shell, leaderboard, profile, admin, and content pages.
 - Added `PHASE_3_UI_SPEC.md` and updated `NEXT_TASK.md` to point Phase 4 at UI review and polish.
+- Started Phase 4 UI polish on phase/4-ui-polish, audited desktop/mobile routes in browser, fixed mobile horizontal overflow, hid mobile nav scrollbar, and added clearer UI-only labels for disabled frontend actions.
+- Stabilized Vitest full-suite runs on Windows/Codex by using the thread pool instead of the default fork worker pool.

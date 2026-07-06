@@ -36,7 +36,9 @@ Use this file as the owner's control board. AI assistants should update it when 
 
 ## Phase 4: UI Review And Interaction Polish
 
-- [ ] Review desktop/mobile layout in browser.
+- [x] Review desktop/mobile layout in browser.
+- [x] Fix mobile horizontal overflow on lobby and leaderboard tables.
+- [x] Add UI-only labels for disabled lobby actions and match canvas placeholder.
 - [ ] Add empty/loading/error states for frontend-only screens.
 - [ ] Add local lobby form validation.
 - [ ] Add non-interactive PixiJS board renderer prototype.

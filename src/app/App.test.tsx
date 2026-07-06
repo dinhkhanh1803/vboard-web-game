@@ -51,6 +51,7 @@ describe("App shell", () => {
     expect(screen.getByRole("button", { name: "Find quick match" })).toBeDisabled();
     expect(screen.getByLabelText("Room code")).toBeInTheDocument();
     expect(screen.getByText("Public Rooms")).toBeInTheDocument();
+    expect(screen.getAllByText("UI-only preview").length).toBeGreaterThan(0);
   });
 
   it("renders the waiting room shell", () => {
@@ -68,6 +69,7 @@ describe("App shell", () => {
     expect(screen.getByRole("heading", { name: "Connect 4 Match" })).toBeInTheDocument();
     expect(screen.getByLabelText("PixiJS board mount")).toBeInTheDocument();
     expect(screen.getByText("Move Log")).toBeInTheDocument();
+    expect(screen.getByText("Canvas placeholder")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Resign match" })).toBeDisabled();
   });
 
