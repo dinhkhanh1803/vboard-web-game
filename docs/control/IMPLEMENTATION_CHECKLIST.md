@@ -164,12 +164,12 @@ Owner review: confirm Connect 4 patterns are reused through the shared game modu
 
 Goal: add retention systems after core gameplay is real.
 
-- [ ] Add Elo helper tests.
-- [ ] Add match history writes through functions.
-- [ ] Add leaderboard read UI.
-- [ ] Add profile stats UI.
+- [x] Add Elo helper tests.
+- [x] Add match history writes through functions.
+- [x] Add leaderboard read UI.
+- [x] Add profile stats UI.
 
-Owner review: approve progression numbers before any reward economy grows.
+Owner review: progression numbers are contract-backed and reward economy remains out of scope.
 
 ## Phase 13: Admin, Moderation, And Safety
 

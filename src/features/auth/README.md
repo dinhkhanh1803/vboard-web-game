@@ -17,3 +17,4 @@ Own sign-in, sign-out, guest entry, profile shell, and protected route state fro
 - Email, Google, and guest-mode entry states are visible but disabled for real auth actions.
 - Profile summary reads from a typed local `PublicProfile` fixture.
 - Admin route is protected by local preview state and links back to the auth shell.
+- Phase 12 profile stats and recent matches read contract-backed local progression fixtures; no live Firebase writes or reads exist yet.

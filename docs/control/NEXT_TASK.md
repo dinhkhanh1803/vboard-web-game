@@ -2,26 +2,23 @@
 
 ## Current Recommended Next Step
 
-Start Phase 12 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: add ranking, history, and progression after Connect 4 and Caro both have local playable paths.
+Start Phase 13 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: add admin, moderation, and safety controls without overbuilding a full back office.
 
 ## Exact First Task
 
-Add Elo helper tests before implementing ranking writes, match history writes, or leaderboard persistence.
+Add admin route behavior tests for a minimal role-gated preview before any live Firebase Auth or custom claims wiring.
 
 ## Scope
 
-- Keep Phase 12 contract/helper-first, with pure tests before UI or Firebase writes.
-- Reuse existing `contracts/`, `functions/`, and feature README boundaries.
+- Keep admin behavior local/contract-first until Firebase Auth setup is explicitly approved.
+- Add report-user contract and UI only after the admin route behavior is covered by tests.
+- Add feature flag contracts for games without changing production availability or deploy config.
 - Do not create, select, or configure any real Firebase project until the owner explicitly approves that step.
-- Do not add reward economy or monetization logic in this phase.
-- Keep leaderboard/profile stats compatible with current local UI and future Cloud Functions writes.
 
 ## Expected Files
 
 - `contracts/`
-- `functions/src/domain/`
-- `functions/test/`
-- `src/features/leaderboard/`
+- `src/features/admin/`
 - `src/features/auth/`
 - `docs/control/PROGRESS.md`
 

@@ -29,3 +29,4 @@
 - Completed Phase 9 server-authoritative room and move path with pure createRoom, joinRoom, startMatch, Connect 4 submitMove, move logs, and timeout contract tests without real Firebase project configuration.
 - Completed Phase 10 Connect 4 web gameplay with local official public state, a realtime-like subscription source, interactive PixiJS board controls, move log updates, and result/reset UI without live Firebase listeners.
 - Completed Phase 11 Caro MVP with pure 15x15 game-engine rules, five-in-row tests, local MatchDocument source, playable PixiJS board UI, and a `/matches/demo-caro` route without live Firebase listeners.
+- Completed Phase 12 ranking, history, and progression with Elo helper tests, contract-backed leaderboard/history entries, pure Functions-domain progression write sets, and profile/leaderboard UI previews without live Firebase writes.

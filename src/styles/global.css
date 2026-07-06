@@ -815,3 +815,65 @@ p {
     padding: 5px;
   }
 }
+
+.leaderboard-row {
+  grid-template-columns: 0.8fr 1.2fr 1.1fr 0.8fr 0.9fr 1fr;
+}
+
+.profile-game-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-game-stat-card {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  border: 1px solid #e6eaf2;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.profile-game-stat-card h2 {
+  margin-bottom: 0;
+  font-size: 1.6rem;
+}
+
+.profile-history-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.profile-history-list li {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #e6eaf2;
+  color: #465166;
+  padding-top: 10px;
+}
+
+.profile-history-list li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.profile-history-list strong,
+.profile-history-list span {
+  display: block;
+}
+
+.profile-history-list strong {
+  color: #111827;
+}
+
+@media (max-width: 880px) {
+  .profile-game-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -41,9 +41,21 @@ describe("ProfilePage auth shell", () => {
       screen.getByText(`Level ${demoPublicProfile.level} - ${demoPublicProfile.xp} XP`),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(String(demoPublicProfile.statsByGame["connect-4"].elo)),
-    ).toBeInTheDocument();
+      screen.getAllByText(String(demoPublicProfile.statsByGame["connect-4"].elo)).length,
+    ).toBeGreaterThan(0);
     expect(screen.getByText("12W 3L")).toBeInTheDocument();
     expect(screen.getByText("15 games")).toBeInTheDocument();
+  });
+  it("renders per-game progression stats and recent match history", () => {
+    render(<ProfilePage />);
+
+    expect(screen.getByRole("heading", { name: "Game Stats" })).toBeInTheDocument();
+    expect(screen.getByText("Connect 4")).toBeInTheDocument();
+    expect(screen.getByText("Caro")).toBeInTheDocument();
+    expect(screen.getByText("80% win rate")).toBeInTheDocument();
+    expect(screen.getByText("62% win rate")).toBeInTheDocument();
+    expect(screen.getByText("vs Arena Bot")).toBeInTheDocument();
+    expect(screen.getByText("+16 Elo")).toBeInTheDocument();
+    expect(screen.getByText("win - Connect 4")).toBeInTheDocument();
   });
 });

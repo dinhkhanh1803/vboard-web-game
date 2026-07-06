@@ -92,3 +92,10 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] Add Caro move validation and five-in-row result tests.
 - [x] Add local Caro match source using the shared MatchDocument public state shape.
 - [x] Add playable Caro PixiJS board UI and demo route.
+
+## Phase 12: Ranking, History, And Progression
+
+- [x] Add progression contracts for Elo changes, leaderboard entries, and per-player match history.
+- [x] Add pure Functions-domain progression write-set helper for completed matches.
+- [x] Add contract-backed leaderboard preview UI with win rate and full records.
+- [x] Add profile game stats and recent match history UI from progression fixtures.

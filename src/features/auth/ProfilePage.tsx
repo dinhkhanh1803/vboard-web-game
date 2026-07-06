@@ -1,8 +1,14 @@
 import { useState } from "react";
 
-import { supportedAuthProviders } from "@contracts/userProfile";
+import { gameIds, supportedAuthProviders, type GameId } from "@contracts/userProfile";
 
 import { demoProfilePrimaryGameId, demoPublicProfile } from "@/shared/constants/profileFixtures";
+import {
+  demoMatchHistoryEntries,
+  formatEloDelta,
+  formatRecord,
+  getDisplayNameForGame,
+} from "@/shared/constants/progressionFixtures";
 
 type AuthPreviewMode = "Email password" | "Google provider" | "Guest player";
 
@@ -130,13 +136,59 @@ export function ProfilePage() {
         </section>
       </div>
 
+      <section className="panel" aria-labelledby="game-stats-title">
+        <h2 id="game-stats-title">Game Stats</h2>
+        <div className="profile-game-stats-grid">
+          {gameIds.map((gameId) => (
+            <GameStatsCard key={gameId} gameId={gameId} />
+          ))}
+        </div>
+      </section>
+
       <section className="panel" aria-labelledby="recent-matches-title">
         <h2 id="recent-matches-title">Recent Matches</h2>
-        <ul className="status-list">
-          <li>Connect 4 - win - +18 Elo</li>
-          <li>Caro - preview match - no rating</li>
+        <ul className="profile-history-list">
+          {demoMatchHistoryEntries.map((entry) => (
+            <li key={entry.id}>
+              <div>
+                <strong>
+                  {entry.result} - {getDisplayNameForGame(entry.gameId)}
+                </strong>
+                <span>vs {entry.opponentDisplayName}</span>
+              </div>
+              <span>{formatEloDelta(entry.eloDelta)}</span>
+            </li>
+          ))}
         </ul>
       </section>
     </section>
+  );
+}
+
+function GameStatsCard({ gameId }: { gameId: GameId }) {
+  const stats = demoPublicProfile.statsByGame[gameId];
+  const winRate = stats.gamesPlayed > 0 ? Math.round((stats.wins / stats.gamesPlayed) * 100) : 0;
+
+  return (
+    <article className="profile-game-stat-card">
+      <div>
+        <p className="meta-label">{getDisplayNameForGame(gameId)}</p>
+        <h2>{stats.elo}</h2>
+      </div>
+      <dl className="compact-facts">
+        <div>
+          <dt>Record</dt>
+          <dd>{formatRecord({ draws: stats.draws, losses: stats.losses, wins: stats.wins })}</dd>
+        </div>
+        <div>
+          <dt>Win Rate</dt>
+          <dd>{winRate}% win rate</dd>
+        </div>
+        <div>
+          <dt>Streak</dt>
+          <dd>{stats.currentStreak} current</dd>
+        </div>
+      </dl>
+    </article>
   );
 }

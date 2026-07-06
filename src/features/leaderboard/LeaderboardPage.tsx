@@ -1,4 +1,8 @@
-import { leaderboardPlayers } from "@/shared/constants/staticDemoData";
+import {
+  demoLeaderboardEntries,
+  formatRecord,
+  getDisplayNameForGame,
+} from "@/shared/constants/progressionFixtures";
 
 export function LeaderboardPage() {
   return (
@@ -6,25 +10,33 @@ export function LeaderboardPage() {
       <header className="screen-header">
         <p className="screen-eyebrow">Ranking</p>
         <h1 id="leaderboard-title">Leaderboard</h1>
-        <p>Static ranking view for approval before public reads and security rules are wired.</p>
+        <p>Contract-backed ranking preview before public Firebase reads are wired.</p>
       </header>
 
       <section className="panel table-panel" aria-label="Season leaderboard preview">
-        <div className="table-like" role="table" aria-label="Season Rank">
-          <div role="row" className="table-row table-head">
+        <div className="table-like leaderboard-table" role="table" aria-label="Leaderboard entries">
+          <div role="row" className="table-row table-head leaderboard-row">
             <span role="columnheader">Season Rank</span>
             <span role="columnheader">Player</span>
             <span role="columnheader">Game</span>
             <span role="columnheader">Elo</span>
+            <span role="columnheader">Win Rate</span>
             <span role="columnheader">Record</span>
           </div>
-          {leaderboardPlayers.map((player) => (
-            <div role="row" className="table-row" key={player.rank}>
-              <span role="cell">#{player.rank}</span>
-              <span role="cell">{player.name}</span>
-              <span role="cell">{player.game}</span>
-              <span role="cell">{player.elo}</span>
-              <span role="cell">{player.record}</span>
+          {demoLeaderboardEntries.map((entry) => (
+            <div
+              role="row"
+              className="table-row leaderboard-row"
+              key={`${entry.gameId}-${entry.uid}`}
+            >
+              <span role="cell">#{entry.rank}</span>
+              <span role="cell">{entry.displayName}</span>
+              <span role="cell">{getDisplayNameForGame(entry.gameId)}</span>
+              <span role="cell">{entry.elo}</span>
+              <span role="cell">{entry.winRatePercent}%</span>
+              <span role="cell">
+                {formatRecord({ draws: entry.draws, losses: entry.losses, wins: entry.wins })}
+              </span>
             </div>
           ))}
         </div>
