@@ -2,24 +2,23 @@
 
 ## Current Recommended Next Step
 
-Start Phase 3 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: add Firebase local foundation safely through local/emulator-first boundaries.
+Start Phase 4 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: review and polish the UI before backend/Firebase work begins.
 
 ## Exact First Task
 
-Create the Firebase client initialization boundary under `src/firebase/` without connecting production secrets.
+Run the app locally and review the Phase 3 screens on desktop and mobile widths.
 
 ## Scope
 
-- Read config from `.env.example` keys only.
-- Keep Firebase rules closed.
-- Keep gameplay, auth providers, and Cloud Functions out of scope.
-- Do not add production Firebase project IDs.
+- Check `/games`, `/lobby`, `/rooms/demo-room`, `/matches/demo-match`, `/leaderboard`, `/profile/me`, `/admin`, `/privacy-policy`, `/terms`, and `/contact`.
+- Fix layout, overflow, spacing, and text hierarchy issues only.
+- Keep all backend actions disabled.
+- Do not create or configure any real Firebase project yet.
 
 ## Expected Files
 
-- `src/firebase/`
-- `.env.example`
-- `firebase/README.md`
+- `src/styles/global.css`
+- `src/features/*`
 - `docs/control/PROGRESS.md`
 
 ## Verification
@@ -27,8 +26,9 @@ Create the Firebase client initialization boundary under `src/firebase/` without
 Make these commands pass:
 
 ```bash
-npm run build
-npm run lint
-npm run test
+npm run format:check
 npm run typecheck
+npm run lint
+npm run build
+npm run test
 ```

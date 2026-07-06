@@ -25,25 +25,26 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] Add feature READMEs for MVP feature folders.
 - [x] Add a development-only navigation layout.
 
-## Phase 3: Server-Authoritative Path
+## Phase 3: UI Screen Foundation
 
-- [ ] Add emulator test setup.
-- [ ] Add `createRoom` test and callable.
-- [ ] Add `joinRoom` test and callable.
-- [ ] Add `startMatch` test and callable.
-- [ ] Add `submitMove` test path before game-specific implementation.
+- [x] Reorder the roadmap so UI work comes before Firebase/backend work.
+- [x] Add static game catalog for Connect 4 and Caro.
+- [x] Add static lobby and waiting room screens.
+- [x] Add static match shell with a PixiJS board mount boundary.
+- [x] Add leaderboard, profile, admin, and content shells.
+- [x] Cover the new route contracts with React Testing Library tests.
 
-## Phase 4: Connect 4
+## Phase 4: UI Review And Interaction Polish
 
-- [ ] Define `GameModule` contract.
-- [ ] Add Connect 4 state tests.
-- [ ] Add Connect 4 validation tests.
-- [ ] Add Connect 4 result tests.
-- [ ] Add Connect 4 match UI.
+- [ ] Review desktop/mobile layout in browser.
+- [ ] Add empty/loading/error states for frontend-only screens.
+- [ ] Add local lobby form validation.
+- [ ] Add non-interactive PixiJS board renderer prototype.
 
-## Phase 5: Caro
+## Phase 5: Firebase Local Foundation
 
-- [ ] Add Caro state tests.
-- [ ] Add Caro five-in-row tests.
-- [ ] Add Caro timer and rematch flow.
-- [ ] Add Caro match UI.
+- [ ] Ask owner before creating or configuring any real Firebase project.
+- [ ] Add Firebase client initialization boundary.
+- [ ] Add Firebase Admin boundary for functions.
+- [ ] Add emulator test structure.
+- [ ] Keep rules closed by default.
