@@ -26,3 +26,4 @@
 - Completed Phase 7 auth/profile flow with typed PublicProfile fixtures and local protected-route preview behavior without Firebase Auth wiring.
 - Started Phase 8 game-engine core with a pure GameModule contract for metadata, state creation, move validation/application, result evaluation, and public state serialization.
 - Completed Phase 8 game-engine core with Connect 4 initial state, move validation, immutable move application, win/draw evaluation, and focused rule tests.
+- Completed Phase 9 server-authoritative room and move path with pure createRoom, joinRoom, startMatch, Connect 4 submitMove, move logs, and timeout contract tests without real Firebase project configuration.

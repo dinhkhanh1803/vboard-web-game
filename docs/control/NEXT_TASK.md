@@ -2,25 +2,25 @@
 
 ## Current Recommended Next Step
 
-Start Phase 9 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: implement `createRoom` through tests.
+Start Phase 10 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: connect the first playable Connect 4 web gameplay path.
 
 ## Exact First Task
 
-Add Cloud Functions/domain tests for the server-authoritative `createRoom` path, using the shared room and game catalog contracts before adding any Firebase writes.
+Connect the match UI to a local official public-state adapter first, then use the same state shape that Phase 9 writes before adding realtime Firebase subscriptions.
 
 ## Scope
 
-- Keep the first pass local and test-driven.
-- Reuse contracts from `contracts/roomMatch.ts` and `contracts/gameCatalog.ts`.
-- Keep official room/match writes behind server-side boundaries only.
-- Do not connect the web client to live room creation yet.
+- Keep the first pass UI/local-state driven.
+- Reuse `game-engine/src/games/connect4/connect4Module.ts` and the Phase 9 match public state shape.
+- Add the PixiJS board interaction behind the existing match board boundary.
+- Do not connect live Firebase realtime listeners until the UI path is stable.
 - Do not create, select, or configure any real Firebase project until the owner explicitly approves that step.
 
 ## Expected Files
 
-- `functions/src/`
-- `functions/test/`
-- `contracts/`
+- `src/features/match/`
+- `src/features/games/`
+- `game-engine/src/games/connect4/`
 - `docs/control/PROGRESS.md`
 
 ## Verification

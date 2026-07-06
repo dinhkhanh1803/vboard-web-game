@@ -70,3 +70,11 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] Add Connect 4 initial state tests.
 - [x] Add Connect 4 move validation tests.
 - [x] Add Connect 4 result tests.
+
+## Phase 9: Server-Authoritative Room And Move Path
+
+- [x] Implement createRoom through tests.
+- [x] Implement joinRoom through tests.
+- [x] Implement startMatch through tests.
+- [x] Implement submitMove for Connect 4 through tests.
+- [x] Add timeout contract before timeout implementation.

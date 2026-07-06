@@ -22,6 +22,25 @@ export type MatchStatus = (typeof matchStatuses)[number];
 
 export const matchResultReasons = ["win", "draw", "timeout", "resignation", "abandoned"] as const;
 export type MatchResultReason = (typeof matchResultReasons)[number];
+export type MatchTimeoutContract = {
+  turnDurationSec: number;
+  turnGraceSec: number;
+  disconnectGraceSec: number;
+  autoForfeitAfterMissedTurns: number;
+};
+
+export type CreateMatchTimeoutContractInput = Partial<MatchTimeoutContract>;
+
+export function createMatchTimeoutContract(
+  input: CreateMatchTimeoutContractInput = {},
+): MatchTimeoutContract {
+  return {
+    turnDurationSec: input.turnDurationSec ?? 30,
+    turnGraceSec: input.turnGraceSec ?? 5,
+    disconnectGraceSec: input.disconnectGraceSec ?? 30,
+    autoForfeitAfterMissedTurns: input.autoForfeitAfterMissedTurns ?? 1,
+  };
+}
 
 export type RoomPlayerSlot = {
   seatIndex: number;

@@ -130,11 +130,11 @@ Owner review: inspect tests first; rule implementation should be boring after te
 
 Goal: make Cloud Functions the only official writer for match state.
 
-- [ ] Implement `createRoom` through tests.
-- [ ] Implement `joinRoom` through tests.
-- [ ] Implement `startMatch` through tests.
-- [ ] Implement `submitMove` for Connect 4 through tests.
-- [ ] Add timeout contract before timeout implementation.
+- [x] Implement `createRoom` through tests.
+- [x] Implement `joinRoom` through tests.
+- [x] Implement `startMatch` through tests.
+- [x] Implement `submitMove` for Connect 4 through tests.
+- [x] Add timeout contract before timeout implementation.
 
 Owner review: verify no client writes official match fields directly.
 

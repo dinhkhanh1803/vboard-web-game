@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   createInitialMatch,
   createInitialRoom,
+  createMatchTimeoutContract,
   createMoveLogEntry,
   getMatchMovesCollectionPath,
   matchCollectionPath,
@@ -166,6 +167,24 @@ describe("createMoveLogEntry", () => {
       stateVersionBefore: 0,
       stateVersionAfter: 1,
       createdAtMs: 3000,
+    });
+  });
+});
+
+describe("createMatchTimeoutContract", () => {
+  it("pins turn timeout settings without implementing timeout execution yet", () => {
+    expect(createMatchTimeoutContract()).toEqual({
+      autoForfeitAfterMissedTurns: 1,
+      disconnectGraceSec: 30,
+      turnDurationSec: 30,
+      turnGraceSec: 5,
+    });
+
+    expect(createMatchTimeoutContract({ turnDurationSec: 45 })).toEqual({
+      autoForfeitAfterMissedTurns: 1,
+      disconnectGraceSec: 30,
+      turnDurationSec: 45,
+      turnGraceSec: 5,
     });
   });
 });

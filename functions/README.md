@@ -20,9 +20,13 @@ This folder contains the server-authoritative backend for VBoard Arena.
 
 ```text
 src/callable/       createRoom, joinRoom, startMatch, submitMove
-src/core/           backend-only domain helpers
+src/domain/         pure server-authoritative room and match commands
 src/integrations/   Firebase Admin SDK wrappers
 src/scheduled/      cleanup and leaderboard batches
 src/triggers/       Auth, Firestore, Storage triggers
-test/               emulator-backed tests
+test/               local domain tests first, emulator-backed tests later
 ```
+
+## Current Domain Boundary
+
+`src/domain/roomMatchCommands.ts` contains the Phase 9 local command layer for `createRoom`, `joinRoom`, `startMatch`, and `submitMove`. It returns official room, match, and move-log documents without calling Firestore directly, so callable Cloud Functions can later wrap the same logic in transactions.
