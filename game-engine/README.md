@@ -17,6 +17,10 @@ This folder contains pure TypeScript game rules. It should be easy to test witho
 - No browser APIs.
 - Unit tests first for every rule change.
 
+## Current Core Contract
+
+`src/core/gameModule.ts` defines the shared `GameModule<TState, TMove>` contract. Game modules own metadata, initial state creation, move validation, immutable move application, result evaluation, and compact public state serialization.
+
 ## Planned Layout
 
 ```text

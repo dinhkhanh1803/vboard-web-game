@@ -63,3 +63,10 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] Add Auth UI shell with email, Google, and guest-mode states.
 - [x] Add profile view connected to the shared profile contract.
 - [x] Add protected-route behavior.
+
+## Phase 8: Game Engine Core And Connect 4
+
+- [x] Define GameModule contract.
+- [ ] Add Connect 4 initial state tests.
+- [ ] Add Connect 4 move validation tests.
+- [ ] Add Connect 4 result tests.
