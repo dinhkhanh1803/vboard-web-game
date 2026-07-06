@@ -1,30 +1,24 @@
-import { techStack } from "@/shared/constants/techStack";
+import { Route, Routes } from "react-router-dom";
+
+import { DevNavigation } from "@/app/DevNavigation";
+import { HomePage } from "@/app/HomePage";
+import { appRoutes } from "@/routes/routeConfig";
+import { RouteStub } from "@/routes/RouteStub";
 
 export function App() {
   return (
-    <main className="app-shell">
-      <section className="app-hero" aria-labelledby="app-title">
-        <p className="app-kicker">Realtime board game platform</p>
-        <h1 id="app-title">VBoard Arena</h1>
-        <p className="app-copy">
-          Foundation is ready for a React app shell, PixiJS game rendering, Firebase backend, and
-          pure TypeScript game rules.
-        </p>
-        <dl className="stack-list" aria-label="Selected technology stack">
-          <div>
-            <dt>Web</dt>
-            <dd>{techStack.app}</dd>
-          </div>
-          <div>
-            <dt>Game Renderer</dt>
-            <dd>{techStack.renderer}</dd>
-          </div>
-          <div>
-            <dt>Backend</dt>
-            <dd>{techStack.backend}</dd>
-          </div>
-        </dl>
-      </section>
-    </main>
+    <div className="app-frame">
+      <DevNavigation />
+      <main className="app-shell">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          {appRoutes
+            .filter((route) => route.id !== "home")
+            .map((route) => (
+              <Route key={route.id} path={route.path} element={<RouteStub route={route} />} />
+            ))}
+        </Routes>
+      </main>
+    </div>
   );
 }

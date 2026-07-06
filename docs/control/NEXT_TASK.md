@@ -2,26 +2,25 @@
 
 ## Current Recommended Next Step
 
-Start Phase 2 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: create the web app shell with route stubs and feature READMEs.
+Start Phase 3 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: add Firebase local foundation safely through local/emulator-first boundaries.
 
 ## Exact First Task
 
-Add route map and app provider shell without Firebase or gameplay logic.
+Create the Firebase client initialization boundary under `src/firebase/` without connecting production secrets.
 
 ## Scope
 
-- Keep React + Vite + PixiJS toolchain as-is.
-- Add route definitions under `src/routes/`.
-- Add app shell/provider boundaries under `src/app/`.
-- Keep game rendering out of scope except for preserving the PixiJS dependency boundary.
-- Do not implement auth, Firebase reads/writes, game rules, or Cloud Functions in this task.
+- Read config from `.env.example` keys only.
+- Keep Firebase rules closed.
+- Keep gameplay, auth providers, and Cloud Functions out of scope.
+- Do not add production Firebase project IDs.
 
 ## Expected Files
 
-- `src/app/`
-- `src/routes/`
-- `src/shared/components/`
-- `src/features/*/README.md`
+- `src/firebase/`
+- `.env.example`
+- `firebase/README.md`
+- `docs/control/PROGRESS.md`
 
 ## Verification
 

@@ -20,10 +20,10 @@ Use this file as the owner's control board. AI assistants should update it when 
 
 ## Phase 2: Web App Shell
 
-- [ ] Add route map and app provider shell.
-- [ ] Add global styles and design tokens.
-- [ ] Add feature READMEs for MVP feature folders.
-- [ ] Add a development-only navigation layout.
+- [x] Add route map and app provider shell.
+- [x] Add global styles and design tokens.
+- [x] Add feature READMEs for MVP feature folders.
+- [x] Add a development-only navigation layout.
 
 ## Phase 3: Server-Authoritative Path
 

@@ -35,16 +35,16 @@ Owner review: confirm React + Vite + PixiJS, scripts, and folder layout still fe
 
 Goal: create a navigable app shell with no Firebase dependency yet.
 
-- [ ] Add route map and app provider shell.
+- [x] Add route map and app provider shell.
   - Files: `src/app/`, `src/routes/`.
   - Done when: routes render stub screens.
-- [ ] Add global styles and design tokens.
+- [x] Add global styles and design tokens.
   - Files: `src/styles/`, `src/shared/constants/`.
   - Done when: all stub screens share the same layout and theme basics.
-- [ ] Add feature READMEs for `auth`, `games`, `lobby`, `match`, `leaderboard`, `admin`, and `content`.
+- [x] Add feature READMEs for `auth`, `games`, `lobby`, `match`, `leaderboard`, `admin`, and `content`.
   - Files: `src/features/*/README.md`.
   - Done when: each feature states responsibility, boundaries, and next task.
-- [ ] Add a development-only navigation layout.
+- [x] Add a development-only navigation layout.
   - Files: `src/app/`, `src/routes/`, `src/shared/components/`.
   - Done when: the owner can click through all MVP stub routes.
 
