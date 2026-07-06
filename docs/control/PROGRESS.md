@@ -57,3 +57,9 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] Define game catalog contracts.
 - [x] Define room and match contracts.
 - [x] Define analytics event names.
+
+## Phase 7: Auth And Profile Flow
+
+- [x] Add Auth UI shell with email, Google, and guest-mode states.
+- [ ] Add profile view connected to the shared profile contract.
+- [ ] Add protected-route behavior.

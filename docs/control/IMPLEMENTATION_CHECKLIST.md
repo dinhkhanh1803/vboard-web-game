@@ -109,7 +109,7 @@ Owner review: approve field names before Firebase writes exist.
 
 Goal: identify users before room/match features.
 
-- [ ] Add Auth UI shell with email, Google, and guest-mode states.
+- [x] Add Auth UI shell with email, Google, and guest-mode states.
 - [ ] Add profile view connected to the shared profile contract.
 - [ ] Add protected-route behavior.
 

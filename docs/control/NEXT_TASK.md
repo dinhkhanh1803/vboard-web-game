@@ -2,24 +2,24 @@
 
 ## Current Recommended Next Step
 
-Start Phase 7 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: add the Auth UI shell before wiring live Firebase providers.
+Continue Phase 7 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: connect the profile view more directly to the shared profile contract while staying local/static.
 
 ## Exact First Task
 
-Add an Auth UI shell with email, Google, and guest-mode states using static/local state only.
+Refactor the profile summary and stats UI to read from a typed local `PublicProfile` fixture created through the shared contract helpers.
 
 ## Scope
 
-- Build visible auth entry states that match the existing profile/auth route style.
-- Use the shared user/profile contracts for labels and future data shape alignment where useful.
 - Keep Firebase Auth provider wiring out of scope until the owner approves real provider setup.
+- Keep profile data local/static; do not read or write Firestore yet.
+- Use `contracts/userProfile.ts` as the source of truth for profile shape and defaults.
+- Preserve the new Auth UI shell and existing profile route.
 - Do not create or configure any real Firebase project yet.
-- Keep room, match, and Cloud Functions workflows out of scope.
 
 ## Expected Files
 
 - `src/features/auth/`
-- `src/app/` or `src/routes/` if route shell needs small support
+- `src/shared/constants/` if a reusable fixture boundary is useful
 - `docs/control/PROGRESS.md`
 
 ## Verification
