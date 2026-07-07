@@ -224,3 +224,5 @@ Goal: prepare for public deploy and monetization without harming gameplay.
 - [ ] Add deploy checklist and CI checklist.
 
 Owner review: no production deploy until staging smoke test passes.
+
+- [x] BE-9 submit official Connect 4 move intent from `/matches/{matchId}` through `submitMove` callable boundary.

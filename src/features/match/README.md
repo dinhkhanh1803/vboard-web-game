@@ -21,4 +21,4 @@ Own the realtime match screen, player panels, timer display, move log, action ba
 
 ## Current Backend Integration Status
 
-Non-demo `/matches/{matchId}` routes subscribe to official match state through the read-only Firebase boundary and render Connect 4 public state in read-only mode. The next step is to submit official Connect 4 move intent through callable `submitMove` while keeping local demo routes intact.
+Non-demo `/matches/{matchId}` routes subscribe to official match state through the read-only Firebase boundary, render Connect 4 public state, and submit Connect 4 column moves through callable `submitMove`. The next step is to subscribe to official `matches/{matchId}/moves` entries so Match history reflects server-written move logs.

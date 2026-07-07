@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 
 import { useParams } from "react-router-dom";
 
 import type { GameId } from "@contracts/gameCatalog";
-import { getRoomMatchReadClient, type MatchReadState } from "@/firebase";
+import { getRoomMatchIntentClient, getRoomMatchReadClient, type MatchReadState } from "@/firebase";
 import { CaroPixiBoard } from "@/features/match/CaroPixiBoard";
 import { Connect4PixiBoard } from "@/features/match/Connect4PixiBoard";
 import { createLocalCaroMatchSource, getCaroPublicState } from "@/features/match/caroLocalMatch";
@@ -17,6 +17,11 @@ export type MatchPageProps = {
 
 type OfficialMatchReadState = MatchReadState | { status: "loading"; message: string };
 
+type OfficialMoveIntentState = {
+  kind: "idle" | "loading" | "success" | "error";
+  message: string;
+};
+
 export function MatchPage({ initialGameId = "connect-4" }: MatchPageProps) {
   const { matchId } = useParams<{ matchId: string }>();
 
@@ -25,7 +30,7 @@ export function MatchPage({ initialGameId = "connect-4" }: MatchPageProps) {
   }
 
   if (matchId && matchId !== "demo-match") {
-    return <OfficialConnect4MatchPage matchId={matchId} />;
+    return <OfficialConnect4MatchPage key={matchId} matchId={matchId} />;
   }
 
   return <Connect4MatchPage />;
@@ -33,10 +38,16 @@ export function MatchPage({ initialGameId = "connect-4" }: MatchPageProps) {
 
 function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
   const roomMatchReadClient = useMemo(() => getRoomMatchReadClient(), []);
+  const roomMatchIntentClient = useMemo(() => getRoomMatchIntentClient(), []);
   const [matchReadState, setMatchReadState] = useState<OfficialMatchReadState>({
     message: "Loading official match state...",
     status: "loading",
   });
+  const [moveIntentState, setMoveIntentState] = useState<OfficialMoveIntentState>({
+    kind: "idle",
+    message: "",
+  });
+  const isSubmittingOfficialMove = moveIntentState.kind === "loading";
   const effectiveMatchReadState = useMemo<OfficialMatchReadState>(() => {
     if (roomMatchReadClient === null) {
       return {
@@ -47,6 +58,42 @@ function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
 
     return matchReadState;
   }, [matchReadState, roomMatchReadClient]);
+
+  const handleOfficialColumnSelect = useCallback(
+    async (column: number) => {
+      if (roomMatchIntentClient === null) {
+        setMoveIntentState({
+          kind: "error",
+          message: "Firebase move actions are not configured for this environment.",
+        });
+
+        return;
+      }
+
+      setMoveIntentState({
+        kind: "loading",
+        message: "Submitting move...",
+      });
+
+      try {
+        await roomMatchIntentClient.submitMove({
+          matchId,
+          payload: { column: column - 1 },
+        });
+
+        setMoveIntentState({
+          kind: "success",
+          message: "Move submitted. Waiting for official state...",
+        });
+      } catch (error) {
+        setMoveIntentState({
+          kind: "error",
+          message: getIntentErrorMessage(error),
+        });
+      }
+    },
+    [matchId, roomMatchIntentClient],
+  );
 
   useEffect(() => {
     if (roomMatchReadClient === null) {
@@ -109,6 +156,12 @@ function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
   const isP2Turn = match.turn.activeSeatIndex === 1;
   const matchCompleted = match.status === "completed";
   const winner = match.players.find((player) => player.seatIndex === match.result.winnerSeatIndex);
+  const officialMoveDisabled =
+    matchCompleted || roomMatchIntentClient === null || isSubmittingOfficialMove;
+  const officialMoveMessage =
+    roomMatchIntentClient === null
+      ? "Firebase move actions are not configured for this environment."
+      : moveIntentState.message;
 
   return (
     <section className="screen match-screen-high-fid" aria-labelledby="match-title">
@@ -167,7 +220,11 @@ function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
 
           <div className="board-stage-wrapper">
             {publicState ? (
-              <Connect4PixiBoard disabled onColumnSelect={() => undefined} state={publicState} />
+              <Connect4PixiBoard
+                disabled={officialMoveDisabled}
+                onColumnSelect={handleOfficialColumnSelect}
+                state={publicState}
+              />
             ) : (
               <p className="no-moves-placeholder">Official public state is not available yet.</p>
             )}
@@ -175,8 +232,11 @@ function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
 
           <div className="game-controls-row">
             <button className="control-btn reset-btn" type="button" disabled>
-              OFFICIAL READ ONLY
+              {isSubmittingOfficialMove ? "SUBMITTING MOVE" : "SERVER MOVE INTENT"}
             </button>
+            {officialMoveMessage.length > 0 ? (
+              <p className="waiting-text">{officialMoveMessage}</p>
+            ) : null}
           </div>
         </div>
 
@@ -203,6 +263,14 @@ function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
       </div>
     </section>
   );
+}
+
+function getIntentErrorMessage(error: unknown) {
+  if (error instanceof Error && error.message.trim().length > 0) {
+    return error.message;
+  }
+
+  return "Move action failed. Please try again.";
 }
 
 function readConnect4PublicState(match: Parameters<typeof getConnect4PublicState>[0]) {

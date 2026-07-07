@@ -2,12 +2,14 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { MatchReadState, RoomMatchReadClient } from "@/firebase";
+import type { MatchReadState, RoomMatchIntentClient, RoomMatchReadClient } from "@/firebase";
 import { createLocalConnect4Match } from "@/features/match/connect4LocalMatch";
 import { MatchPage } from "@/features/match/MatchPage";
 
 const roomReadMocks = vi.hoisted(() => ({
+  getRoomMatchIntentClient: vi.fn(),
   getRoomMatchReadClient: vi.fn(),
+  submitMove: vi.fn(),
   subscribeToMatch: vi.fn(),
   subscribeToRoom: vi.fn(),
 }));
@@ -17,9 +19,26 @@ vi.mock("@/firebase", async (importOriginal) => {
 
   return {
     ...actual,
+    getRoomMatchIntentClient: roomReadMocks.getRoomMatchIntentClient,
     getRoomMatchReadClient: roomReadMocks.getRoomMatchReadClient,
   };
 });
+
+function mockRoomIntentClient() {
+  const client: RoomMatchIntentClient = {
+    createRoom: vi.fn(),
+    joinRoom: vi.fn(),
+    startMatch: vi.fn(),
+    submitMove: roomReadMocks.submitMove,
+  };
+
+  roomReadMocks.getRoomMatchIntentClient.mockReturnValue(client);
+  roomReadMocks.submitMove.mockResolvedValue({
+    matchId: "match-1",
+    stateVersion: 4,
+    status: "active",
+  });
+}
 
 function mockRoomReadClient() {
   const client: RoomMatchReadClient = {
@@ -72,6 +91,7 @@ function createOfficialMatchReadState(matchId = "match-1"): MatchReadState {
 describe("MatchPage gameplay", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockRoomIntentClient();
     mockRoomReadClient();
   });
 
@@ -107,7 +127,7 @@ describe("MatchPage gameplay", () => {
     expect(roomReadMocks.subscribeToMatch).not.toHaveBeenCalled();
   });
 
-  it("subscribes non-demo match routes through the read-only boundary", async () => {
+  it("subscribes non-demo match routes through the official read boundary", async () => {
     let matchListener: ((state: MatchReadState) => void) | null = null;
     roomReadMocks.subscribeToMatch.mockImplementation(
       (_matchId: string, listener: (state: MatchReadState) => void) => {
@@ -132,7 +152,62 @@ describe("MatchPage gameplay", () => {
     expect(screen.getByText("State version 3")).toBeInTheDocument();
     expect(screen.getByText("Player One")).toBeInTheDocument();
     expect(screen.getByText("StrategyKing")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Drop disc in column 4" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Drop disc in column 4" })).toBeEnabled();
+  });
+
+  it("submits official Connect 4 moves through the callable intent boundary", async () => {
+    let matchListener: ((state: MatchReadState) => void) | null = null;
+    roomReadMocks.subscribeToMatch.mockImplementation(
+      (_matchId: string, listener: (state: MatchReadState) => void) => {
+        matchListener = listener;
+
+        return () => undefined;
+      },
+    );
+
+    renderMatchRoute("/matches/match-1");
+
+    act(() => {
+      matchListener?.(createOfficialMatchReadState("match-1"));
+    });
+
+    const columnButton = await screen.findByRole("button", { name: "Drop disc in column 4" });
+    expect(columnButton).toBeEnabled();
+
+    fireEvent.click(columnButton);
+
+    await waitFor(() => {
+      expect(roomReadMocks.submitMove).toHaveBeenCalledWith({
+        matchId: "match-1",
+        payload: { column: 3 },
+      });
+    });
+    expect(
+      await screen.findByText("Move submitted. Waiting for official state..."),
+    ).toBeInTheDocument();
+  });
+
+  it("shows official move intent errors without mutating local state", async () => {
+    let matchListener: ((state: MatchReadState) => void) | null = null;
+    roomReadMocks.subscribeToMatch.mockImplementation(
+      (_matchId: string, listener: (state: MatchReadState) => void) => {
+        matchListener = listener;
+
+        return () => undefined;
+      },
+    );
+    roomReadMocks.submitMove.mockRejectedValue(new Error("invalid-move:not-your-turn"));
+
+    renderMatchRoute("/matches/match-1");
+
+    act(() => {
+      matchListener?.(createOfficialMatchReadState("match-1"));
+    });
+
+    fireEvent.click(await screen.findByRole("button", { name: "Drop disc in column 4" }));
+
+    expect(await screen.findByText("invalid-move:not-your-turn")).toBeInTheDocument();
+    expect(screen.getByText("State version 3")).toBeInTheDocument();
   });
 
   it("shows read boundary errors for official match routes", async () => {
