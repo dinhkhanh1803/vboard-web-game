@@ -35,3 +35,7 @@
 
 - Completed Phase 13 admin, moderation, and safety with a local admin role gate, moderation report contracts, report-player preview UI, game feature flag contracts, and admin preview panels without live Firebase writes.
 - Started the UI Polish Track and polished the core web experience with a game-hub Home route, clearer Games catalog states, local Lobby room-code validation, and scan-friendly Waiting Room slots without Firebase wiring.
+- Configured the approved Kinetic Grid dark game UI theme across the app shell, shared surfaces, controls, and game board containers without backend or Firebase changes.
+- Refactored the Lobby route into the Battle Lobby layout with quick match, join-by-code, room tools, and available rooms table while keeping actions local-only.
+- Refactored the Profile route into the approved high-fidelity player dashboard with hero stats, skill distribution, weekly activity, and recent match history while keeping data local-only.
+- Refactored the Privacy and Terms content route into the approved documentation layout with sidebar navigation, support card, policy cards, and local-only legal copy.

@@ -2,24 +2,27 @@
 
 ## Current Recommended Next Step
 
-Continue the UI Polish Track before Phase 14: polish the active match screens for Connect 4 and Caro on desktop and mobile.
+Move from UI polish to backend integration. The immediate backend focus is server-authoritative room and match callable Functions around the existing pure domain commands.
 
 ## Exact First Task
 
-Review `/matches/demo-match` and `/matches/demo-caro` in browser, then tighten match layout hierarchy so the board remains the primary focus and player/move panels stay readable on mobile.
+Implement BE-1: callable Cloud Functions boundaries for `createRoom`, `joinRoom`, `startMatch`, and `submitMove` using `functions/src/domain/roomMatchCommands.ts` as the only source of room/match state transitions.
 
 ## Scope
 
-- Keep the work UI-only and local-state only.
-- Do not change pure game-engine rules unless a UI bug exposes a rules issue.
-- Do not connect Firebase listeners, writes, auth, ads, or deploy config.
-- Preserve PixiJS board interactivity and current tests.
+- Backend-first only.
+- Do not create or configure a real Firebase project until the owner explicitly approves it.
+- Use local tests, emulator-ready boundaries, or test doubles before live Firebase wiring.
+- Keep clients as intent senders; client code must not write official room, match, result, turn, timer, ranking, or private opponent state.
+- Do not change high-fidelity UI except for minimal wiring after callable contracts exist.
 
 ## Expected Files
 
-- `src/features/match/`
-- `src/styles/global.css`
-- `src/app/App.test.tsx`
+- `functions/src/callable/`
+- `functions/src/domain/`
+- `functions/src/integrations/`
+- `functions/test/`
+- `firebase/`
 - `docs/control/PROGRESS.md`
 
 ## Verification
@@ -27,11 +30,8 @@ Review `/matches/demo-match` and `/matches/demo-caro` in browser, then tighten m
 Make these commands pass:
 
 ```bash
-npm run format:check
 npm run typecheck
 npm run lint
 npm run build
 npm run test
 ```
-
-Also browser-check `/matches/demo-match` and `/matches/demo-caro` at desktop and mobile widths.

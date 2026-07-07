@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 
-import { DevNavigation } from "@/app/DevNavigation";
+import { Header } from "@/app/Header";
+import { Sidebar } from "@/app/Sidebar";
 import { HomePage } from "@/app/HomePage";
 import { AdminPage } from "@/features/admin/AdminPage";
 import { RequireAdminPreview } from "@/features/admin/RequireAdminPreview";
@@ -13,31 +14,34 @@ import { MatchPage } from "@/features/match/MatchPage";
 
 export function App() {
   return (
-    <div className="app-frame">
-      <DevNavigation />
-      <main className="app-shell">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/games" element={<GameCatalogPage />} />
-          <Route path="/lobby" element={<LobbyPage />} />
-          <Route path="/rooms/:roomId" element={<WaitingRoomPage />} />
-          <Route path="/matches/demo-caro" element={<MatchPage initialGameId="caro" />} />
-          <Route path="/matches/:matchId" element={<MatchPage />} />
-          <Route path="/profile/:userId?" element={<ProfilePage />} />
-          <Route path="/leaderboard" element={<LeaderboardPage />} />
-          <Route
-            path="/admin"
-            element={
-              <RequireAdminPreview>
-                <AdminPage />
-              </RequireAdminPreview>
-            }
-          />
-          <Route path="/privacy-policy" element={<ContentPage routeId="privacy" />} />
-          <Route path="/terms" element={<ContentPage routeId="terms" />} />
-          <Route path="/contact" element={<ContentPage routeId="contact" />} />
-        </Routes>
-      </main>
+    <div className="app-frame" data-theme="kinetic-grid">
+      <Header />
+      <div className="app-container">
+        <Sidebar />
+        <main className="app-shell">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/games" element={<GameCatalogPage />} />
+            <Route path="/lobby" element={<LobbyPage />} />
+            <Route path="/rooms/:roomId" element={<WaitingRoomPage />} />
+            <Route path="/matches/demo-caro" element={<MatchPage initialGameId="caro" />} />
+            <Route path="/matches/:matchId" element={<MatchPage />} />
+            <Route path="/profile/:userId?" element={<ProfilePage />} />
+            <Route path="/leaderboard" element={<LeaderboardPage />} />
+            <Route
+              path="/admin"
+              element={
+                <RequireAdminPreview>
+                  <AdminPage />
+                </RequireAdminPreview>
+              }
+            />
+            <Route path="/privacy-policy" element={<ContentPage routeId="privacy" />} />
+            <Route path="/terms" element={<ContentPage routeId="terms" />} />
+            <Route path="/contact" element={<ContentPage routeId="contact" />} />
+          </Routes>
+        </main>
+      </div>
     </div>
   );
 }

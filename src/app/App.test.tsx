@@ -3,7 +3,6 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
 import { App } from "@/app/App";
-import { techStack } from "@/shared/constants/techStack";
 
 function renderApp(path = "/") {
   return render(
@@ -14,29 +13,47 @@ function renderApp(path = "/") {
 }
 
 describe("App shell", () => {
+  it("uses the approved Kinetic Grid theme contract", () => {
+    const { container } = renderApp();
+
+    expect(container.querySelector(".app-frame")).toHaveAttribute("data-theme", "kinetic-grid");
+  });
+
   it("renders the playable game hub on the home route", () => {
     renderApp();
 
-    expect(screen.getByRole("heading", { name: "VBoard Arena" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Play Connect 4" })).toHaveAttribute(
+    // Check Header brand
+    expect(screen.getByRole("link", { name: "VBoard Arena" })).toBeInTheDocument();
+
+    // Check Connect 4 Hero card
+    expect(screen.getByRole("heading", { name: "Connect 4" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /PLAY NOW/i })).toHaveAttribute(
       "href",
       "/matches/demo-match",
     );
-    expect(screen.getByRole("link", { name: "Open Lobby" })).toHaveAttribute("href", "/lobby");
-    expect(screen.getByText("Playable now")).toBeInTheDocument();
-    expect(screen.getByText(techStack.renderer)).toHaveTextContent("PixiJS");
+
+    // Check Custom Lobby CTA
+    expect(screen.getByRole("link", { name: /GO TO LOBBY/i })).toHaveAttribute("href", "/lobby");
+
+    // Check Active Arenas
+    expect(screen.getByText("Active Arenas")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Grandmaster Chess" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Pro Checkers" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Battle Poker" })).toBeInTheDocument();
   });
 
-  it("renders development navigation for MVP routes", () => {
+  it("renders header and sidebar navigation for MVP routes", () => {
     renderApp();
 
-    expect(screen.getByRole("navigation", { name: "Primary" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Games" })).toHaveAttribute("href", "/games");
-    expect(screen.getByRole("link", { name: "Lobby" })).toHaveAttribute("href", "/lobby");
-    expect(screen.getByRole("link", { name: "Leaderboard" })).toHaveAttribute(
-      "href",
-      "/leaderboard",
-    );
+    expect(screen.getByRole("navigation", { name: "Sidebar navigation" })).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: "Main Menu" })).toBeInTheDocument();
+
+    // Sidebar nav links check
+    const sidebar = screen.getByRole("navigation", { name: "Sidebar navigation" });
+    expect(sidebar.querySelector('a[href="/"]')).toHaveTextContent("Home");
+    expect(sidebar.querySelector('a[href="/games"]')).toHaveTextContent("Games");
+    expect(sidebar.querySelector('a[href="/lobby"]')).toHaveTextContent("Lobby");
+    expect(sidebar.querySelector('a[href="/leaderboard"]')).toHaveTextContent("Leaderboard");
   });
 
   it("renders the polished games catalog", () => {
@@ -49,17 +66,25 @@ describe("App shell", () => {
       "href",
       "/matches/demo-match",
     );
-    expect(screen.getByText("Playable now")).toBeInTheDocument();
-    expect(screen.getByText("Preview locked")).toBeInTheDocument();
+    expect(screen.getByText("ACTIVE")).toBeInTheDocument();
+    expect(screen.getByText("LOCKED")).toBeInTheDocument();
   });
 
-  it("renders lobby entry points with local room-code validation", () => {
+  it("renders the battle lobby layout with room-code validation", () => {
     renderApp("/lobby");
 
-    expect(screen.getByRole("heading", { name: "Lobby" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Find quick match" })).toBeDisabled();
-    expect(screen.getByText("Public Rooms")).toBeInTheDocument();
-    expect(screen.getAllByText("UI-only preview").length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: "Battle Lobby" })).toBeInTheDocument();
+    expect(screen.getByText("Find your next opponent or join a squad.")).toBeInTheDocument();
+    expect(screen.getByText("Live queue: 1,204 players")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Start searching" })).toBeDisabled();
+    expect(screen.getByRole("heading", { name: "Join by Code" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Filter rooms" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Refresh rooms" })).toBeDisabled();
+    expect(screen.getByText("Available Rooms")).toBeInTheDocument();
+    expect(screen.getByText("248 total")).toBeInTheDocument();
+    expect(screen.getByText("CyberViper")).toBeInTheDocument();
+    expect(screen.getByText("Rapid Chess")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Join room VB-9921" })).toBeDisabled();
 
     const roomCodeInput = screen.getByLabelText("Room code");
     fireEvent.change(roomCodeInput, { target: { value: "abc" } });
@@ -67,7 +92,7 @@ describe("App shell", () => {
 
     fireEvent.change(roomCodeInput, { target: { value: "VB-1042" } });
     expect(screen.getByText("Code format ready for backend wiring.")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Join room preview" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Enter arena" })).toBeEnabled();
   });
 
   it("renders the waiting room shell with scan-friendly player states", () => {
@@ -86,7 +111,7 @@ describe("App shell", () => {
 
     expect(screen.getByRole("heading", { name: "Connect 4 Match" })).toBeInTheDocument();
     expect(screen.getByLabelText("Interactive Connect 4 PixiJS board")).toBeInTheDocument();
-    expect(screen.getByText("Move Log")).toBeInTheDocument();
+    expect(screen.getByText("MATCH HISTORY")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Drop disc in column 4" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Reset local match" })).toBeInTheDocument();
 
@@ -103,8 +128,8 @@ describe("App shell", () => {
     expect(screen.getByText("Season Rank")).toBeInTheDocument();
 
     renderApp("/profile/me");
-    expect(screen.getByRole("heading", { name: "Player Profile" })).toBeInTheDocument();
-    expect(screen.getByText("Recent Matches")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Player One" })).toBeInTheDocument();
+    expect(screen.getByText("Recent Match History")).toBeInTheDocument();
 
     renderApp("/admin");
     expect(screen.getByRole("heading", { name: "Sign in required" })).toBeInTheDocument();

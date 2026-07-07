@@ -14,8 +14,8 @@ Own sign-in, sign-out, guest entry, profile shell, and protected route state fro
 
 ## Current State
 
-- Email, Google, and guest-mode entry states are visible but disabled for real auth actions.
-- Profile summary reads from a typed local `PublicProfile` fixture.
+- Profile now renders the high-fidelity player dashboard from local UI fixtures; real auth actions are still not wired.
+- The dashboard includes local hero stats, skill distribution, weekly activity, and recent match history only.
 - Admin route is protected by local preview state and links back to the auth shell.
 - Phase 12 profile stats and recent matches read contract-backed local progression fixtures; no live Firebase writes or reads exist yet.
-- Report-player safety UI is a disabled local preview backed by `contracts/moderationSafety.ts`; no report writes exist yet.
+- Report-player safety contracts remain available for moderation work, but the current profile dashboard does not write reports or live profile state.

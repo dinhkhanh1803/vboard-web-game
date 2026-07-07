@@ -1,233 +1,224 @@
-import { useState } from "react";
+type SkillMetric = {
+  label: string;
+  value: number;
+  tone: "primary" | "secondary";
+};
 
-import { moderationReportReasons } from "@contracts/moderationSafety";
-import { gameIds, supportedAuthProviders, type GameId } from "@contracts/userProfile";
+type MatchHistoryRow = {
+  game: string;
+  result: "Victory" | "Defeat";
+  opponent: string;
+  duration: string;
+  date: string;
+  iconTone: "blue" | "coral";
+};
 
-import { demoProfilePrimaryGameId, demoPublicProfile } from "@/shared/constants/profileFixtures";
-import {
-  demoMatchHistoryEntries,
-  formatEloDelta,
-  formatRecord,
-  getDisplayNameForGame,
-} from "@/shared/constants/progressionFixtures";
-import { getReportCollectionLabel } from "@/shared/constants/moderationFixtures";
-
-type AuthPreviewMode = "Email password" | "Google provider" | "Guest player";
-
-const authModes = [
-  {
-    label: "Email password",
-    provider: supportedAuthProviders[0],
-    detail: "Future email/password sign-in and account creation flow.",
-  },
-  {
-    label: "Google provider",
-    provider: supportedAuthProviders[1],
-    detail: "Future Google OAuth sign-in flow.",
-  },
-  {
-    label: "Guest player",
-    provider: supportedAuthProviders[2],
-    detail: "Future temporary player profile for quick lobby entry.",
-  },
+const headlineStats = [
+  { label: "Total Wins", value: "1,248", delta: "+12 Today", tone: "success" },
+  { label: "Total Losses", value: "314", delta: "-2 Today", tone: "danger" },
 ] as const;
 
-const primaryStats = demoPublicProfile.statsByGame[demoProfilePrimaryGameId];
-const primaryRecord = `${primaryStats.wins}W ${primaryStats.losses}L`;
+const skillMetrics: SkillMetric[] = [
+  { label: "Tactics", value: 94, tone: "primary" },
+  { label: "Economy", value: 82, tone: "secondary" },
+  { label: "Speed", value: 88, tone: "secondary" },
+  { label: "Luck", value: 45, tone: "primary" },
+];
+
+const weeklyActivity = [42, 61, 55, 100, 58, 51, 28];
+
+const matchHistoryRows: MatchHistoryRow[] = [
+  {
+    game: "Neon Chess",
+    result: "Victory",
+    opponent: "CyberKnight_99",
+    duration: "14:22",
+    date: "Today, 2:45 PM",
+    iconTone: "blue",
+  },
+  {
+    game: "Deck Masters",
+    result: "Defeat",
+    opponent: "Glitch_Void",
+    duration: "08:15",
+    date: "Yesterday",
+    iconTone: "coral",
+  },
+  {
+    game: "Grid Shift",
+    result: "Victory",
+    opponent: "StrategyKing",
+    duration: "22:01",
+    date: "Nov 22 2023",
+    iconTone: "blue",
+  },
+  {
+    game: "Neon Chess",
+    result: "Victory",
+    opponent: "Dark_Aether",
+    duration: "12:50",
+    date: "Nov 21 2023",
+    iconTone: "blue",
+  },
+  {
+    game: "Deck Masters",
+    result: "Victory",
+    opponent: "RogueOne",
+    duration: "19:34",
+    date: "Nov 20 2023",
+    iconTone: "coral",
+  },
+];
 
 export function ProfilePage() {
-  const [selectedMode, setSelectedMode] = useState<AuthPreviewMode>("Email password");
-  const selectedModeConfig = authModes.find((mode) => mode.label === selectedMode) ?? authModes[0];
-
   return (
-    <section className="screen" aria-labelledby="profile-title">
-      <header className="screen-header">
-        <p className="screen-eyebrow">Identity</p>
-        <h1 id="profile-title">Player Profile</h1>
-        <p>
-          Profile stats are mocked so the screen can be reviewed before auth providers are
-          configured.
-        </p>
-      </header>
-
-      <section className="panel auth-entry-panel" aria-labelledby="auth-entry-title">
-        <div>
-          <p className="meta-label">Phase 7 shell</p>
-          <h2 id="auth-entry-title">Auth Entry</h2>
-          <p>Firebase Auth is not connected yet.</p>
-        </div>
-
-        <form className="auth-form" aria-label="Email auth preview">
-          <label>
-            <span className="field-label">Email</span>
-            <input type="email" name="email" autoComplete="email" placeholder="player@vboard.dev" />
-          </label>
-          <label>
-            <span className="field-label">Password</span>
-            <input
-              type="password"
-              name="password"
-              autoComplete="current-password"
-              placeholder="Not connected yet"
-            />
-          </label>
-          <button type="button" disabled>
-            Continue with email
-          </button>
-        </form>
-
-        <div className="auth-provider-grid" aria-label="Provider preview">
-          <button type="button" disabled>
-            Continue with Google
-          </button>
-          <button type="button" disabled>
-            Continue as guest
-          </button>
-          <button type="button" onClick={() => setSelectedMode("Google provider")}>
-            Preview Google
-          </button>
-          <button type="button" onClick={() => setSelectedMode("Guest player")}>
-            Preview guest
-          </button>
-        </div>
-
-        <section className="auth-mode-preview" aria-labelledby="selected-auth-mode-title">
-          <p className="meta-label" id="selected-auth-mode-title">
-            Selected mode
-          </p>
-          <h2>{selectedModeConfig.label}</h2>
-          <p>{selectedModeConfig.detail}</p>
-          <dl className="compact-facts">
+    <section className="profile-screen" aria-labelledby="profile-title">
+      <div className="profile-dashboard-grid">
+        <ProfileHero />
+        <section className="profile-stat-grid" aria-label="Profile headline stats">
+          {headlineStats.map((stat) => (
+            <article className={`profile-stat-card is-${stat.tone}`} key={stat.label}>
+              <span>{stat.label}</span>
+              <strong>{stat.value}</strong>
+              <small>{stat.delta}</small>
+            </article>
+          ))}
+          <article className="profile-win-rate-card">
             <div>
-              <dt>Provider</dt>
-              <dd>{selectedModeConfig.provider}</dd>
+              <span>Win Rate</span>
+              <strong>79.8%</strong>
             </div>
-          </dl>
+            <div className="profile-rate-ring" aria-hidden="true" />
+          </article>
         </section>
-      </section>
-
-      <div className="two-column-layout">
-        <section className="panel profile-summary" aria-label="Profile summary">
-          <div className="avatar-placeholder" aria-hidden="true">
-            VA
-          </div>
-          <div>
-            <h2>{demoPublicProfile.displayName}</h2>
-            <p>
-              Level {demoPublicProfile.level} - {demoPublicProfile.xp} XP
-            </p>
-          </div>
-        </section>
-
-        <section className="panel" aria-labelledby="profile-stats-title">
-          <h2 id="profile-stats-title">Stats</h2>
-          <dl className="compact-facts">
-            <div>
-              <dt>Elo</dt>
-              <dd>{primaryStats.elo}</dd>
-            </div>
-            <div>
-              <dt>Record</dt>
-              <dd>{primaryRecord}</dd>
-            </div>
-            <div>
-              <dt>Games</dt>
-              <dd>{primaryStats.gamesPlayed} games</dd>
-            </div>
-          </dl>
-        </section>
+        <SkillDistributionPanel />
+        <RecentMatchHistory />
       </div>
-
-      <section className="panel" aria-labelledby="game-stats-title">
-        <h2 id="game-stats-title">Game Stats</h2>
-        <div className="profile-game-stats-grid">
-          {gameIds.map((gameId) => (
-            <GameStatsCard key={gameId} gameId={gameId} />
-          ))}
-        </div>
-      </section>
-
-      <section className="panel" aria-labelledby="recent-matches-title">
-        <h2 id="recent-matches-title">Recent Matches</h2>
-        <ul className="profile-history-list">
-          {demoMatchHistoryEntries.map((entry) => (
-            <li key={entry.id}>
-              <div>
-                <strong>
-                  {entry.result} - {getDisplayNameForGame(entry.gameId)}
-                </strong>
-                <span>vs {entry.opponentDisplayName}</span>
-              </div>
-              <span>{formatEloDelta(entry.eloDelta)}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <ReportPlayerPreview />
     </section>
   );
 }
 
-function GameStatsCard({ gameId }: { gameId: GameId }) {
-  const stats = demoPublicProfile.statsByGame[gameId];
-  const winRate = stats.gamesPlayed > 0 ? Math.round((stats.wins / stats.gamesPlayed) * 100) : 0;
-
+function ProfileHero() {
   return (
-    <article className="profile-game-stat-card">
-      <div>
-        <p className="meta-label">{getDisplayNameForGame(gameId)}</p>
-        <h2>{stats.elo}</h2>
+    <section className="profile-hero-card" aria-labelledby="profile-title">
+      <div className="profile-avatar-frame" aria-label="Player One avatar">
+        <img
+          src="/assets/images/avatar.png"
+          alt="Player One avatar"
+          className="profile-avatar-img"
+        />
+        <span className="profile-level-pill">LV. 94</span>
       </div>
-      <dl className="compact-facts">
-        <div>
-          <dt>Record</dt>
-          <dd>{formatRecord({ draws: stats.draws, losses: stats.losses, wins: stats.wins })}</dd>
-        </div>
-        <div>
-          <dt>Win Rate</dt>
-          <dd>{winRate}% win rate</dd>
-        </div>
-        <div>
-          <dt>Streak</dt>
-          <dd>{stats.currentStreak} current</dd>
-        </div>
-      </dl>
-    </article>
-  );
-}
 
-function ReportPlayerPreview() {
-  return (
-    <section className="panel report-player-panel" aria-labelledby="report-player-title">
-      <div>
-        <p className="meta-label">Safety preview</p>
-        <h2 id="report-player-title">Report Player</h2>
+      <div className="profile-hero-copy">
+        <h1 id="profile-title">Player One</h1>
+        <div className="profile-rank-row">
+          <span>Grandmaster II</span>
+          <span>EST. JUNE 2023</span>
+        </div>
         <p>
-          Reports will use <code>{getReportCollectionLabel()}</code> after Firebase writes are
-          approved.
+          Dedicated board game strategist specialized in high-speed tactical RPGs and complex deck
+          management games. Top 0.5% in global win streaks.
         </p>
       </div>
 
-      <form className="report-preview-form" aria-label="Report player preview">
-        <label>
-          <span className="field-label">Report reason</span>
-          <select name="reason" defaultValue={moderationReportReasons[1]}>
-            {moderationReportReasons.map((reason) => (
-              <option key={reason} value={reason}>
-                {reason}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          <span className="field-label">Report details</span>
-          <textarea name="details" rows={3} placeholder="Local preview only" />
-        </label>
-        <button type="button" disabled>
-          Submit report preview
+      <aside className="profile-global-rank" aria-label="Global rank">
+        <span>Global Rank</span>
+        <strong>#422</strong>
+      </aside>
+      <p className="profile-sidebar-rank">Rank: Grandmaster</p>
+    </section>
+  );
+}
+
+function SkillDistributionPanel() {
+  return (
+    <section className="profile-skill-card" aria-labelledby="skill-distribution-title">
+      <div className="profile-card-title-row">
+        <h2 id="skill-distribution-title">Skill Distribution</h2>
+        <button type="button" aria-label="Inspect skill distribution" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 5h14v14H5zM8 16l3-3 2 2 3-5" />
+          </svg>
         </button>
-      </form>
+      </div>
+
+      <div className="profile-skill-list">
+        {skillMetrics.map((skill) => (
+          <div className="profile-skill-row" key={skill.label}>
+            <div>
+              <span>{skill.label}</span>
+              <strong>{skill.value}%</strong>
+            </div>
+            <div className="profile-skill-track" aria-hidden="true">
+              <span className={`is-${skill.tone}`} style={{ width: `${skill.value}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <section className="profile-weekly-activity" aria-label="Weekly activity chart">
+        <h3>Weekly Activity</h3>
+        <div className="profile-activity-bars">
+          {weeklyActivity.map((value, index) => (
+            <span key={`${value}-${index}`} style={{ height: `${value}%` }} />
+          ))}
+        </div>
+      </section>
+    </section>
+  );
+}
+
+function RecentMatchHistory() {
+  return (
+    <section className="profile-history-card" aria-labelledby="recent-match-history-title">
+      <div className="profile-card-title-row">
+        <h2 id="recent-match-history-title">Recent Match History</h2>
+        <div className="profile-history-tabs" aria-label="History filters">
+          <button type="button" disabled>
+            All
+          </button>
+          <button type="button" disabled>
+            Ranked
+          </button>
+        </div>
+      </div>
+
+      <div className="profile-history-table" role="table" aria-label="Recent match history">
+        <div className="profile-history-row is-head" role="row">
+          <span role="columnheader">Game Type</span>
+          <span role="columnheader">Result</span>
+          <span role="columnheader">Opponent</span>
+          <span role="columnheader">Duration</span>
+          <span role="columnheader">Date</span>
+        </div>
+        {matchHistoryRows.map((match) => (
+          <div className="profile-history-row" role="row" key={`${match.game}-${match.opponent}`}>
+            <span className="profile-game-cell" role="cell">
+              <span className={`profile-game-icon is-${match.iconTone}`} aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M7 7h10v10H7zM10 10h4v4h-4z" />
+                </svg>
+              </span>
+              <strong>{match.game}</strong>
+            </span>
+            <span role="cell">
+              <span className={`profile-result-badge is-${match.result.toLowerCase()}`}>
+                {match.result}
+              </span>
+            </span>
+            <span role="cell">{match.opponent}</span>
+            <span role="cell" className="profile-duration-cell">
+              {match.duration}
+            </span>
+            <span role="cell">{match.date}</span>
+          </div>
+        ))}
+      </div>
+
+      <button type="button" className="profile-full-history-btn" disabled>
+        View full history
+      </button>
     </section>
   );
 }

@@ -9,12 +9,12 @@ describe("MatchPage gameplay", () => {
 
     expect(screen.getByRole("heading", { name: "Connect 4 Match" })).toBeInTheDocument();
     expect(screen.getByLabelText("Interactive Connect 4 PixiJS board")).toBeInTheDocument();
-    expect(screen.getAllByText("Turn: Khanh").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("YOUR TURN").length).toBeGreaterThan(0);
 
     fireEvent.click(screen.getByRole("button", { name: "Drop disc in column 4" }));
 
-    expect(screen.getAllByText("Turn: Arena Bot").length).toBeGreaterThan(0);
-    expect(screen.getByText("Red C4")).toBeInTheDocument();
+    expect(screen.getAllByText("OPPONENT'S TURN").length).toBeGreaterThan(0);
+    expect(screen.getByText("P1 dropped in Column 4")).toBeInTheDocument();
   });
 
   it("shows the result panel when the local match completes", () => {
@@ -24,20 +24,21 @@ describe("MatchPage gameplay", () => {
       fireEvent.click(screen.getByRole("button", { name: `Drop disc in column ${column}` }));
     }
 
-    expect(screen.getByText("Khanh wins")).toBeInTheDocument();
+    expect(screen.getByText("KHANH WINS")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Reset local match" })).toBeInTheDocument();
   });
+
   it("renders a local Caro gameplay state and accepts cell moves", () => {
     render(<MatchPage initialGameId="caro" />);
 
     expect(screen.getByRole("heading", { name: "Caro Match" })).toBeInTheDocument();
     expect(screen.getByLabelText("Interactive Caro PixiJS board")).toBeInTheDocument();
-    expect(screen.getAllByText("Turn: Khanh").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("YOUR TURN").length).toBeGreaterThan(0);
 
     fireEvent.click(screen.getByRole("button", { name: "Place stone at row 8 column 8" }));
 
-    expect(screen.getAllByText("Turn: Arena Bot").length).toBeGreaterThan(0);
-    expect(screen.getByText("Black R8 C8")).toBeInTheDocument();
+    expect(screen.getAllByText("OPPONENT'S TURN").length).toBeGreaterThan(0);
+    expect(screen.getByText("P1 placed stone at R8 C8")).toBeInTheDocument();
   });
 
   it("shows the Caro result panel when the local match completes", () => {
@@ -59,7 +60,7 @@ describe("MatchPage gameplay", () => {
       );
     }
 
-    expect(screen.getByText("Khanh wins")).toBeInTheDocument();
+    expect(screen.getByText("KHANH WINS")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Reset local match" })).toBeInTheDocument();
   });
 });

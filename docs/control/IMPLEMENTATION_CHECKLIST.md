@@ -185,6 +185,8 @@ Owner review: keep admin MVP minimal; do not build a full back office too early.
 
 Goal: improve the playable web experience before resuming backend or deploy work.
 
+- [x] Configure the approved Kinetic Grid dark UI theme across shared app surfaces.
+
 - [x] Polish Home into a game hub with playable demo CTAs.
 - [x] Polish Games catalog cards with clear playable/locked states.
 - [x] Polish Lobby with local room-code validation.

@@ -108,7 +108,25 @@ Use this file as the owner's control board. AI assistants should update it when 
 
 ## UI Polish Track: Core Experience
 
+- [x] Refactor Lobby into the Battle Lobby layout from the approved reference image.
+- [x] Refactor Profile into the approved player dashboard layout from the reference image.
+- [x] Refactor Privacy and Terms into the approved documentation layout from the reference image.
+
+- [x] Add approved Kinetic Grid dark UI theme tokens and global surface styling.
+
 - [x] Add game-hub Home route with Connect 4 and Lobby CTAs.
 - [x] Add clearer Games catalog playable/locked states.
 - [x] Add local Lobby room-code validation.
 - [x] Add scan-friendly Waiting Room player slot states.
+- [x] Refactor game match pages to add beautifully styled titles with proper spacing.
+- [x] Refactor Connect 4 board with futuristic cyberpunk neon aesthetics and column hover drop overlays.
+- [x] Refactor Caro board with futuristic cyberpunk neon aesthetics.
+- [x] Eliminate game board jitter by caching PixiJS canvas and redrawing Graphics directly on state update.
+- [x] Fix Pixi board hook-order regression that blanked the Connect 4 and Caro match screens.
+
+## Backend Integration Track
+
+- [x] BE-0 checkpoint UI polish work and prepare a clean backend branch.
+- [ ] BE-1 add callable room/match Function boundaries around existing domain commands.
+- [ ] BE-2 add emulator-backed Firestore rules for room/match reads and server-only writes.
+- [ ] BE-3 add client intent boundary for room/match callable calls.
