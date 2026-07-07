@@ -58,4 +58,13 @@ describe("ProfilePage auth shell", () => {
     expect(screen.getByText("+16 Elo")).toBeInTheDocument();
     expect(screen.getByText("win - Connect 4")).toBeInTheDocument();
   });
+  it("renders a report-player safety preview from moderation contracts", () => {
+    render(<ProfilePage />);
+
+    expect(screen.getByRole("heading", { name: "Report Player" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Report reason")).toBeInTheDocument();
+    expect(screen.getByLabelText("Report details")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Submit report preview" })).toBeDisabled();
+    expect(screen.getByText("reports/{reportId}")).toBeInTheDocument();
+  });
 });

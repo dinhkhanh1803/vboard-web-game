@@ -877,3 +877,88 @@ p {
     grid-template-columns: 1fr;
   }
 }
+
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 16px;
+}
+
+.admin-panel {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.admin-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-list li {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid #e6eaf2;
+  padding-top: 12px;
+}
+
+.admin-list li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.admin-list strong,
+.admin-list span {
+  display: block;
+}
+
+.admin-list strong {
+  color: #111827;
+}
+
+.admin-list span {
+  color: #526078;
+  line-height: 1.5;
+}
+
+.admin-inline-facts {
+  gap: 8px;
+}
+
+.report-player-panel {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.report-preview-form {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.7fr) minmax(240px, 1fr) minmax(180px, 0.55fr);
+  gap: 12px;
+  align-items: end;
+}
+
+select,
+textarea {
+  width: 100%;
+  border: 1px solid #c9d2e4;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  padding: 10px 12px;
+}
+
+textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+@media (max-width: 880px) {
+  .admin-dashboard-grid,
+  .report-preview-form {
+    grid-template-columns: 1fr;
+  }
+}

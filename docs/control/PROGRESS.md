@@ -99,3 +99,9 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] Add pure Functions-domain progression write-set helper for completed matches.
 - [x] Add contract-backed leaderboard preview UI with win rate and full records.
 - [x] Add profile game stats and recent match history UI from progression fixtures.
+
+## Phase 13: Admin, Moderation, And Safety
+
+- [x] Add admin route behavior with local signed-out, player-denied, and admin-allowed states.
+- [x] Add moderation report contracts and report-player preview UI.
+- [x] Add game feature flag contracts and admin preview UI.

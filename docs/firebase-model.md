@@ -215,6 +215,47 @@ Per-player match history entry generated from completed matches.
 | `completedAtMs`       | `number`                    | Match completion timestamp.                      |
 | `createdAtMs`         | `number`                    | History entry creation timestamp.                |
 
+## Moderation And Safety Contracts
+
+Phase 13 pins admin, moderation, and game safety data language in `contracts/moderationSafety.ts`. These contracts are TypeScript-only for now; no live Firebase Auth custom claims, Firestore reads, or Firestore writes exist yet.
+
+### `reports/{reportId}`
+
+User-submitted moderation report document queued for owner/admin review.
+
+| Field                 | Type                                                                      | Notes                                     |
+| --------------------- | ------------------------------------------------------------------------- | ----------------------------------------- |
+| `id`                  | `string`                                                                  | Deterministic preview ID.                 |
+| `reporterUid`         | `string`                                                                  | User submitting the report.               |
+| `reportedUid`         | `string`                                                                  | User being reported.                      |
+| `reportedDisplayName` | `string`                                                                  | Display name captured for review context. |
+| `reason`              | `"harassment" \| "cheating" \| "spam" \| "inappropriate-name" \| "other"` | Report reason category.                   |
+| `details`             | `string`                                                                  | Trimmed and capped at 500 characters.     |
+| `sourceMatchId`       | `string \| null`                                                          | Related match when available.             |
+| `sourceRoomId`        | `string \| null`                                                          | Related room when available.              |
+| `status`              | `"open" \| "reviewing" \| "actioned" \| "dismissed"`                      | Moderation lifecycle.                     |
+| `createdAtMs`         | `number`                                                                  | Unix epoch milliseconds.                  |
+| `updatedAtMs`         | `number`                                                                  | Unix epoch milliseconds.                  |
+
+### `appConfig/gameFlags`
+
+Preview shape for game-level safety and rollout flags. The UI reads this locally for now; live config will wait for explicit Firebase project approval.
+
+| Field                  | Type                                         | Notes                                           |
+| ---------------------- | -------------------------------------------- | ----------------------------------------------- |
+| `id`                   | `string`                                     | `game_${gameId}` preview ID.                    |
+| `gameId`               | `"connect-4" \| "caro"`                      | Game identifier.                                |
+| `displayName`          | `string`                                     | Public game label.                              |
+| `status`               | `"available" \| "coming-soon" \| "disabled"` | Catalog availability.                           |
+| `publicCatalogVisible` | `boolean`                                    | Whether the game appears in public catalog UI.  |
+| `matchmakingEnabled`   | `boolean`                                    | Whether matchmaking/lobby entry should be open. |
+| `maintenanceMode`      | `boolean`                                    | Emergency admin safety switch.                  |
+| `updatedAtMs`          | `number`                                     | Unix epoch milliseconds.                        |
+
+### Local Admin Gate
+
+`RequireAdminPreview` uses the shared `UserRole` language and allows only the `admin` role through the local admin preview. This is not a security boundary; real enforcement must come from Firebase Auth claims, Firestore rules, and Cloud Functions later.
+
 ## Analytics Event Contracts
 
 Phase 6.4 pins product analytics event language in `contracts/analyticsEvents.ts`. These contracts are TypeScript-only for now; no Firebase Analytics SDK calls or event writes exist yet.

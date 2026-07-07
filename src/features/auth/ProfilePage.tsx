@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { moderationReportReasons } from "@contracts/moderationSafety";
 import { gameIds, supportedAuthProviders, type GameId } from "@contracts/userProfile";
 
 import { demoProfilePrimaryGameId, demoPublicProfile } from "@/shared/constants/profileFixtures";
@@ -9,6 +10,7 @@ import {
   formatRecord,
   getDisplayNameForGame,
 } from "@/shared/constants/progressionFixtures";
+import { getReportCollectionLabel } from "@/shared/constants/moderationFixtures";
 
 type AuthPreviewMode = "Email password" | "Google provider" | "Guest player";
 
@@ -161,6 +163,8 @@ export function ProfilePage() {
           ))}
         </ul>
       </section>
+
+      <ReportPlayerPreview />
     </section>
   );
 }
@@ -190,5 +194,40 @@ function GameStatsCard({ gameId }: { gameId: GameId }) {
         </div>
       </dl>
     </article>
+  );
+}
+
+function ReportPlayerPreview() {
+  return (
+    <section className="panel report-player-panel" aria-labelledby="report-player-title">
+      <div>
+        <p className="meta-label">Safety preview</p>
+        <h2 id="report-player-title">Report Player</h2>
+        <p>
+          Reports will use <code>{getReportCollectionLabel()}</code> after Firebase writes are
+          approved.
+        </p>
+      </div>
+
+      <form className="report-preview-form" aria-label="Report player preview">
+        <label>
+          <span className="field-label">Report reason</span>
+          <select name="reason" defaultValue={moderationReportReasons[1]}>
+            {moderationReportReasons.map((reason) => (
+              <option key={reason} value={reason}>
+                {reason}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span className="field-label">Report details</span>
+          <textarea name="details" rows={3} placeholder="Local preview only" />
+        </label>
+        <button type="button" disabled>
+          Submit report preview
+        </button>
+      </form>
+    </section>
   );
 }

@@ -175,9 +175,9 @@ Owner review: progression numbers are contract-backed and reward economy remains
 
 Goal: create operational controls without overbuilding.
 
-- [ ] Add admin route behavior.
-- [ ] Add report user contract and UI.
-- [ ] Add feature flag contract for games.
+- [x] Add admin route behavior.
+- [x] Add report user contract and UI.
+- [x] Add feature flag contract for games.
 
 Owner review: keep admin MVP minimal; do not build a full back office too early.
 

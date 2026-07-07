@@ -15,4 +15,5 @@ This folder owns TypeScript contracts that describe product data before Firebase
 - `gameCatalog.ts`: `games/{gameId}` metadata for Connect 4, Caro, route contracts, player counts, renderer, and availability.
 - `roomMatch.ts`: `rooms/{roomId}`, `matches/{matchId}`, and `matches/{matchId}/moves/{moveId}` lifecycle contracts.
 - `progression.ts`: Elo rating helper, public leaderboard row shape, and per-player match history entry shape.
+- `moderationSafety.ts`: moderation report shape, admin preview role gate helper, and game feature flag preview shape.
 - `analyticsEvents.ts`: stable product analytics event names, categories, payload contracts, and event envelope helper.

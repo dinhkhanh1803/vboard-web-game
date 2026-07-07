@@ -3,8 +3,8 @@ import { Route, Routes } from "react-router-dom";
 import { DevNavigation } from "@/app/DevNavigation";
 import { HomePage } from "@/app/HomePage";
 import { AdminPage } from "@/features/admin/AdminPage";
+import { RequireAdminPreview } from "@/features/admin/RequireAdminPreview";
 import { ProfilePage } from "@/features/auth/ProfilePage";
-import { RequireAuthPreview } from "@/features/auth/RequireAuthPreview";
 import { ContentPage } from "@/features/content/ContentPage";
 import { GameCatalogPage } from "@/features/games/GameCatalogPage";
 import { LeaderboardPage } from "@/features/leaderboard/LeaderboardPage";
@@ -28,9 +28,9 @@ export function App() {
           <Route
             path="/admin"
             element={
-              <RequireAuthPreview routeName="Admin Console">
+              <RequireAdminPreview>
                 <AdminPage />
-              </RequireAuthPreview>
+              </RequireAdminPreview>
             }
           />
           <Route path="/privacy-policy" element={<ContentPage routeId="privacy" />} />
