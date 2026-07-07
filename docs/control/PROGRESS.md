@@ -105,3 +105,10 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] Add admin route behavior with local signed-out, player-denied, and admin-allowed states.
 - [x] Add moderation report contracts and report-player preview UI.
 - [x] Add game feature flag contracts and admin preview UI.
+
+## UI Polish Track: Core Experience
+
+- [x] Add game-hub Home route with Connect 4 and Lobby CTAs.
+- [x] Add clearer Games catalog playable/locked states.
+- [x] Add local Lobby room-code validation.
+- [x] Add scan-friendly Waiting Room player slot states.

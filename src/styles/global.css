@@ -962,3 +962,180 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+
+.home-hero {
+  align-self: start;
+}
+
+.home-hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.home-hero-copy {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+}
+
+.hero-actions,
+.game-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.primary-action {
+  border-color: #162033;
+  background: #162033;
+  color: #ffffff;
+}
+
+.secondary-action {
+  background: #ffffff;
+  color: #162033;
+}
+
+.hero-panel {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+.hero-panel h2 {
+  font-size: 1.45rem;
+}
+
+.polished-game-grid {
+  align-items: stretch;
+}
+
+.polished-game-card {
+  align-content: start;
+  min-height: 100%;
+}
+
+.polished-game-card .compact-facts {
+  margin-top: auto;
+}
+
+.polished-game-card button,
+.polished-game-card .button-link,
+.lobby-action-panel button {
+  width: 100%;
+  justify-content: center;
+}
+
+.lobby-entry-grid {
+  align-items: stretch;
+}
+
+.lobby-action-panel {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.form-status {
+  border-radius: 8px;
+  margin: 0;
+  padding: 8px 10px;
+}
+
+.form-status.is-error {
+  background: #fff4f0;
+  color: #9f341f;
+}
+
+.form-status.is-success {
+  background: #eef8f1;
+  color: #1f7a45;
+}
+
+.public-room-heading {
+  margin-bottom: 12px;
+}
+
+.waiting-room-layout {
+  align-items: stretch;
+}
+
+.room-code-card {
+  gap: 14px;
+}
+
+.room-code-display {
+  font-size: 2.15rem;
+  letter-spacing: 0;
+}
+
+.room-player-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.room-player-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid #e6eaf2;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.room-player-marker {
+  display: block;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #c9d2e4;
+}
+
+.room-player-row.is-ready .room-player-marker {
+  background: #1f7a45;
+}
+
+.room-player-row strong,
+.room-player-row span {
+  display: block;
+}
+
+.room-player-row strong {
+  color: #111827;
+}
+
+.room-player-row span {
+  color: #526078;
+  line-height: 1.45;
+}
+
+@media (max-width: 880px) {
+  .home-hero-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero-actions,
+  .game-card-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .hero-actions .button-link,
+  .game-card-actions .button-link {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .room-code-display {
+    font-size: 1.8rem;
+  }
+}

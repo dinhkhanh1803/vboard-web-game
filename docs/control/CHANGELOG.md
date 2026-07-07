@@ -34,3 +34,4 @@
 ## 2026-07-07
 
 - Completed Phase 13 admin, moderation, and safety with a local admin role gate, moderation report contracts, report-player preview UI, game feature flag contracts, and admin preview panels without live Firebase writes.
+- Started the UI Polish Track and polished the core web experience with a game-hub Home route, clearer Games catalog states, local Lobby room-code validation, and scan-friendly Waiting Room slots without Firebase wiring.

@@ -2,25 +2,25 @@
 
 ## Current Recommended Next Step
 
-Start Phase 14 from `docs/control/IMPLEMENTATION_CHECKLIST.md`: prepare content, policy pages, ads config contracts, deploy checklist, and staging planning without creating production Firebase config yet.
+Continue the UI Polish Track before Phase 14: polish the active match screens for Connect 4 and Caro on desktop and mobile.
 
 ## Exact First Task
 
-Replace placeholder policy/contact content with final-ready privacy policy, terms, and contact page copy that still avoids legal overreach.
+Review `/matches/demo-match` and `/matches/demo-caro` in browser, then tighten match layout hierarchy so the board remains the primary focus and player/move panels stay readable on mobile.
 
 ## Scope
 
-- Keep content static and reviewable in React routes.
-- Add ad placement config as a contract only; do not add ad SDKs yet.
-- Prepare deploy and CI checklists, but do not create Firebase dev/staging/prod project mapping until the owner explicitly approves that step.
-- Do not create, select, or configure any real Firebase project until the owner explicitly approves that step.
+- Keep the work UI-only and local-state only.
+- Do not change pure game-engine rules unless a UI bug exposes a rules issue.
+- Do not connect Firebase listeners, writes, auth, ads, or deploy config.
+- Preserve PixiJS board interactivity and current tests.
 
 ## Expected Files
 
-- `src/features/content/`
-- `contracts/`
+- `src/features/match/`
+- `src/styles/global.css`
+- `src/app/App.test.tsx`
 - `docs/control/PROGRESS.md`
-- `docs/firebase-model.md`
 
 ## Verification
 
@@ -33,3 +33,5 @@ npm run lint
 npm run build
 npm run test
 ```
+
+Also browser-check `/matches/demo-match` and `/matches/demo-caro` at desktop and mobile widths.

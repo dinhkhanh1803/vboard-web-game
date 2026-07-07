@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
@@ -14,13 +14,17 @@ function renderApp(path = "/") {
 }
 
 describe("App shell", () => {
-  it("renders the selected project stack on the home route", () => {
+  it("renders the playable game hub on the home route", () => {
     renderApp();
 
     expect(screen.getByRole("heading", { name: "VBoard Arena" })).toBeInTheDocument();
-    expect(screen.getByText(techStack.app)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Play Connect 4" })).toHaveAttribute(
+      "href",
+      "/matches/demo-match",
+    );
+    expect(screen.getByRole("link", { name: "Open Lobby" })).toHaveAttribute("href", "/lobby");
+    expect(screen.getByText("Playable now")).toBeInTheDocument();
     expect(screen.getByText(techStack.renderer)).toHaveTextContent("PixiJS");
-    expect(screen.getByText(techStack.backend)).toBeInTheDocument();
   });
 
   it("renders development navigation for MVP routes", () => {
@@ -35,31 +39,45 @@ describe("App shell", () => {
     );
   });
 
-  it("renders the static games catalog", () => {
+  it("renders the polished games catalog", () => {
     renderApp("/games");
 
     expect(screen.getByRole("heading", { name: "Games" })).toBeInTheDocument();
     expect(screen.getByText("Connect 4")).toBeInTheDocument();
     expect(screen.getByText("Caro")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Open Connect 4 lobby" })).toBeDisabled();
+    expect(screen.getByRole("link", { name: "Play Connect 4 demo" })).toHaveAttribute(
+      "href",
+      "/matches/demo-match",
+    );
+    expect(screen.getByText("Playable now")).toBeInTheDocument();
+    expect(screen.getByText("Preview locked")).toBeInTheDocument();
   });
 
-  it("renders the lobby entry points", () => {
+  it("renders lobby entry points with local room-code validation", () => {
     renderApp("/lobby");
 
     expect(screen.getByRole("heading", { name: "Lobby" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Find quick match" })).toBeDisabled();
-    expect(screen.getByLabelText("Room code")).toBeInTheDocument();
     expect(screen.getByText("Public Rooms")).toBeInTheDocument();
     expect(screen.getAllByText("UI-only preview").length).toBeGreaterThan(0);
+
+    const roomCodeInput = screen.getByLabelText("Room code");
+    fireEvent.change(roomCodeInput, { target: { value: "abc" } });
+    expect(screen.getByText("Use a code like VB-1042.")).toBeInTheDocument();
+
+    fireEvent.change(roomCodeInput, { target: { value: "VB-1042" } });
+    expect(screen.getByText("Code format ready for backend wiring.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Join room preview" })).toBeEnabled();
   });
 
-  it("renders the waiting room shell", () => {
+  it("renders the waiting room shell with scan-friendly player states", () => {
     renderApp("/rooms/demo-room");
 
     expect(screen.getByRole("heading", { name: "Waiting Room" })).toBeInTheDocument();
     expect(screen.getByText("Room Code")).toBeInTheDocument();
-    expect(screen.getByText("Ready Check")).toBeInTheDocument();
+    expect(screen.getByText("Local room preview")).toBeInTheDocument();
+    expect(screen.getByText("Host ready")).toBeInTheDocument();
+    expect(screen.getByText("Opponent slot open")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Copy invite link" })).toBeDisabled();
   });
 

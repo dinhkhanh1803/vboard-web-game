@@ -65,7 +65,7 @@ Goal: finish the frontend feel before backend work begins.
 - [ ] Add empty/loading/error states for frontend-only screens.
   - Files: `src/features/*`.
   - Done when: future Firebase states have clear UI slots without connecting Firebase.
-- [ ] Add form validation behavior for lobby inputs locally.
+- [x] Add form validation behavior for lobby inputs locally.
   - Files: `src/features/lobby/`.
   - Done when: room code validation works without network calls.
 - [x] Add first PixiJS renderer prototype behind the match board boundary.
@@ -180,6 +180,19 @@ Goal: create operational controls without overbuilding.
 - [x] Add feature flag contract for games.
 
 Owner review: keep admin MVP minimal; do not build a full back office too early.
+
+## UI Polish Track: Core Experience
+
+Goal: improve the playable web experience before resuming backend or deploy work.
+
+- [x] Polish Home into a game hub with playable demo CTAs.
+- [x] Polish Games catalog cards with clear playable/locked states.
+- [x] Polish Lobby with local room-code validation.
+- [x] Polish Waiting Room with scan-friendly player slot states.
+- [ ] Polish Match screens for Connect 4 and Caro mobile play.
+- [ ] Add empty/loading/error states for frontend-only Firebase-ready screens.
+
+Owner review: keep this UI-only until the flow feels controlled on desktop and mobile.
 
 ## Phase 14: Content, Policy Pages, Ads, Deploy And Operations
 
