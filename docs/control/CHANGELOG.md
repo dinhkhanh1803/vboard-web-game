@@ -41,3 +41,4 @@
 - Refactored the Privacy and Terms content route into the approved documentation layout with sidebar navigation, support card, policy cards, and local-only legal copy.
 - Started backend integration with callable `createRoom`, `joinRoom`, `startMatch`, and `submitMove` handlers backed by Firestore transaction adapters and local tests, without configuring a real Firebase project.
 - Added BE-2 Firestore room/match rules, emulator-backed rules tests, and `npm run test:rules`; local emulator execution currently requires Java on PATH.
+- Verified BE-2 Firestore room/match rules against the local Firestore Emulator with `npm run test:rules` after configuring Java for the session.
