@@ -2,7 +2,48 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Foundation default: no client access until paths have emulator tests.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isPublicRoom() {
+      return resource.data.visibility == "public";
+    }
+
+    function hasPlayerAt(matchData, seatIndex) {
+      return matchData.players is list &&
+        matchData.players.size() > seatIndex &&
+        matchData.players[seatIndex].uid == request.auth.uid;
+    }
+
+    function isMatchPlayerData(matchData) {
+      return isSignedIn() && (hasPlayerAt(matchData, 0) || hasPlayerAt(matchData, 1));
+    }
+
+    function matchPath(matchId) {
+      return /databases/$(database)/documents/matches/$(matchId);
+    }
+
+    function isMatchPlayer(matchId) {
+      return exists(matchPath(matchId)) && isMatchPlayerData(get(matchPath(matchId)).data);
+    }
+
+    match /rooms/{roomId} {
+      allow get, list: if isSignedIn() && isPublicRoom();
+      allow create, update, delete: if false;
+    }
+
+    match /matches/{matchId} {
+      allow get, list: if isMatchPlayerData(resource.data);
+      allow create, update, delete: if false;
+
+      match /moves/{moveId} {
+        allow get, list: if isMatchPlayer(matchId);
+        allow create, update, delete: if false;
+      }
+    }
+
+    // Default deny keeps every future collection closed until it has tests.
     match /{document=**} {
       allow read, write: if false;
     }

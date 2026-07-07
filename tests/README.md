@@ -4,12 +4,18 @@ This folder owns tests that span app, functions, Firebase rules, or future emula
 
 ## Current Tests
 
-- `tests/firebaseRules.test.ts` checks that Firestore, Storage, and Realtime Database rules stay closed by default.
+- `tests/firebaseRules.test.ts` checks Storage and Realtime Database stay closed and contains emulator-backed Firestore tests for room/match reads and client write denial.
 
 Run all tests with:
 
 ```bash
 npm run test
+```
+
+Run Firestore emulator rules tests with Java on `PATH`:
+
+```bash
+npm run test:rules
 ```
 
 Run the Firebase foundation tests only with:
@@ -22,7 +28,6 @@ npm run test -- src/firebase/config.test.ts functions/test/firebaseAdmin.test.ts
 
 Near-term candidates:
 
-- Firebase emulator security rules tests using the official Rules Unit Testing SDK.
 - End-to-end room lifecycle tests.
 - Realtime two-client match tests.
 - Production readiness smoke tests.

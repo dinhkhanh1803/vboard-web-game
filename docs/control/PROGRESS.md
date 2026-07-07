@@ -128,5 +128,6 @@ Use this file as the owner's control board. AI assistants should update it when 
 
 - [x] BE-0 checkpoint UI polish work and prepare a clean backend branch.
 - [x] BE-1 add callable room/match Function boundaries around existing domain commands.
-- [ ] BE-2 add emulator-backed Firestore rules for room/match reads and server-only writes.
+- [x] BE-2 add Firestore rules and emulator test suite for room/match reads and server-only writes.
+- [ ] BE-2 local emulator verification: install Java on PATH and run `npm run test:rules`.
 - [ ] BE-3 add client intent boundary for room/match callable calls.

@@ -40,3 +40,4 @@
 - Refactored the Profile route into the approved high-fidelity player dashboard with hero stats, skill distribution, weekly activity, and recent match history while keeping data local-only.
 - Refactored the Privacy and Terms content route into the approved documentation layout with sidebar navigation, support card, policy cards, and local-only legal copy.
 - Started backend integration with callable `createRoom`, `joinRoom`, `startMatch`, and `submitMove` handlers backed by Firestore transaction adapters and local tests, without configuring a real Firebase project.
+- Added BE-2 Firestore room/match rules, emulator-backed rules tests, and `npm run test:rules`; local emulator execution currently requires Java on PATH.

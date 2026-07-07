@@ -2,32 +2,31 @@
 
 ## Current Recommended Next Step
 
-Continue backend integration after BE-1. The next backend focus is emulator-backed Firestore rules for room and match reads while keeping official writes server-only.
+Finish BE-2 local emulator verification before moving to BE-3. The Firestore rules and emulator test suite are in place, but this machine does not currently have Java on `PATH`, so Firebase Emulator cannot start yet.
 
 ## Exact First Task
 
-Implement BE-2: add Firestore rules and tests for room/match access. Clients may read the public room/match data they need, but clients must not write official room, match, result, turn, timer, ranking, or move-log state directly.
+Install or configure a Java runtime on `PATH`, then run `npm run test:rules`. After that passes, continue to BE-3: client intent boundary for room/match callable calls.
 
 ## Scope
 
-- Backend-first only.
 - Do not create or configure a real Firebase project until the owner explicitly approves it.
-- Use local rules tests and emulator-ready paths.
+- Do not deploy.
 - Keep callable Functions as the only official writer for room/match state.
-- Do not change high-fidelity UI except for minimal wiring after rules and callable contracts are stable.
+- Do not change high-fidelity UI except for minimal wiring after rules and callable contracts are verified.
 
 ## Expected Files
 
-- `firebase/firestore.rules`
-- `tests/firebaseRules.test.ts`
-- `contracts/roomMatch.ts` only if rule tests expose a missing path constant
-- `docs/control/PROGRESS.md`
+- No code files should need to change for the Java verification step.
+- If the verification exposes a rules bug, update `firebase/firestore.rules` and `tests/firebaseRules.test.ts` only.
+- Update `docs/control/PROGRESS.md` after `npm run test:rules` runs successfully.
 
 ## Verification
 
 Make these commands pass:
 
 ```bash
+npm run test:rules
 npm run typecheck
 npm run lint
 npm run build

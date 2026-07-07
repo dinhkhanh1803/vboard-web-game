@@ -4,7 +4,7 @@ This folder owns Firebase rules, indexes, and local emulator wiring.
 
 ## Files
 
-- `firestore.rules`: closed-by-default Firestore rules.
+- `firestore.rules`: room/match read rules with server-only official writes and closed fallback.
 - `storage.rules`: closed-by-default Storage rules.
 - `database.rules.json`: closed-by-default Realtime Database rules.
 - `firestore.indexes.json`: empty index baseline.
@@ -24,4 +24,4 @@ npm run firebase:emulators:ui
 
 The web app reads emulator host settings from `.env.example` / `.env.local` keys such as `VITE_USE_FIREBASE_EMULATORS`, `VITE_FIRESTORE_EMULATOR_HOST`, and `VITE_AUTH_EMULATOR_HOST`.
 
-Rules are currently locked down and covered by `tests/firebaseRules.test.ts`.
+Firestore rules are covered by `tests/firebaseRules.test.ts`. Run `npm run test:rules` for emulator-backed rule checks; Firebase Emulator requires Java on `PATH`.

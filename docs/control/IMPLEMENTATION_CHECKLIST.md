@@ -202,7 +202,8 @@ Goal: connect the existing pure room/match logic to Firebase safely before front
 
 - [x] BE-0 checkpoint UI polish work and prepare a clean backend branch.
 - [x] BE-1 add callable Cloud Functions for `createRoom`, `joinRoom`, `startMatch`, and `submitMove` around pure domain commands.
-- [ ] BE-2 add emulator-backed Firestore rules for room/match reads and server-only writes.
+- [x] BE-2 add Firestore rules and emulator test suite for room/match reads and server-only writes.
+- [ ] BE-2 local emulator verification: install Java on PATH and run `npm run test:rules`.
 - [ ] BE-3 add client intent boundary for room/match callable calls.
 
 Owner review: verify clients only send intent and never write official room, match, result, timer, ranking, or move-log state.
