@@ -196,6 +196,17 @@ Goal: improve the playable web experience before resuming backend or deploy work
 
 Owner review: keep this UI-only until the flow feels controlled on desktop and mobile.
 
+## Backend Integration Track
+
+Goal: connect the existing pure room/match logic to Firebase safely before frontend wiring.
+
+- [x] BE-0 checkpoint UI polish work and prepare a clean backend branch.
+- [x] BE-1 add callable Cloud Functions for `createRoom`, `joinRoom`, `startMatch`, and `submitMove` around pure domain commands.
+- [ ] BE-2 add emulator-backed Firestore rules for room/match reads and server-only writes.
+- [ ] BE-3 add client intent boundary for room/match callable calls.
+
+Owner review: verify clients only send intent and never write official room, match, result, timer, ranking, or move-log state.
+
 ## Phase 14: Content, Policy Pages, Ads, Deploy And Operations
 
 Goal: prepare for public deploy and monetization without harming gameplay.

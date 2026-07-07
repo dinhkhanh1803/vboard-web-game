@@ -127,6 +127,6 @@ Use this file as the owner's control board. AI assistants should update it when 
 ## Backend Integration Track
 
 - [x] BE-0 checkpoint UI polish work and prepare a clean backend branch.
-- [ ] BE-1 add callable room/match Function boundaries around existing domain commands.
+- [x] BE-1 add callable room/match Function boundaries around existing domain commands.
 - [ ] BE-2 add emulator-backed Firestore rules for room/match reads and server-only writes.
 - [ ] BE-3 add client intent boundary for room/match callable calls.

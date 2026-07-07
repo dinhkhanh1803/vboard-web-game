@@ -2,27 +2,25 @@
 
 ## Current Recommended Next Step
 
-Move from UI polish to backend integration. The immediate backend focus is server-authoritative room and match callable Functions around the existing pure domain commands.
+Continue backend integration after BE-1. The next backend focus is emulator-backed Firestore rules for room and match reads while keeping official writes server-only.
 
 ## Exact First Task
 
-Implement BE-1: callable Cloud Functions boundaries for `createRoom`, `joinRoom`, `startMatch`, and `submitMove` using `functions/src/domain/roomMatchCommands.ts` as the only source of room/match state transitions.
+Implement BE-2: add Firestore rules and tests for room/match access. Clients may read the public room/match data they need, but clients must not write official room, match, result, turn, timer, ranking, or move-log state directly.
 
 ## Scope
 
 - Backend-first only.
 - Do not create or configure a real Firebase project until the owner explicitly approves it.
-- Use local tests, emulator-ready boundaries, or test doubles before live Firebase wiring.
-- Keep clients as intent senders; client code must not write official room, match, result, turn, timer, ranking, or private opponent state.
-- Do not change high-fidelity UI except for minimal wiring after callable contracts exist.
+- Use local rules tests and emulator-ready paths.
+- Keep callable Functions as the only official writer for room/match state.
+- Do not change high-fidelity UI except for minimal wiring after rules and callable contracts are stable.
 
 ## Expected Files
 
-- `functions/src/callable/`
-- `functions/src/domain/`
-- `functions/src/integrations/`
-- `functions/test/`
-- `firebase/`
+- `firebase/firestore.rules`
+- `tests/firebaseRules.test.ts`
+- `contracts/roomMatch.ts` only if rule tests expose a missing path constant
 - `docs/control/PROGRESS.md`
 
 ## Verification
