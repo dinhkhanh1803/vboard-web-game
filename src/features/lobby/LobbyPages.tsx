@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  getRoomMatchIntentClient,
+  getGuestReadyRoomMatchIntentClient,
   getRoomMatchReadClient,
   type RoomIntentResult,
   type RoomReadState,
@@ -85,7 +85,6 @@ export function LobbyPage() {
     kind: "idle",
     message: "",
   });
-  const roomMatchIntentClient = useMemo(() => getRoomMatchIntentClient(), []);
   const normalizedRoomCode = roomCode.trim().toUpperCase();
   const hasRoomCode = normalizedRoomCode.length > 0;
   const isRoomCodeValid = roomCodePattern.test(normalizedRoomCode);
@@ -108,22 +107,32 @@ export function LobbyPage() {
       ? "battle-code-status is-error"
       : "battle-code-status is-success";
 
-  const requireRoomIntentClient = (action: RoomIntentAction) => {
-    if (roomMatchIntentClient !== null) {
-      return roomMatchIntentClient;
-    }
+  const requireRoomIntentClient = async (action: RoomIntentAction) => {
+    try {
+      const intentClient = await getGuestReadyRoomMatchIntentClient();
 
-    setRoomIntentState({
-      action,
-      kind: "error",
-      message: "Firebase room actions are not configured for this environment.",
-    });
+      if (intentClient !== null) {
+        return intentClient;
+      }
+
+      setRoomIntentState({
+        action,
+        kind: "error",
+        message: "Firebase room actions are not configured for this environment.",
+      });
+    } catch (error) {
+      setRoomIntentState({
+        action,
+        kind: "error",
+        message: getIntentErrorMessage(error),
+      });
+    }
 
     return null;
   };
 
   const handleCreateRoom = async () => {
-    const intentClient = requireRoomIntentClient("createRoom");
+    const intentClient = await requireRoomIntentClient("createRoom");
 
     if (intentClient === null) {
       return;
@@ -164,7 +173,7 @@ export function LobbyPage() {
       return;
     }
 
-    const intentClient = requireRoomIntentClient("joinRoom");
+    const intentClient = await requireRoomIntentClient("joinRoom");
 
     if (intentClient === null) {
       return;
@@ -400,7 +409,6 @@ export function WaitingRoomPage() {
   const navigate = useNavigate();
   const { roomId } = useParams<{ roomId: string }>();
   const roomMatchReadClient = useMemo(() => getRoomMatchReadClient(), []);
-  const roomMatchIntentClient = useMemo(() => getRoomMatchIntentClient(), []);
   const [roomReadState, setRoomReadState] = useState<WaitingRoomReadState>({
     message: "Loading official room state...",
     status: "loading",
@@ -496,21 +504,23 @@ export function WaitingRoomPage() {
       return;
     }
 
-    if (roomMatchIntentClient === null) {
-      setStartMatchState({
-        kind: "error",
-        message: "Firebase match actions are not configured for this environment.",
-      });
-
-      return;
-    }
-
     setStartMatchState({
       kind: "loading",
       message: "Starting match...",
     });
 
     try {
+      const roomMatchIntentClient = await getGuestReadyRoomMatchIntentClient();
+
+      if (roomMatchIntentClient === null) {
+        setStartMatchState({
+          kind: "error",
+          message: "Firebase match actions are not configured for this environment.",
+        });
+
+        return;
+      }
+
       const result = await roomMatchIntentClient.startMatch({ roomId });
 
       setStartMatchState({

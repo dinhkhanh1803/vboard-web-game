@@ -21,7 +21,9 @@ export type {
 export {
   createAuthenticatedRoomMatchIntentClient,
   createFunctionsCallableIntentInvoker,
+  createGuestReadyRoomMatchIntentClient,
   createRoomMatchIntentClient,
+  getGuestReadyRoomMatchIntentClient,
   getRoomMatchIntentClient,
   roomMatchAuthRequiredMessage,
   roomMatchCallableNames,
@@ -29,6 +31,7 @@ export {
 export type {
   CallableIntentInvoker,
   CreateRoomIntentInput,
+  GuestReadyRoomMatchIntentClientDeps,
   JoinRoomIntentInput,
   RoomIntentResult,
   RoomMatchCallableName,

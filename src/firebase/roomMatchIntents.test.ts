@@ -3,9 +3,10 @@ import { join } from "node:path";
 
 import { describe, expect, it, vi } from "vitest";
 
-import type { FirebaseIdentityUser } from "@/firebase/authIdentity";
+import type { FirebaseIdentityClient, FirebaseIdentityUser } from "@/firebase/authIdentity";
 import {
   createAuthenticatedRoomMatchIntentClient,
+  createGuestReadyRoomMatchIntentClient,
   createRoomMatchIntentClient,
   getRoomMatchIntentClient,
   roomMatchCallableNames,
@@ -162,6 +163,67 @@ describe("room/match client intent boundary", () => {
     });
   });
 
+  it("signs in as a guest before exposing a room/match intent client", async () => {
+    const identity: FirebaseIdentityUser = {
+      displayName: null,
+      email: null,
+      isAnonymous: true,
+      photoURL: null,
+      uid: "guest-1",
+    };
+    const identityClient: FirebaseIdentityClient = {
+      readCurrentUser: vi.fn(() => null),
+      signInAsGuest: vi.fn().mockResolvedValue(identity),
+      signOut: vi.fn(),
+      subscribe: vi.fn(),
+    };
+    const intentClient: RoomMatchIntentClient = {
+      createRoom: vi.fn(),
+      joinRoom: vi.fn(),
+      startMatch: vi.fn(),
+      submitMove: vi.fn(),
+    };
+
+    await expect(
+      createGuestReadyRoomMatchIntentClient({
+        readIdentityClient: () => identityClient,
+        readIntentClient: () => intentClient,
+      }),
+    ).resolves.toBe(intentClient);
+
+    expect(identityClient.signInAsGuest).toHaveBeenCalledOnce();
+  });
+
+  it("does not sign in again when a Firebase identity already exists", async () => {
+    const identity: FirebaseIdentityUser = {
+      displayName: "Guest Pilot",
+      email: null,
+      isAnonymous: true,
+      photoURL: null,
+      uid: "guest-1",
+    };
+    const identityClient: FirebaseIdentityClient = {
+      readCurrentUser: vi.fn(() => identity),
+      signInAsGuest: vi.fn(),
+      signOut: vi.fn(),
+      subscribe: vi.fn(),
+    };
+    const intentClient: RoomMatchIntentClient = {
+      createRoom: vi.fn(),
+      joinRoom: vi.fn(),
+      startMatch: vi.fn(),
+      submitMove: vi.fn(),
+    };
+
+    await expect(
+      createGuestReadyRoomMatchIntentClient({
+        readIdentityClient: () => identityClient,
+        readIntentClient: () => intentClient,
+      }),
+    ).resolves.toBe(intentClient);
+
+    expect(identityClient.signInAsGuest).not.toHaveBeenCalled();
+  });
   it("does not import Firestore write APIs in the client intent boundary", () => {
     const source = readFileSync(join(process.cwd(), "src/firebase/roomMatchIntents.ts"), "utf8");
 

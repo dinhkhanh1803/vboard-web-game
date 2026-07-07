@@ -7,6 +7,7 @@ import { LobbyPage, WaitingRoomPage } from "@/features/lobby/LobbyPages";
 
 const roomMocks = vi.hoisted(() => ({
   createRoom: vi.fn(),
+  getGuestReadyRoomMatchIntentClient: vi.fn(),
   getRoomMatchIntentClient: vi.fn(),
   getRoomMatchReadClient: vi.fn(),
   joinRoom: vi.fn(),
@@ -22,6 +23,7 @@ vi.mock("@/firebase", async (importOriginal) => {
 
   return {
     ...actual,
+    getGuestReadyRoomMatchIntentClient: roomMocks.getGuestReadyRoomMatchIntentClient,
     getRoomMatchIntentClient: roomMocks.getRoomMatchIntentClient,
     getRoomMatchReadClient: roomMocks.getRoomMatchReadClient,
   };
@@ -35,6 +37,7 @@ function mockRoomIntentClient() {
     submitMove: roomMocks.submitMove,
   };
 
+  roomMocks.getGuestReadyRoomMatchIntentClient.mockResolvedValue(client);
   roomMocks.getRoomMatchIntentClient.mockReturnValue(client);
 }
 
@@ -199,6 +202,7 @@ describe("LobbyPage backend intents", () => {
   });
 
   it("shows a local error when the Firebase intent client is missing", async () => {
+    roomMocks.getGuestReadyRoomMatchIntentClient.mockResolvedValue(null);
     roomMocks.getRoomMatchIntentClient.mockReturnValue(null);
 
     renderLobbyRoute();

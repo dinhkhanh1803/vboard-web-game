@@ -22,4 +22,4 @@ Own the realtime match screen, player panels, timer display, move log, action ba
 
 ## Current Backend Integration Status
 
-Non-demo `/matches/{matchId}` routes subscribe to official match state, subscribe to official `matches/{matchId}/moves` entries ordered by sequence, render Connect 4 public state and official Match history, and submit Connect 4 column moves through callable `submitMove`. BE-12 added an authenticated Auth + Firestore emulator smoke flow and document-safe official Connect 4 public state; the next backend integration step is a real Functions emulator callable endpoint smoke.
+Non-demo `/matches/{matchId}` routes subscribe to official match state, subscribe to official `matches/{matchId}/moves` entries ordered by sequence, render Connect 4 public state and official Match history, and submit Connect 4 column moves through the guest-ready callable intent helper. BE-14 adds a route-level smoke proving Lobby -> Waiting Room -> Match uses guest-ready intents plus read-only subscriptions.

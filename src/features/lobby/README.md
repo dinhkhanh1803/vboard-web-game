@@ -13,4 +13,4 @@ Own quick match entry, public room listing, room code join, and waiting room UI.
 
 ## Current Backend Integration Status
 
-Lobby create/join and Waiting Room start-match flows submit through callable intent wrappers and route by returned ids. BE-11 added the auth identity guard before these official intents; the next backend integration step is an authenticated local/emulator smoke flow.
+Lobby create/join and Waiting Room start-match flows use the guest-ready room/match intent helper. The helper signs into Firebase anonymous Auth through `src/firebase/authIdentity.ts` when needed, then submits official callable intent. Waiting Room still reads official room state only through `src/firebase/roomMatchSubscriptions.ts`.

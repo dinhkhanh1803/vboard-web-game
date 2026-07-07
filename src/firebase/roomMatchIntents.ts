@@ -2,7 +2,12 @@ import { httpsCallable, type Functions } from "firebase/functions";
 
 import type { GameId } from "@contracts/gameCatalog";
 
-import { readFirebaseIdentityFromAuth, type FirebaseIdentityReader } from "@/firebase/authIdentity";
+import {
+  getFirebaseIdentityClient,
+  readFirebaseIdentityFromAuth,
+  type FirebaseIdentityClient,
+  type FirebaseIdentityReader,
+} from "@/firebase/authIdentity";
 import { getFirebaseClientServices } from "@/firebase/clientApp";
 import type { FirebaseEnv } from "@/firebase/config";
 
@@ -126,6 +131,27 @@ export function createAuthenticatedRoomMatchIntentClient(
   };
 }
 
+export type GuestReadyRoomMatchIntentClientDeps = {
+  readIdentityClient(): FirebaseIdentityClient | null;
+  readIntentClient(): RoomMatchIntentClient | null;
+};
+
+export async function createGuestReadyRoomMatchIntentClient(
+  deps: GuestReadyRoomMatchIntentClientDeps,
+): Promise<RoomMatchIntentClient | null> {
+  const identityClient = deps.readIdentityClient();
+  const intentClient = deps.readIntentClient();
+
+  if (identityClient === null || intentClient === null) {
+    return null;
+  }
+
+  if (identityClient.readCurrentUser() === null) {
+    await identityClient.signInAsGuest();
+  }
+
+  return intentClient;
+}
 export function createFunctionsCallableIntentInvoker(functions: Functions): CallableIntentInvoker {
   return async <Input, Output>(name: RoomMatchCallableName, data: Input): Promise<Output> => {
     const callable = httpsCallable<Input, Output>(functions, name);
@@ -135,6 +161,14 @@ export function createFunctionsCallableIntentInvoker(functions: Functions): Call
   };
 }
 
+export function getGuestReadyRoomMatchIntentClient(
+  env: FirebaseEnv = import.meta.env,
+): Promise<RoomMatchIntentClient | null> {
+  return createGuestReadyRoomMatchIntentClient({
+    readIdentityClient: () => getFirebaseIdentityClient(env),
+    readIntentClient: () => getRoomMatchIntentClient(env),
+  });
+}
 export function getRoomMatchIntentClient(
   env: FirebaseEnv = import.meta.env,
 ): RoomMatchIntentClient | null {

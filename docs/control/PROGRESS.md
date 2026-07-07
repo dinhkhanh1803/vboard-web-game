@@ -141,3 +141,4 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] BE-11 add Firebase Auth identity boundary and require authenticated users before official room/match intents.
 - [x] BE-12 add authenticated Auth + Firestore emulator smoke flow for guest room/match lifecycle.
 - [x] BE-13 add callable endpoint smoke through Auth, Firestore, and Functions emulators.
+- [x] BE-14 add route-level web app smoke for guest-ready official room/match intents.

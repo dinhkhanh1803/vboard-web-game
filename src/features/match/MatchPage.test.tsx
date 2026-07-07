@@ -18,6 +18,7 @@ type MatchMoveLogReadState =
     };
 
 const roomReadMocks = vi.hoisted(() => ({
+  getGuestReadyRoomMatchIntentClient: vi.fn(),
   getRoomMatchIntentClient: vi.fn(),
   getRoomMatchReadClient: vi.fn(),
   submitMove: vi.fn(),
@@ -31,6 +32,7 @@ vi.mock("@/firebase", async (importOriginal) => {
 
   return {
     ...actual,
+    getGuestReadyRoomMatchIntentClient: roomReadMocks.getGuestReadyRoomMatchIntentClient,
     getRoomMatchIntentClient: roomReadMocks.getRoomMatchIntentClient,
     getRoomMatchReadClient: roomReadMocks.getRoomMatchReadClient,
   };
@@ -44,6 +46,7 @@ function mockRoomIntentClient() {
     submitMove: roomReadMocks.submitMove,
   };
 
+  roomReadMocks.getGuestReadyRoomMatchIntentClient.mockResolvedValue(client);
   roomReadMocks.getRoomMatchIntentClient.mockReturnValue(client);
   roomReadMocks.submitMove.mockResolvedValue({
     matchId: "match-1",

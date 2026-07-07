@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import type { GameId } from "@contracts/gameCatalog";
 import type { MatchMoveLogEntry } from "@contracts/roomMatch";
 import {
+  getGuestReadyRoomMatchIntentClient,
   getRoomMatchIntentClient,
   getRoomMatchReadClient,
   type MatchMoveLogReadState,
@@ -73,22 +74,24 @@ function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
 
   const handleOfficialColumnSelect = useCallback(
     async (column: number) => {
-      if (roomMatchIntentClient === null) {
-        setMoveIntentState({
-          kind: "error",
-          message: "Firebase move actions are not configured for this environment.",
-        });
-
-        return;
-      }
-
       setMoveIntentState({
         kind: "loading",
         message: "Submitting move...",
       });
 
       try {
-        await roomMatchIntentClient.submitMove({
+        const guestReadyIntentClient = await getGuestReadyRoomMatchIntentClient();
+
+        if (guestReadyIntentClient === null) {
+          setMoveIntentState({
+            kind: "error",
+            message: "Firebase move actions are not configured for this environment.",
+          });
+
+          return;
+        }
+
+        await guestReadyIntentClient.submitMove({
           matchId,
           payload: { column: column - 1 },
         });
@@ -104,7 +107,7 @@ function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
         });
       }
     },
-    [matchId, roomMatchIntentClient],
+    [matchId],
   );
 
   useEffect(() => {
