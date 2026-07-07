@@ -130,4 +130,4 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] BE-1 add callable room/match Function boundaries around existing domain commands.
 - [x] BE-2 add Firestore rules and emulator test suite for room/match reads and server-only writes.
 - [x] BE-2 local emulator verification passed with Firestore Emulator via `npm run test:rules`.
-- [ ] BE-3 add client intent boundary for room/match callable calls.
+- [x] BE-3 add client intent boundary for room/match callable calls.

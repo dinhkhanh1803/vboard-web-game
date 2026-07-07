@@ -2,24 +2,24 @@
 
 ## Current Recommended Next Step
 
-Move to BE-3: client intent boundary for room/match callable calls. BE-1 callable Functions exist, and BE-2 Firestore rules plus emulator rules tests have been verified locally.
+Start backend-to-frontend wiring now that BE-1, BE-2, and BE-3 are in place. The next focus is connecting the Lobby create/join actions to the client intent boundary without adding direct Firestore writes.
 
 ## Exact First Task
 
-Add a frontend Firebase intent boundary for room/match workflows. The client should call callable Functions for `createRoom`, `joinRoom`, `startMatch`, and `submitMove`; it must not write official room, match, result, turn, timer, ranking, or move-log state directly.
+Wire the Lobby route to `getRoomMatchIntentClient()` for `createRoom` and `joinRoom` intent submission behind local loading/error states. Keep the existing UI layout intact and do not connect match state subscriptions yet.
 
 ## Scope
 
 - Do not create or configure a real Firebase project until the owner explicitly approves it.
 - Do not deploy.
-- Keep the work focused on client callable wrappers and tests.
-- Do not change high-fidelity UI except for minimal wiring after the callable client boundary is stable.
+- Client code may call callable intent wrappers only.
+- Client code must not write official room, match, result, turn, timer, ranking, or move-log state directly.
+- Keep UI changes minimal and behavior-focused.
 
 ## Expected Files
 
-- `src/firebase/`
-- `src/features/lobby/` only if a local intent boundary test needs route-level proof
-- `src/features/match/` only if a local intent boundary test needs route-level proof
+- `src/features/lobby/`
+- `src/firebase/` only if the wiring exposes a missing client helper
 - `docs/control/PROGRESS.md`
 
 ## Verification
