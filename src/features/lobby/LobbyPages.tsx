@@ -18,6 +18,11 @@ type RoomIntentState = {
   message: string;
 };
 
+type WaitingRoomIntentState = {
+  kind: "idle" | "loading" | "success" | "error";
+  message: string;
+};
+
 type WaitingRoomReadState = RoomReadState | { status: "loading"; message: string };
 
 type BattleLobbyRoom = {
@@ -375,12 +380,34 @@ function getWaitingRoomPlayerSummary(state: WaitingRoomReadState) {
   return `${hostName} ${hostReady}. ${opponentStatus}.`;
 }
 
+function canStartWaitingRoomMatch(state: WaitingRoomReadState) {
+  if (state.status !== "ready") {
+    return false;
+  }
+
+  const occupiedPlayerCount = state.data.playerSlots.filter(
+    (slot) => slot.status === "occupied" && slot.uid !== null,
+  ).length;
+
+  return (
+    state.data.status === "full" &&
+    state.data.matchId === null &&
+    occupiedPlayerCount === state.data.maxPlayers
+  );
+}
+
 export function WaitingRoomPage() {
+  const navigate = useNavigate();
   const { roomId } = useParams<{ roomId: string }>();
   const roomMatchReadClient = useMemo(() => getRoomMatchReadClient(), []);
+  const roomMatchIntentClient = useMemo(() => getRoomMatchIntentClient(), []);
   const [roomReadState, setRoomReadState] = useState<WaitingRoomReadState>({
     message: "Loading official room state...",
     status: "loading",
+  });
+  const [startMatchState, setStartMatchState] = useState<WaitingRoomIntentState>({
+    kind: "idle",
+    message: "",
   });
   // Chat message logs state
   const [chatInput, setChatInput] = useState("");
@@ -407,20 +434,28 @@ export function WaitingRoomPage() {
 
   // Copy status
   const [copied, setCopied] = useState(false);
-  const effectiveRoomReadState: WaitingRoomReadState = !roomId
-    ? {
+  const effectiveRoomReadState = useMemo<WaitingRoomReadState>(() => {
+    if (!roomId) {
+      return {
         message: "Waiting room route is missing a room id.",
         status: "error",
-      }
-    : roomMatchReadClient === null
-      ? {
-          message: "Firebase room reads are not configured for this environment.",
-          status: "error",
-        }
-      : roomReadState;
+      };
+    }
+
+    if (roomMatchReadClient === null) {
+      return {
+        message: "Firebase room reads are not configured for this environment.",
+        status: "error",
+      };
+    }
+
+    return roomReadState;
+  }, [roomId, roomMatchReadClient, roomReadState]);
   const waitingRoomCode = getWaitingRoomCode(effectiveRoomReadState);
   const waitingRoomSummary = getWaitingRoomSummary(effectiveRoomReadState);
   const waitingRoomPlayerSummary = getWaitingRoomPlayerSummary(effectiveRoomReadState);
+  const canStartMatch = canStartWaitingRoomMatch(effectiveRoomReadState);
+  const isStartingMatch = startMatchState.kind === "loading";
 
   useEffect(() => {
     if (!roomId || roomMatchReadClient === null) {
@@ -430,10 +465,65 @@ export function WaitingRoomPage() {
     return roomMatchReadClient.subscribeToRoom(roomId, setRoomReadState);
   }, [roomId, roomMatchReadClient]);
 
+  useEffect(() => {
+    if (effectiveRoomReadState.status === "ready" && effectiveRoomReadState.data.matchId !== null) {
+      navigate(`/matches/${effectiveRoomReadState.data.matchId}`);
+    }
+  }, [effectiveRoomReadState, navigate]);
+
   const handleCopyCode = () => {
     navigator.clipboard.writeText(waitingRoomCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleStartMatch = async () => {
+    if (!roomId) {
+      setStartMatchState({
+        kind: "error",
+        message: "Waiting room route is missing a room id.",
+      });
+
+      return;
+    }
+
+    if (!canStartMatch) {
+      setStartMatchState({
+        kind: "error",
+        message: "Waiting for a full room before starting the match.",
+      });
+
+      return;
+    }
+
+    if (roomMatchIntentClient === null) {
+      setStartMatchState({
+        kind: "error",
+        message: "Firebase match actions are not configured for this environment.",
+      });
+
+      return;
+    }
+
+    setStartMatchState({
+      kind: "loading",
+      message: "Starting match...",
+    });
+
+    try {
+      const result = await roomMatchIntentClient.startMatch({ roomId });
+
+      setStartMatchState({
+        kind: "success",
+        message: `Match ${result.matchId} is starting.`,
+      });
+      navigate(`/matches/${result.matchId}`);
+    } catch (error) {
+      setStartMatchState({
+        kind: "error",
+        message: getIntentErrorMessage(error),
+      });
+    }
   };
 
   // Submit chat message
@@ -505,6 +595,9 @@ export function WaitingRoomPage() {
               <p className="code-help-text">Share code with opponent to join</p>
               <p className="code-help-text">{waitingRoomSummary}</p>
               <p className="code-help-text">{waitingRoomPlayerSummary}</p>
+              {startMatchState.message.length > 0 ? (
+                <p className="code-help-text">{startMatchState.message}</p>
+              ) : null}
             </div>
           </div>
 
@@ -632,7 +725,12 @@ export function WaitingRoomPage() {
               LEAVE ROOM
             </button>
 
-            <button className="room-action-btn start-match-btn" disabled>
+            <button
+              type="button"
+              className="room-action-btn start-match-btn"
+              disabled={!canStartMatch || isStartingMatch}
+              onClick={() => void handleStartMatch()}
+            >
               <svg
                 className="btn-play-icon"
                 xmlns="http://www.w3.org/2000/svg"
@@ -641,7 +739,10 @@ export function WaitingRoomPage() {
               >
                 <path d="M8 5v14l11-7z" />
               </svg>
-              START MATCH <span className="disabled-note">(WAITING FOR OPPONENT)</span>
+              {isStartingMatch ? "STARTING MATCH" : "START MATCH"}
+              {!canStartMatch ? (
+                <span className="disabled-note">(WAITING FOR OPPONENT)</span>
+              ) : null}
             </button>
           </div>
         </div>

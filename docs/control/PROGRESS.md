@@ -134,3 +134,4 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] BE-4 wire Lobby create/join actions to callable intent submission.
 - [x] BE-5 add read-only room/match subscription boundary and Waiting Room room reads.
 - [x] BE-6 navigate Lobby create/join success to Waiting Room route.
+- [x] BE-7 start matches from Waiting Room through callable intent and route to Match.

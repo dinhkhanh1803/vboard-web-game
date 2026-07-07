@@ -46,3 +46,4 @@
 - Completed BE-4 Lobby intent wiring so quick room creation and room-code joins submit through callable wrappers with local loading and error states.
 - Completed BE-5 read-only room/match subscription boundary and wired the Waiting Room route to read official room state without client writes.
 - Completed BE-6 Lobby route navigation so successful callable create/join results send players to `/rooms/{roomId}` without direct client writes.
+- Completed BE-7 Waiting Room start-match flow so full rooms call `startMatch({ roomId })` and route to `/matches/{matchId}` without direct client writes.

@@ -10,6 +10,6 @@ Own quick match entry, public room listing, room code join, and waiting room UI.
 - Must not write room status, player slots, or match creation directly from the client.
 - Presence and room reads must go through `src/firebase/roomMatchSubscriptions.ts`.
 
-## Next Task
+## Current Backend Integration Status
 
-Wire Waiting Room start-match intent through the callable boundary and route successful starts to `/matches/{matchId}`.
+Lobby create/join and Waiting Room start-match flows now submit through callable intent wrappers and route by returned ids. The next backend integration step moves to `src/features/match/` for official match reads.

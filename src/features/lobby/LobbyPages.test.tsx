@@ -54,6 +54,12 @@ function RoomRouteProbe() {
   return <p>Waiting room route {roomId}</p>;
 }
 
+function MatchRouteProbe() {
+  const { matchId } = useParams<{ matchId: string }>();
+
+  return <p>Match route {matchId}</p>;
+}
+
 function renderLobbyRoute() {
   return render(
     <MemoryRouter initialEntries={["/lobby"]}>
@@ -63,6 +69,77 @@ function renderLobbyRoute() {
       </Routes>
     </MemoryRouter>,
   );
+}
+
+function renderWaitingRoomRoute() {
+  return render(
+    <MemoryRouter initialEntries={["/rooms/room-1"]}>
+      <Routes>
+        <Route path="/rooms/:roomId" element={<WaitingRoomPage />} />
+        <Route path="/matches/:matchId" element={<MatchRouteProbe />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+}
+
+function createReadyRoomState(
+  input: {
+    matchId?: string | null;
+    opponentOccupied?: boolean;
+    status?: "open" | "full" | "in-match";
+  } = {},
+): RoomReadState {
+  const opponentOccupied = input.opponentOccupied ?? false;
+
+  return {
+    data: {
+      code: "VB-1042",
+      createdAtMs: 1,
+      expiresAtMs: 2,
+      gameId: "connect-4",
+      hostUid: "host-1",
+      id: "room-1",
+      matchId: input.matchId ?? null,
+      maxPlayers: 2,
+      playerSlots: [
+        {
+          avatarUrl: null,
+          displayName: "Player One",
+          isHost: true,
+          joinedAtMs: 1,
+          ready: true,
+          seatIndex: 0,
+          status: "occupied",
+          uid: "host-1",
+        },
+        opponentOccupied
+          ? {
+              avatarUrl: null,
+              displayName: "Player Two",
+              isHost: false,
+              joinedAtMs: 2,
+              ready: true,
+              seatIndex: 1,
+              status: "occupied",
+              uid: "guest-1",
+            }
+          : {
+              avatarUrl: null,
+              displayName: null,
+              isHost: false,
+              joinedAtMs: null,
+              ready: false,
+              seatIndex: 1,
+              status: "open",
+              uid: null,
+            },
+      ],
+      status: input.status ?? (opponentOccupied ? "full" : "open"),
+      updatedAtMs: 1,
+      visibility: "private",
+    },
+    status: "ready",
+  };
 }
 
 describe("LobbyPage backend intents", () => {
@@ -148,60 +225,71 @@ describe("WaitingRoomPage room reads", () => {
       },
     );
 
-    render(
-      <MemoryRouter initialEntries={["/rooms/room-1"]}>
-        <Routes>
-          <Route path="/rooms/:roomId" element={<WaitingRoomPage />} />
-        </Routes>
-      </MemoryRouter>,
-    );
+    renderWaitingRoomRoute();
 
     await waitFor(() => {
       expect(roomMocks.subscribeToRoom).toHaveBeenCalledWith("room-1", expect.any(Function));
     });
 
     act(() => {
-      roomListener?.({
-        data: {
-          code: "VB-1042",
-          createdAtMs: 1,
-          expiresAtMs: 2,
-          gameId: "connect-4",
-          hostUid: "host-1",
-          id: "room-1",
-          matchId: null,
-          maxPlayers: 2,
-          playerSlots: [
-            {
-              avatarUrl: null,
-              displayName: "Player One",
-              isHost: true,
-              joinedAtMs: 1,
-              ready: true,
-              seatIndex: 0,
-              status: "occupied",
-              uid: "host-1",
-            },
-            {
-              avatarUrl: null,
-              displayName: null,
-              isHost: false,
-              joinedAtMs: null,
-              ready: false,
-              seatIndex: 1,
-              status: "open",
-              uid: null,
-            },
-          ],
-          status: "open",
-          updatedAtMs: 1,
-          visibility: "private",
-        },
-        status: "ready",
-      });
+      roomListener?.(createReadyRoomState());
     });
 
     expect(await screen.findByText("Official room VB-1042 is open.")).toBeInTheDocument();
     expect(screen.getByText("Player One ready. Opponent slot open.")).toBeInTheDocument();
+  });
+
+  it("starts a full room through the intent boundary and navigates to the match", async () => {
+    let roomListener: ((state: RoomReadState) => void) | null = null;
+    roomMocks.subscribeToRoom.mockImplementation(
+      (_roomId: string, listener: (state: RoomReadState) => void) => {
+        roomListener = listener;
+
+        return () => undefined;
+      },
+    );
+    roomMocks.startMatch.mockResolvedValue({
+      matchId: "match-1",
+      roomId: "room-1",
+      status: "active",
+    });
+
+    renderWaitingRoomRoute();
+
+    act(() => {
+      roomListener?.(createReadyRoomState({ opponentOccupied: true }));
+    });
+
+    fireEvent.click(await screen.findByRole("button", { name: /^start match$/i }));
+
+    await waitFor(() => {
+      expect(roomMocks.startMatch).toHaveBeenCalledWith({ roomId: "room-1" });
+    });
+    expect(await screen.findByText("Match route match-1")).toBeInTheDocument();
+  });
+
+  it("navigates to the match when the subscribed room already has a match id", async () => {
+    let roomListener: ((state: RoomReadState) => void) | null = null;
+    roomMocks.subscribeToRoom.mockImplementation(
+      (_roomId: string, listener: (state: RoomReadState) => void) => {
+        roomListener = listener;
+
+        return () => undefined;
+      },
+    );
+
+    renderWaitingRoomRoute();
+
+    act(() => {
+      roomListener?.(
+        createReadyRoomState({
+          matchId: "match-2",
+          opponentOccupied: true,
+          status: "in-match",
+        }),
+      );
+    });
+
+    expect(await screen.findByText("Match route match-2")).toBeInTheDocument();
   });
 });
