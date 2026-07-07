@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useParams } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { RoomMatchIntentClient, RoomMatchReadClient, RoomReadState } from "@/firebase";
@@ -48,6 +48,23 @@ function mockRoomReadClient() {
   roomMocks.subscribeToMatch.mockReturnValue(() => undefined);
 }
 
+function RoomRouteProbe() {
+  const { roomId } = useParams<{ roomId: string }>();
+
+  return <p>Waiting room route {roomId}</p>;
+}
+
+function renderLobbyRoute() {
+  return render(
+    <MemoryRouter initialEntries={["/lobby"]}>
+      <Routes>
+        <Route path="/lobby" element={<LobbyPage />} />
+        <Route path="/rooms/:roomId" element={<RoomRouteProbe />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+}
+
 describe("LobbyPage backend intents", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -55,33 +72,31 @@ describe("LobbyPage backend intents", () => {
     mockRoomReadClient();
   });
 
-  it("submits quick room creation through the room intent boundary", async () => {
+  it("submits quick room creation through the room intent boundary and navigates to the room", async () => {
     roomMocks.createRoom.mockResolvedValue({
       roomCode: "VB-1042",
       roomId: "room-1",
       status: "open",
     });
 
-    render(<LobbyPage />);
+    renderLobbyRoute();
 
     fireEvent.click(screen.getByRole("button", { name: "Start searching" }));
 
     await waitFor(() => {
       expect(roomMocks.createRoom).toHaveBeenCalledWith({ gameId: "connect-4" });
     });
-    expect(
-      await screen.findByText("Room VB-1042 created. Waiting room room-1 is ready."),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Waiting room route room-1")).toBeInTheDocument();
   });
 
-  it("submits normalized room code joins through the room intent boundary", async () => {
+  it("submits normalized room code joins through the room intent boundary and navigates to the room", async () => {
     roomMocks.joinRoom.mockResolvedValue({
       roomCode: "VB-1042",
       roomId: "room-1",
       status: "full",
     });
 
-    render(<LobbyPage />);
+    renderLobbyRoute();
 
     fireEvent.change(screen.getByLabelText("Room code"), { target: { value: "vb-1042" } });
     fireEvent.click(screen.getByRole("button", { name: "Enter arena" }));
@@ -89,15 +104,13 @@ describe("LobbyPage backend intents", () => {
     await waitFor(() => {
       expect(roomMocks.joinRoom).toHaveBeenCalledWith({ roomCode: "VB-1042" });
     });
-    expect(
-      await screen.findByText("Joined room VB-1042. Room room-1 status is full."),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Waiting room route room-1")).toBeInTheDocument();
   });
 
   it("shows local errors when a callable intent fails", async () => {
     roomMocks.joinRoom.mockRejectedValue(new Error("Room code expired."));
 
-    render(<LobbyPage />);
+    renderLobbyRoute();
 
     fireEvent.change(screen.getByLabelText("Room code"), { target: { value: "VB-1042" } });
     fireEvent.click(screen.getByRole("button", { name: "Enter arena" }));
@@ -108,7 +121,7 @@ describe("LobbyPage backend intents", () => {
   it("shows a local error when the Firebase intent client is missing", async () => {
     roomMocks.getRoomMatchIntentClient.mockReturnValue(null);
 
-    render(<LobbyPage />);
+    renderLobbyRoute();
 
     fireEvent.click(screen.getByRole("button", { name: "Start searching" }));
 

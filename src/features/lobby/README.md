@@ -12,4 +12,4 @@ Own quick match entry, public room listing, room code join, and waiting room UI.
 
 ## Next Task
 
-Navigate Lobby create/join success into Waiting Room once route transitions are approved.
+Wire Waiting Room start-match intent through the callable boundary and route successful starts to `/matches/{matchId}`.

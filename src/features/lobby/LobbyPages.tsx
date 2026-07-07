@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import {
   getRoomMatchIntentClient,
@@ -73,6 +73,7 @@ function formatJoinRoomResult(result: RoomIntentResult) {
 }
 
 export function LobbyPage() {
+  const navigate = useNavigate();
   const [roomCode, setRoomCode] = useState("");
   const [roomIntentState, setRoomIntentState] = useState<RoomIntentState>({
     action: null,
@@ -137,6 +138,7 @@ export function LobbyPage() {
         kind: "success",
         message: formatCreateRoomResult(result),
       });
+      navigate(`/rooms/${result.roomId}`);
     } catch (error) {
       setRoomIntentState({
         action: "createRoom",
@@ -177,6 +179,7 @@ export function LobbyPage() {
         kind: "success",
         message: formatJoinRoomResult(result),
       });
+      navigate(`/rooms/${result.roomId}`);
     } catch (error) {
       setRoomIntentState({
         action: "joinRoom",

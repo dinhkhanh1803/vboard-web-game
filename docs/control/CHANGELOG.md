@@ -45,3 +45,4 @@
 - Completed BE-3 client intent boundary with typed frontend callable wrappers for room and match workflows, keeping client code away from direct official state writes.
 - Completed BE-4 Lobby intent wiring so quick room creation and room-code joins submit through callable wrappers with local loading and error states.
 - Completed BE-5 read-only room/match subscription boundary and wired the Waiting Room route to read official room state without client writes.
+- Completed BE-6 Lobby route navigation so successful callable create/join results send players to `/rooms/{roomId}` without direct client writes.

@@ -207,6 +207,7 @@ Goal: connect the existing pure room/match logic to Firebase safely before front
 - [x] BE-3 add client intent boundary for room/match callable calls.
 - [x] BE-4 wire Lobby create/join actions to callable intent submission with local loading/error states.
 - [x] BE-5 add read-only room/match subscription boundary and wire Waiting Room to `rooms/{roomId}`.
+- [x] BE-6 navigate Lobby create/join success to `/rooms/{roomId}` after callable create/join results.
 
 Owner review: verify clients only send intent and never write official room, match, result, timer, ranking, or move-log state.
 
