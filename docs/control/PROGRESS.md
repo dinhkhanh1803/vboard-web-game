@@ -138,3 +138,4 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] BE-8 connect non-demo Match routes to official read-only match state.
 - [x] BE-9 submit official Connect 4 move intent from Match route through callable boundary.
 - [x] BE-10 add official move-log subscription boundary and Match history rendering.
+- [x] BE-11 add Firebase Auth identity boundary and require authenticated users before official room/match intents.

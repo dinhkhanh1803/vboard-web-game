@@ -3,9 +3,27 @@ export { readFirebaseEmulatorConfig, readFirebaseWebConfig } from "@/firebase/co
 export type { FirebaseClientServices } from "@/firebase/clientApp";
 export type { FirebaseEmulatorConfig, FirebaseEnv } from "@/firebase/config";
 export {
+  createFirebaseIdentityClient,
+  getFirebaseIdentityClient,
+  mapFirebaseIdentityUser,
+  readFirebaseIdentityFromAuth,
+} from "@/firebase/authIdentity";
+export type {
+  AuthIdentityAuth,
+  AuthIdentityDeps,
+  AuthIdentityUserLike,
+  FirebaseIdentityClient,
+  FirebaseIdentityListener,
+  FirebaseIdentityReader,
+  FirebaseIdentityState,
+  FirebaseIdentityUser,
+} from "@/firebase/authIdentity";
+export {
+  createAuthenticatedRoomMatchIntentClient,
   createFunctionsCallableIntentInvoker,
   createRoomMatchIntentClient,
   getRoomMatchIntentClient,
+  roomMatchAuthRequiredMessage,
   roomMatchCallableNames,
 } from "@/firebase/roomMatchIntents";
 export type {

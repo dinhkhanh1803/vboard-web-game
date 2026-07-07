@@ -210,6 +210,9 @@ Goal: connect the existing pure room/match logic to Firebase safely before front
 - [x] BE-6 navigate Lobby create/join success to `/rooms/{roomId}` after callable create/join results.
 - [x] BE-7 wire Waiting Room start-match action through callable intent and navigate to `/matches/{matchId}`.
 - [x] BE-8 connect non-demo Match routes to `matches/{matchId}` through the read-only boundary.
+- [x] BE-9 submit official Connect 4 move intent from `/matches/{matchId}` through `submitMove` callable boundary.
+- [x] BE-10 add official move-log subscription boundary and Match history rendering.
+- [x] BE-11 add Firebase Auth identity boundary and require authenticated users before official room/match intents.
 
 Owner review: verify clients only send intent and never write official room, match, result, timer, ranking, or move-log state.
 
@@ -224,6 +227,3 @@ Goal: prepare for public deploy and monetization without harming gameplay.
 - [ ] Add deploy checklist and CI checklist.
 
 Owner review: no production deploy until staging smoke test passes.
-
-- [x] BE-9 submit official Connect 4 move intent from `/matches/{matchId}` through `submitMove` callable boundary.
-- [x] BE-10 add official move-log subscription boundary and Match history rendering.

@@ -12,6 +12,7 @@ Own the realtime match screen, player panels, timer display, move log, action ba
 - Match listeners must target one match document and its move-log subcollection, not broad collections.
 - Non-demo match routes must read through `src/firebase/roomMatchSubscriptions.ts`.
 - Client move submissions must go through `src/firebase/roomMatchIntents.ts`.
+- Official move submissions require the Firebase Auth identity boundary to have a current user.
 
 ## Current Local Gameplay
 
@@ -21,4 +22,4 @@ Own the realtime match screen, player panels, timer display, move log, action ba
 
 ## Current Backend Integration Status
 
-Non-demo `/matches/{matchId}` routes subscribe to official match state, subscribe to official `matches/{matchId}/moves` entries ordered by sequence, render Connect 4 public state and official Match history, and submit Connect 4 column moves through callable `submitMove`. The next backend integration need is a Firebase Auth identity boundary so local/emulator callable intents have an authenticated user.
+Non-demo `/matches/{matchId}` routes subscribe to official match state, subscribe to official `matches/{matchId}/moves` entries ordered by sequence, render Connect 4 public state and official Match history, and submit Connect 4 column moves through callable `submitMove`. BE-11 added the Firebase Auth identity guard before official move intent; the next backend integration step is an authenticated local/emulator smoke flow.

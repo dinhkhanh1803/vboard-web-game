@@ -2,6 +2,7 @@ import { httpsCallable, type Functions } from "firebase/functions";
 
 import type { GameId } from "@contracts/gameCatalog";
 
+import { readFirebaseIdentityFromAuth, type FirebaseIdentityReader } from "@/firebase/authIdentity";
 import { getFirebaseClientServices } from "@/firebase/clientApp";
 import type { FirebaseEnv } from "@/firebase/config";
 
@@ -64,6 +65,9 @@ export type RoomMatchIntentClient = {
   submitMove(input: SubmitMoveIntentInput): Promise<SubmitMoveIntentResult>;
 };
 
+export const roomMatchAuthRequiredMessage =
+  "Firebase Auth sign-in is required before room and match actions.";
+
 export function createRoomMatchIntentClient(
   invokeCallable: CallableIntentInvoker,
 ): RoomMatchIntentClient {
@@ -88,6 +92,40 @@ export function createRoomMatchIntentClient(
   };
 }
 
+export function createAuthenticatedRoomMatchIntentClient(
+  client: RoomMatchIntentClient,
+  readIdentity: FirebaseIdentityReader,
+): RoomMatchIntentClient {
+  const requireIdentity = () => {
+    if (readIdentity() === null) {
+      throw new Error(roomMatchAuthRequiredMessage);
+    }
+  };
+
+  return {
+    createRoom: async (input) => {
+      requireIdentity();
+
+      return client.createRoom(input);
+    },
+    joinRoom: async (input) => {
+      requireIdentity();
+
+      return client.joinRoom(input);
+    },
+    startMatch: async (input) => {
+      requireIdentity();
+
+      return client.startMatch(input);
+    },
+    submitMove: async (input) => {
+      requireIdentity();
+
+      return client.submitMove(input);
+    },
+  };
+}
+
 export function createFunctionsCallableIntentInvoker(functions: Functions): CallableIntentInvoker {
   return async <Input, Output>(name: RoomMatchCallableName, data: Input): Promise<Output> => {
     const callable = httpsCallable<Input, Output>(functions, name);
@@ -106,5 +144,8 @@ export function getRoomMatchIntentClient(
     return null;
   }
 
-  return createRoomMatchIntentClient(createFunctionsCallableIntentInvoker(services.functions));
+  return createAuthenticatedRoomMatchIntentClient(
+    createRoomMatchIntentClient(createFunctionsCallableIntentInvoker(services.functions)),
+    () => readFirebaseIdentityFromAuth(services.auth),
+  );
 }
