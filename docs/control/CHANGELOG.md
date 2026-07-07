@@ -44,3 +44,4 @@
 - Verified BE-2 Firestore room/match rules against the local Firestore Emulator with `npm run test:rules` after configuring Java for the session.
 - Completed BE-3 client intent boundary with typed frontend callable wrappers for room and match workflows, keeping client code away from direct official state writes.
 - Completed BE-4 Lobby intent wiring so quick room creation and room-code joins submit through callable wrappers with local loading and error states.
+- Completed BE-5 read-only room/match subscription boundary and wired the Waiting Room route to read official room state without client writes.

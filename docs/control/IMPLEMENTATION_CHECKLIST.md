@@ -206,6 +206,7 @@ Goal: connect the existing pure room/match logic to Firebase safely before front
 - [x] BE-2 local emulator verification passed with Firestore Emulator via `npm run test:rules`.
 - [x] BE-3 add client intent boundary for room/match callable calls.
 - [x] BE-4 wire Lobby create/join actions to callable intent submission with local loading/error states.
+- [x] BE-5 add read-only room/match subscription boundary and wire Waiting Room to `rooms/{roomId}`.
 
 Owner review: verify clients only send intent and never write official room, match, result, timer, ranking, or move-log state.
 

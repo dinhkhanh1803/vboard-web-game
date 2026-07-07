@@ -13,3 +13,9 @@ No feature should import Firebase SDK modules directly until there is a clear re
 - `roomMatchIntents.ts` is the approved frontend entrypoint for room and match write intent.
 - Frontend features may call `createRoom`, `joinRoom`, `startMatch`, and `submitMove` through this boundary.
 - Frontend features must not write official `rooms`, `matches`, match result, turn, timer, ranking, or move-log state directly.
+
+## Room/Match Read Boundary
+
+- `roomMatchSubscriptions.ts` is the approved frontend entrypoint for realtime room and match reads.
+- Frontend features may subscribe to `rooms/{roomId}` and `matches/{matchId}` through this boundary.
+- Frontend features must not import Firestore SDK modules directly or write official room/match state.

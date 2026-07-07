@@ -1,6 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 
-import { getRoomMatchIntentClient, type RoomIntentResult } from "@/firebase";
+import {
+  getRoomMatchIntentClient,
+  getRoomMatchReadClient,
+  type RoomIntentResult,
+  type RoomReadState,
+} from "@/firebase";
 
 const roomCodePattern = /^VB-\d{4}$/;
 
@@ -11,6 +17,8 @@ type RoomIntentState = {
   kind: "idle" | "loading" | "success" | "error";
   message: string;
 };
+
+type WaitingRoomReadState = RoomReadState | { status: "loading"; message: string };
 
 type BattleLobbyRoom = {
   host: string;
@@ -314,7 +322,63 @@ export function LobbyPage() {
   );
 }
 
+function formatWaitingRoomCode(code: string) {
+  const [prefix, suffix] = code.split("-");
+
+  if (!prefix || !suffix) {
+    return code;
+  }
+
+  return `[${prefix}] - ${suffix.split("").join(" ")}`;
+}
+
+function getWaitingRoomCode(state: WaitingRoomReadState) {
+  return state.status === "ready" ? formatWaitingRoomCode(state.data.code) : "[VB] - A 7 2 X";
+}
+
+function getWaitingRoomSummary(state: WaitingRoomReadState) {
+  if (state.status === "loading") {
+    return state.message;
+  }
+
+  if (state.status === "error") {
+    return `Official room state unavailable: ${state.message}`;
+  }
+
+  if (state.status === "missing") {
+    return `Official room ${state.id} was not found.`;
+  }
+
+  return `Official room ${state.data.code} is ${state.data.status}.`;
+}
+
+function getWaitingRoomPlayerSummary(state: WaitingRoomReadState) {
+  if (state.status !== "ready") {
+    return "Waiting for official player slots.";
+  }
+
+  const hostSlot = state.data.playerSlots.find((slot) => slot.isHost);
+  const opponentSlot = state.data.playerSlots.find((slot) => !slot.isHost);
+  const hostName = hostSlot?.displayName ?? "Host";
+  const hostReady = hostSlot?.ready ? "ready" : "not ready";
+  let opponentStatus = "Opponent slot open";
+
+  if (opponentSlot?.displayName) {
+    opponentStatus = `${opponentSlot.displayName} joined`;
+  } else if (opponentSlot?.status && opponentSlot.status !== "open") {
+    opponentStatus = "Opponent slot reserved";
+  }
+
+  return `${hostName} ${hostReady}. ${opponentStatus}.`;
+}
+
 export function WaitingRoomPage() {
+  const { roomId } = useParams<{ roomId: string }>();
+  const roomMatchReadClient = useMemo(() => getRoomMatchReadClient(), []);
+  const [roomReadState, setRoomReadState] = useState<WaitingRoomReadState>({
+    message: "Loading official room state...",
+    status: "loading",
+  });
   // Chat message logs state
   const [chatInput, setChatInput] = useState("");
   const [messages, setMessages] = useState([
@@ -340,9 +404,31 @@ export function WaitingRoomPage() {
 
   // Copy status
   const [copied, setCopied] = useState(false);
+  const effectiveRoomReadState: WaitingRoomReadState = !roomId
+    ? {
+        message: "Waiting room route is missing a room id.",
+        status: "error",
+      }
+    : roomMatchReadClient === null
+      ? {
+          message: "Firebase room reads are not configured for this environment.",
+          status: "error",
+        }
+      : roomReadState;
+  const waitingRoomCode = getWaitingRoomCode(effectiveRoomReadState);
+  const waitingRoomSummary = getWaitingRoomSummary(effectiveRoomReadState);
+  const waitingRoomPlayerSummary = getWaitingRoomPlayerSummary(effectiveRoomReadState);
+
+  useEffect(() => {
+    if (!roomId || roomMatchReadClient === null) {
+      return undefined;
+    }
+
+    return roomMatchReadClient.subscribeToRoom(roomId, setRoomReadState);
+  }, [roomId, roomMatchReadClient]);
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText("VB-A72X");
+    navigator.clipboard.writeText(waitingRoomCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -388,7 +474,7 @@ export function WaitingRoomPage() {
 
             <div className="hud-room-code-card">
               <div className="code-display-row">
-                <span className="code-value">[VB] - A 7 2 X</span>
+                <span className="code-value">{waitingRoomCode}</span>
                 <button
                   onClick={handleCopyCode}
                   className={`copy-code-btn ${copied ? "copied" : ""}`}
@@ -414,6 +500,8 @@ export function WaitingRoomPage() {
                 </button>
               </div>
               <p className="code-help-text">Share code with opponent to join</p>
+              <p className="code-help-text">{waitingRoomSummary}</p>
+              <p className="code-help-text">{waitingRoomPlayerSummary}</p>
             </div>
           </div>
 
