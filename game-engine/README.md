@@ -23,7 +23,7 @@ This folder contains pure TypeScript game rules. It should be easy to test witho
 
 Current modules:
 
-- `src/games/connect4/connect4Module.ts`: pure Connect 4 state, validation, move application, win/draw evaluation, and public-state serialization.
+- `src/games/connect4/connect4Module.ts`: pure Connect 4 state, validation, move application, win/draw evaluation, public-state serialization, and a document-safe row-major board codec for Firestore-compatible official state.
 - `src/games/caro/caroModule.ts`: pure 15x15 Caro state, move validation, immutable stone placement, five-in-row win detection, draw evaluation, and public-state serialization.
 
 ## Planned Layout

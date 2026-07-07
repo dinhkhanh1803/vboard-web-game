@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 
+import type { MatchPublicState } from "@contracts/roomMatch";
+import { connect4Module, serializeConnect4DocumentState } from "@engine/index";
 import {
   createLocalConnect4Match,
   createLocalConnect4MatchSource,
+  getConnect4PublicState,
   submitLocalConnect4Move,
 } from "@/features/match/connect4LocalMatch";
 
@@ -75,6 +78,21 @@ describe("connect4 local match adapter", () => {
       winnerSeatIndex: 0,
       winnerUid: "host-uid",
     });
+  });
+
+  it("decodes document-safe official Connect 4 public state for the board UI", () => {
+    const snapshot = createLocalConnect4Match({ matchId: "official-match", nowMs: 1_000 });
+    const state = connect4Module.applyMove({
+      actorSeatIndex: 0,
+      move: { column: 3 },
+      state: connect4Module.createInitialState({ seed: "official-match" }),
+    });
+    const match = {
+      ...snapshot.match,
+      publicState: serializeConnect4DocumentState(state) as unknown as MatchPublicState,
+    };
+
+    expect(getConnect4PublicState(match)).toEqual(state);
   });
 });
 

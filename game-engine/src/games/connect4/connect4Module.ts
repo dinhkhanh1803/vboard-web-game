@@ -23,6 +23,15 @@ export type Connect4State = {
 
 export type Connect4PublicState = Connect4State;
 
+export const connect4DocumentBoardEncoding = "connect4-row-major-v1" as const;
+
+export type Connect4DocumentState = Omit<Connect4State, "board"> & {
+  boardCells: readonly Connect4Cell[];
+  boardEncoding: typeof connect4DocumentBoardEncoding;
+  columns: typeof connect4ColumnCount;
+  rows: typeof connect4RowCount;
+};
+
 type MutableConnect4Board = Connect4Cell[][];
 
 const connect4Directions = [
@@ -137,6 +146,46 @@ export function evaluateConnect4Result(input: { state: Connect4State }): GameRes
 export function serializeConnect4PublicState(state: Connect4State): Connect4PublicState {
   return {
     board: cloneBoard(state.board),
+    currentPlayerSeatIndex: state.currentPlayerSeatIndex,
+    moveCount: state.moveCount,
+    status: state.status,
+    winnerSeatIndex: state.winnerSeatIndex,
+  };
+}
+
+export function serializeConnect4DocumentState(state: Connect4State): Connect4DocumentState {
+  return {
+    boardCells: state.board.flat(),
+    boardEncoding: connect4DocumentBoardEncoding,
+    columns: connect4ColumnCount,
+    currentPlayerSeatIndex: state.currentPlayerSeatIndex,
+    moveCount: state.moveCount,
+    rows: connect4RowCount,
+    status: state.status,
+    winnerSeatIndex: state.winnerSeatIndex,
+  };
+}
+
+export function deserializeConnect4DocumentState(state: Connect4DocumentState): Connect4State {
+  if (state.boardEncoding !== connect4DocumentBoardEncoding) {
+    throw new Error("Unsupported Connect 4 board encoding.");
+  }
+
+  if (state.rows !== connect4RowCount || state.columns !== connect4ColumnCount) {
+    throw new Error("Unsupported Connect 4 board dimensions.");
+  }
+
+  if (state.boardCells.length !== connect4RowCount * connect4ColumnCount) {
+    throw new Error("Invalid Connect 4 board cell count.");
+  }
+
+  return {
+    board: Array.from({ length: connect4RowCount }, (_, rowIndex) =>
+      state.boardCells.slice(
+        rowIndex * connect4ColumnCount,
+        rowIndex * connect4ColumnCount + connect4ColumnCount,
+      ),
+    ),
     currentPlayerSeatIndex: state.currentPlayerSeatIndex,
     moveCount: state.moveCount,
     status: state.status,

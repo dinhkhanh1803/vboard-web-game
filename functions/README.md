@@ -37,4 +37,4 @@ test/               local domain tests first, emulator-backed tests later
 
 `src/callable/roomMatchCallables.ts` contains testable handlers for `createRoom`, `joinRoom`, `startMatch`, and `submitMove`. These handlers require Firebase Auth, validate client intent payloads, and call `src/domain/roomMatchCommands.ts` for all official state transitions.
 
-`src/integrations/roomMatchFirestore.ts` adapts those handlers to Firestore transactions. It writes `rooms/{roomId}`, `matches/{matchId}`, and `matches/{matchId}/moves/{moveId}` through the Admin SDK only.
+`src/integrations/roomMatchFirestore.ts` adapts those handlers to Firestore transactions. It writes `rooms/{roomId}`, `matches/{matchId}`, and `matches/{matchId}/moves/{moveId}` through the Admin SDK only. Connect 4 official `publicState` is stored with the game-engine document-safe board codec so Firestore never receives nested board arrays.

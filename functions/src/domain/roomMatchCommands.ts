@@ -11,7 +11,15 @@ import {
   type RoomDocument,
   type RoomPlayerSlot,
 } from "@contracts/roomMatch";
-import { connect4Module, type Connect4Move, type Connect4State } from "@engine/index";
+import {
+  connect4DocumentBoardEncoding,
+  connect4Module,
+  deserializeConnect4DocumentState,
+  serializeConnect4DocumentState,
+  type Connect4DocumentState,
+  type Connect4Move,
+  type Connect4State,
+} from "@engine/index";
 
 export const defaultRoomTtlMs = 30 * 60 * 1000;
 
@@ -182,9 +190,7 @@ export function startServerMatch(input: StartServerMatchInput): StartServerMatch
     },
     match: {
       ...match,
-      publicState: connect4Module.serializePublicState(
-        initialGameState,
-      ) as unknown as MatchPublicState,
+      publicState: serializeConnect4MatchPublicState(initialGameState),
       startedAtMs: input.nowMs,
       status: "active",
       turn: {
@@ -216,7 +222,7 @@ export function submitServerMove(input: SubmitServerMoveInput): SubmitServerMove
     throw new Error("match-state-missing");
   }
 
-  const state = input.match.publicState as unknown as Connect4State;
+  const state = readConnect4MatchPublicState(input.match.publicState);
   const move = parseConnect4Move(input.payload);
   const validation = connect4Module.validateMove({
     actorSeatIndex: actor.seatIndex,
@@ -281,7 +287,7 @@ function buildNextMatch(
     return {
       ...match,
       completedAtMs: nowMs,
-      publicState: connect4Module.serializePublicState(nextState) as unknown as MatchPublicState,
+      publicState: serializeConnect4MatchPublicState(nextState),
       result: {
         completedAtMs: nowMs,
         reason: result.reason,
@@ -303,7 +309,7 @@ function buildNextMatch(
 
   return {
     ...match,
-    publicState: connect4Module.serializePublicState(nextState) as unknown as MatchPublicState,
+    publicState: serializeConnect4MatchPublicState(nextState),
     stateVersion: nextStateVersion,
     turn: {
       ...match.turn,
@@ -316,6 +322,43 @@ function buildNextMatch(
   };
 }
 
+function serializeConnect4MatchPublicState(state: Connect4State): MatchPublicState {
+  return serializeConnect4DocumentState(state) as unknown as MatchPublicState;
+}
+
+function readConnect4MatchPublicState(publicState: MatchPublicState): Connect4State {
+  if (publicState === null) {
+    throw new Error("match-state-missing");
+  }
+
+  if (isConnect4DocumentState(publicState)) {
+    return deserializeConnect4DocumentState(publicState);
+  }
+
+  if (isLegacyConnect4State(publicState)) {
+    return publicState;
+  }
+
+  throw new Error("match-state-invalid");
+}
+
+function isConnect4DocumentState(
+  publicState: MatchPublicState,
+): publicState is MatchPublicState & Connect4DocumentState {
+  return (
+    publicState !== null &&
+    publicState.boardEncoding === connect4DocumentBoardEncoding &&
+    Array.isArray(publicState.boardCells) &&
+    publicState.rows === 6 &&
+    publicState.columns === 7
+  );
+}
+
+function isLegacyConnect4State(
+  publicState: MatchPublicState,
+): publicState is MatchPublicState & Connect4State {
+  return publicState !== null && Array.isArray(publicState.board);
+}
 function findPlayerBySeat(
   players: readonly MatchPlayer[],
   seatIndex: number | null,

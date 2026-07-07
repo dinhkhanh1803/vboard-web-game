@@ -21,7 +21,8 @@
     "firebase:deploy:preview": "firebase hosting:channel:deploy preview",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "test:rules": "firebase emulators:exec --project vboard-arena-local --only firestore \"vitest run tests/firebaseRules.test.ts\""
+    "test:rules": "firebase emulators:exec --project vboard-arena-local --only firestore \"vitest run tests/firebaseRules.test.ts\"",
+    "test:smoke:auth-flow": "firebase emulators:exec --project vboard-arena-local --only auth,firestore \"npm run test -- tests/authenticatedRoomMatchSmoke.emulator.test.ts\""
   },
   "engines": {
     "node": ">=20",

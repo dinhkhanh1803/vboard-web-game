@@ -6,7 +6,8 @@ import {
   connect4ColumnCount,
   connect4Module,
   connect4RowCount,
-  type Connect4State,
+  deserializeConnect4DocumentState,
+  type Connect4DocumentState,
 } from "@engine/index";
 
 import {
@@ -175,13 +176,17 @@ describe("joinServerRoom", () => {
 describe("startServerMatch", () => {
   it("starts a full room with Connect 4 public state and turn timing", () => {
     const { room, match } = createActiveMatch();
-    const publicState = match.publicState as Connect4State;
+    const documentState = match.publicState as unknown as Connect4DocumentState;
+    const publicState = deserializeConnect4DocumentState(documentState);
 
     expect(room.status).toBe("in-match");
     expect(room.matchId).toBe("match-1");
     expect(room.updatedAtMs).toBe(3_000);
     expect(match.status).toBe("active");
-    expect(match.publicState).toEqual(
+    expect(documentState.boardEncoding).toBe("connect4-row-major-v1");
+    expect(documentState.boardCells).toHaveLength(connect4RowCount * connect4ColumnCount);
+    expect(documentState.boardCells.some(Array.isArray)).toBe(false);
+    expect(publicState).toEqual(
       connect4Module.serializePublicState(connect4Module.createInitialState({ seed: "match-1" })),
     );
     expect(publicState.board).toHaveLength(connect4RowCount);
@@ -226,7 +231,9 @@ describe("submitServerMove", () => {
       nowMs: 4_000,
       payload: { column: 3 },
     });
-    const publicState = nextMatch.publicState as Connect4State;
+    const publicState = deserializeConnect4DocumentState(
+      nextMatch.publicState as unknown as Connect4DocumentState,
+    );
 
     expect(publicState.board[connect4RowCount - 1]?.[3]).toBe(0);
     expect(nextMatch.stateVersion).toBe(1);

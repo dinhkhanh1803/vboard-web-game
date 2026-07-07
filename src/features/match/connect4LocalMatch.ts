@@ -7,7 +7,14 @@ import {
   type MatchPlayer,
   type MatchPublicState,
 } from "@contracts/roomMatch";
-import { connect4Module, type Connect4Move, type Connect4State } from "@engine/index";
+import {
+  connect4DocumentBoardEncoding,
+  connect4Module,
+  deserializeConnect4DocumentState,
+  type Connect4DocumentState,
+  type Connect4Move,
+  type Connect4State,
+} from "@engine/index";
 
 export type LocalConnect4Player = {
   seatIndex: number;
@@ -196,7 +203,23 @@ export function getConnect4PublicState(match: MatchDocument): Connect4State {
     throw new Error("match-public-state-missing");
   }
 
+  if (isConnect4DocumentState(match.publicState)) {
+    return deserializeConnect4DocumentState(match.publicState);
+  }
+
   return match.publicState as unknown as Connect4State;
+}
+
+function isConnect4DocumentState(
+  publicState: MatchPublicState,
+): publicState is MatchPublicState & Connect4DocumentState {
+  return (
+    publicState !== null &&
+    publicState.boardEncoding === connect4DocumentBoardEncoding &&
+    Array.isArray(publicState.boardCells) &&
+    publicState.rows === 6 &&
+    publicState.columns === 7
+  );
 }
 
 export function getActivePlayer(match: MatchDocument): MatchPlayer | undefined {

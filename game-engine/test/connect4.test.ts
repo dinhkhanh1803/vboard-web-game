@@ -5,6 +5,8 @@ import {
   connect4Module,
   connect4RowCount,
   createConnect4InitialState,
+  deserializeConnect4DocumentState,
+  serializeConnect4DocumentState,
   type Connect4State,
 } from "../src/games/connect4/connect4Module";
 
@@ -56,6 +58,17 @@ describe("connect4Module", () => {
     expect(publicState.board[0]).not.toBe(state.board[0]);
   });
 
+  it("serializes and restores a document-safe public state without nested board arrays", () => {
+    const state = playColumns([3, 2]);
+    const documentState = serializeConnect4DocumentState(state);
+
+    expect(documentState.boardEncoding).toBe("connect4-row-major-v1");
+    expect(documentState.boardCells).toHaveLength(connect4RowCount * connect4ColumnCount);
+    expect(documentState.boardCells.some(Array.isArray)).toBe(false);
+    expect(documentState.rows).toBe(connect4RowCount);
+    expect(documentState.columns).toBe(connect4ColumnCount);
+    expect(deserializeConnect4DocumentState(documentState)).toEqual(state);
+  });
   it("validates turn ownership, column bounds, and full columns", () => {
     const initialState = createConnect4InitialState();
 

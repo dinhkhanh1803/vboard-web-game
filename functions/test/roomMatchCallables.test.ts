@@ -3,7 +3,11 @@ import { describe, expect, it } from "vitest";
 
 import type { GameId } from "@contracts/gameCatalog";
 import type { MatchDocument, MatchMoveLogEntry, RoomDocument } from "@contracts/roomMatch";
-import { connect4Module } from "@engine/index";
+import {
+  connect4Module,
+  deserializeConnect4DocumentState,
+  type Connect4DocumentState,
+} from "@engine/index";
 
 import {
   createServerRoom,
@@ -231,7 +235,9 @@ describe("room/match callable handlers", () => {
     expect(result).toEqual({ matchId: "match-1", roomId: "room-1", status: "active" });
     expect(store.rooms.get("room-1")?.status).toBe("in-match");
     expect(match?.status).toBe("active");
-    expect(match?.publicState).toEqual(
+    expect(
+      deserializeConnect4DocumentState(match?.publicState as unknown as Connect4DocumentState),
+    ).toEqual(
       connect4Module.serializePublicState(connect4Module.createInitialState({ seed: "match-1" })),
     );
   });
