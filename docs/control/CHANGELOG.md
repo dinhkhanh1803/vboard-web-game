@@ -47,3 +47,4 @@
 - Completed BE-5 read-only room/match subscription boundary and wired the Waiting Room route to read official room state without client writes.
 - Completed BE-6 Lobby route navigation so successful callable create/join results send players to `/rooms/{roomId}` without direct client writes.
 - Completed BE-7 Waiting Room start-match flow so full rooms call `startMatch({ roomId })` and route to `/matches/{matchId}` without direct client writes.
+- Completed BE-8 Match route official reads so non-demo `/matches/{matchId}` subscribes to `matches/{matchId}` and renders read-only status/public state without client writes.

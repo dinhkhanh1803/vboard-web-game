@@ -2,25 +2,26 @@
 
 ## Current Recommended Next Step
 
-Continue the backend integration track with BE-8: connect the Match route to official match reads. BE-7 now starts a match from the Waiting Room through the callable intent boundary and lands on `/matches/{matchId}`.
+Continue the backend integration track with BE-9: submit Connect 4 moves from the official Match route through the callable intent boundary. BE-8 now reads official match state for non-demo `/matches/{matchId}` routes.
 
 ## Exact First Task
 
-For non-demo `/matches/{matchId}` routes, subscribe to `matches/{matchId}` through `getRoomMatchReadClient().subscribeToMatch(matchId)` and render the official match status/public state path without adding client writes yet.
+Wire official Connect 4 board column selection to `getRoomMatchIntentClient().submitMove({ matchId, payload: { column } })`, then rely on the existing `subscribeToMatch(matchId)` read path to refresh public state.
 
 ## Scope
 
 - Do not create or configure a real Firebase project until the owner explicitly approves it.
 - Do not deploy.
-- Keep `/matches/demo-caro` and local demo match behavior intact.
+- Keep `/matches/demo-match` and `/matches/demo-caro` local demo behavior intact.
+- Client code may submit official move intent only through callable wrappers.
 - Client code may read room/match documents only through the Firebase read boundary.
 - Client code must not write official room, match, result, turn, timer, ranking, or move-log state directly.
-- Do not wire `submitMove` yet; keep this phase focused on official Match route reads.
+- Keep this focused on Connect 4 official move submission; Caro official moves can follow later.
 
 ## Expected Files
 
-- `src/features/match/` for Match route official-read state and tests.
-- `src/firebase/` only if the existing read boundary needs a missing helper.
+- `src/features/match/` for official Match move intent UI and tests.
+- `src/firebase/` only if the existing intent boundary needs a missing helper.
 - `docs/control/PROGRESS.md`
 
 ## Verification

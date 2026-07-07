@@ -1,6 +1,8 @@
-import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useParams } from "react-router-dom";
 
 import type { GameId } from "@contracts/gameCatalog";
+import { getRoomMatchReadClient, type MatchReadState } from "@/firebase";
 import { CaroPixiBoard } from "@/features/match/CaroPixiBoard";
 import { Connect4PixiBoard } from "@/features/match/Connect4PixiBoard";
 import { createLocalCaroMatchSource, getCaroPublicState } from "@/features/match/caroLocalMatch";
@@ -13,12 +15,218 @@ export type MatchPageProps = {
   initialGameId?: GameId;
 };
 
+type OfficialMatchReadState = MatchReadState | { status: "loading"; message: string };
+
 export function MatchPage({ initialGameId = "connect-4" }: MatchPageProps) {
+  const { matchId } = useParams<{ matchId: string }>();
+
   if (initialGameId === "caro") {
     return <CaroMatchPage />;
   }
 
+  if (matchId && matchId !== "demo-match") {
+    return <OfficialConnect4MatchPage matchId={matchId} />;
+  }
+
   return <Connect4MatchPage />;
+}
+
+function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
+  const roomMatchReadClient = useMemo(() => getRoomMatchReadClient(), []);
+  const [matchReadState, setMatchReadState] = useState<OfficialMatchReadState>({
+    message: "Loading official match state...",
+    status: "loading",
+  });
+  const effectiveMatchReadState = useMemo<OfficialMatchReadState>(() => {
+    if (roomMatchReadClient === null) {
+      return {
+        message: "Firebase match reads are not configured for this environment.",
+        status: "error",
+      };
+    }
+
+    return matchReadState;
+  }, [matchReadState, roomMatchReadClient]);
+
+  useEffect(() => {
+    if (roomMatchReadClient === null) {
+      return undefined;
+    }
+
+    return roomMatchReadClient.subscribeToMatch(matchId, setMatchReadState);
+  }, [matchId, roomMatchReadClient]);
+
+  if (effectiveMatchReadState.status !== "ready") {
+    return (
+      <section className="screen match-screen-high-fid" aria-labelledby="match-title">
+        <header className="match-header-block">
+          <h1 id="match-title" className="match-visible-title">
+            Connect 4 Match
+          </h1>
+          <p className="match-subtitle-text">Official Arena Match</p>
+        </header>
+        <div className="match-layout-high-fid">
+          <div className="match-col match-center-col">
+            <div className="match-history-card">
+              <div className="history-header">
+                <h2 className="history-title">MATCH STATE</h2>
+              </div>
+              <div className="history-logs-container">
+                <p className="no-moves-placeholder">
+                  {getOfficialMatchReadMessage(effectiveMatchReadState, matchId)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const match = effectiveMatchReadState.data;
+
+  if (match.gameId !== "connect-4") {
+    return (
+      <section className="screen match-screen-high-fid" aria-labelledby="match-title">
+        <header className="match-header-block">
+          <h1 id="match-title" className="match-visible-title">
+            Match
+          </h1>
+          <p className="match-subtitle-text">Official Arena Match</p>
+        </header>
+        <p className="no-moves-placeholder">
+          Official game {match.gameId} is not supported here yet.
+        </p>
+      </section>
+    );
+  }
+
+  const publicState = readConnect4PublicState(match);
+
+  const p1 = match.players[0] ?? { displayName: "Player One", seatIndex: 0 };
+  const p2 = match.players[1] ?? { displayName: "Opponent", seatIndex: 1 };
+  const isP1Turn = match.turn.activeSeatIndex === 0;
+  const isP2Turn = match.turn.activeSeatIndex === 1;
+  const matchCompleted = match.status === "completed";
+  const winner = match.players.find((player) => player.seatIndex === match.result.winnerSeatIndex);
+
+  return (
+    <section className="screen match-screen-high-fid" aria-labelledby="match-title">
+      <header className="match-header-block">
+        <h1 id="match-title" className="match-visible-title">
+          Connect 4 Match
+        </h1>
+        <p className="match-subtitle-text">Official Arena Match</p>
+      </header>
+      <div className="match-layout-high-fid">
+        <div className="match-col match-left-col">
+          <div className="player-status-card p1-card">
+            <div className="card-header-status">
+              <span className={`status-pill-high-fid ${isP1Turn ? "p1-turn" : "waiting"}`}>
+                {isP1Turn ? "YOUR TURN" : "WAITING..."}
+              </span>
+            </div>
+            <div className="card-player-info">
+              <div className="player-avatar-wrapper p1-avatar" aria-hidden="true" />
+              <h2 className="player-name-text">{p1.displayName}</h2>
+            </div>
+          </div>
+
+          <div className="match-history-card">
+            <div className="history-header">
+              <h3 className="history-title">OFFICIAL MATCH STATE</h3>
+            </div>
+            <div className="history-logs-container">
+              <p className="no-moves-placeholder">
+                Official match {match.id} is {match.status}.
+              </p>
+              <p className="waiting-text">State version {match.stateVersion}</p>
+              <p className="waiting-text">Room {match.roomId}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="match-col match-center-col">
+          <div className="match-hud-bar">
+            <div className="hud-turn-display">
+              <span className={`hud-pulse-dot ${isP1Turn ? "p1-active" : "p2-active"}`} />
+              <span className="hud-turn-text">
+                {matchCompleted
+                  ? winner
+                    ? `${winner.displayName.toUpperCase()} WINS`
+                    : "MATCH COMPLETE"
+                  : isP1Turn
+                    ? "YOUR TURN"
+                    : "OPPONENT'S TURN"}
+              </span>
+            </div>
+            <div className="hud-timer-display">
+              <span className="hud-timer-text">| Official timer</span>
+            </div>
+          </div>
+
+          <div className="board-stage-wrapper">
+            {publicState ? (
+              <Connect4PixiBoard disabled onColumnSelect={() => undefined} state={publicState} />
+            ) : (
+              <p className="no-moves-placeholder">Official public state is not available yet.</p>
+            )}
+          </div>
+
+          <div className="game-controls-row">
+            <button className="control-btn reset-btn" type="button" disabled>
+              OFFICIAL READ ONLY
+            </button>
+          </div>
+        </div>
+
+        <div className="match-col match-right-col">
+          <div className="player-status-card p2-card">
+            <div className="card-header-status">
+              <span className={`status-pill-high-fid ${isP2Turn ? "p2-turn" : "waiting"}`}>
+                {isP2Turn ? "YOUR TURN" : "WAITING..."}
+              </span>
+            </div>
+            <div className="card-player-info">
+              <div className="player-avatar-wrapper p2-avatar" aria-hidden="true" />
+              <h2 className="player-name-text">{p2.displayName}</h2>
+            </div>
+          </div>
+
+          <div className="room-code-widget-match">
+            <span className="room-code-title">MATCH STATUS</span>
+            <div className="room-code-row">
+              <span className="room-code-val">{match.status.toUpperCase()}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function readConnect4PublicState(match: Parameters<typeof getConnect4PublicState>[0]) {
+  try {
+    return getConnect4PublicState(match);
+  } catch {
+    return null;
+  }
+}
+
+function getOfficialMatchReadMessage(state: OfficialMatchReadState, matchId: string) {
+  if (state.status === "loading") {
+    return state.message;
+  }
+
+  if (state.status === "missing") {
+    return `Official match ${state.id} was not found.`;
+  }
+
+  if (state.status === "error") {
+    return `Official match ${matchId} unavailable: ${state.message}`;
+  }
+
+  return `Official match ${state.data.id} is ${state.data.status}.`;
 }
 
 function Connect4MatchPage() {
