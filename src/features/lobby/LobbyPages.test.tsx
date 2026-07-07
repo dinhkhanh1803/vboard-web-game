@@ -13,6 +13,7 @@ const roomMocks = vi.hoisted(() => ({
   startMatch: vi.fn(),
   submitMove: vi.fn(),
   subscribeToMatch: vi.fn(),
+  subscribeToMatchMoves: vi.fn(),
   subscribeToRoom: vi.fn(),
 }));
 
@@ -40,12 +41,14 @@ function mockRoomIntentClient() {
 function mockRoomReadClient() {
   const client: RoomMatchReadClient = {
     subscribeToMatch: roomMocks.subscribeToMatch,
+    subscribeToMatchMoves: roomMocks.subscribeToMatchMoves,
     subscribeToRoom: roomMocks.subscribeToRoom,
   };
 
   roomMocks.getRoomMatchReadClient.mockReturnValue(client);
   roomMocks.subscribeToRoom.mockReturnValue(() => undefined);
   roomMocks.subscribeToMatch.mockReturnValue(() => undefined);
+  roomMocks.subscribeToMatchMoves.mockReturnValue(() => undefined);
 }
 
 function RoomRouteProbe() {

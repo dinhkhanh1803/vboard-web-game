@@ -16,6 +16,6 @@ No feature should import Firebase SDK modules directly until there is a clear re
 
 ## Room/Match Read Boundary
 
-- `roomMatchSubscriptions.ts` is the approved frontend entrypoint for realtime room and match reads.
-- Frontend features may subscribe to `rooms/{roomId}` and `matches/{matchId}` through this boundary.
+- `roomMatchSubscriptions.ts` is the approved frontend entrypoint for realtime room, match, and match move-log reads.
+- Frontend features may subscribe to `rooms/{roomId}`, `matches/{matchId}`, and ordered `matches/{matchId}/moves` through this boundary.
 - Frontend features must not import Firestore SDK modules directly or write official room/match state.

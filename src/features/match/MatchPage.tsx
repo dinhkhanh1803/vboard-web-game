@@ -2,7 +2,13 @@ import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 
 import { useParams } from "react-router-dom";
 
 import type { GameId } from "@contracts/gameCatalog";
-import { getRoomMatchIntentClient, getRoomMatchReadClient, type MatchReadState } from "@/firebase";
+import type { MatchMoveLogEntry } from "@contracts/roomMatch";
+import {
+  getRoomMatchIntentClient,
+  getRoomMatchReadClient,
+  type MatchMoveLogReadState,
+  type MatchReadState,
+} from "@/firebase";
 import { CaroPixiBoard } from "@/features/match/CaroPixiBoard";
 import { Connect4PixiBoard } from "@/features/match/Connect4PixiBoard";
 import { createLocalCaroMatchSource, getCaroPublicState } from "@/features/match/caroLocalMatch";
@@ -16,6 +22,8 @@ export type MatchPageProps = {
 };
 
 type OfficialMatchReadState = MatchReadState | { status: "loading"; message: string };
+
+type OfficialMoveLogReadState = MatchMoveLogReadState | { status: "loading"; message: string };
 
 type OfficialMoveIntentState = {
   kind: "idle" | "loading" | "success" | "error";
@@ -46,6 +54,10 @@ function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
   const [moveIntentState, setMoveIntentState] = useState<OfficialMoveIntentState>({
     kind: "idle",
     message: "",
+  });
+  const [moveLogReadState, setMoveLogReadState] = useState<OfficialMoveLogReadState>({
+    message: "Loading official move log...",
+    status: "loading",
   });
   const isSubmittingOfficialMove = moveIntentState.kind === "loading";
   const effectiveMatchReadState = useMemo<OfficialMatchReadState>(() => {
@@ -101,6 +113,16 @@ function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
     }
 
     return roomMatchReadClient.subscribeToMatch(matchId, setMatchReadState);
+  }, [matchId, roomMatchReadClient]);
+
+  useEffect(() => {
+    if (roomMatchReadClient === null) {
+      return undefined;
+    }
+
+    return roomMatchReadClient.subscribeToMatchMoves(matchId, (state) => {
+      setMoveLogReadState(state);
+    });
   }, [matchId, roomMatchReadClient]);
 
   if (effectiveMatchReadState.status !== "ready") {
@@ -195,6 +217,7 @@ function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
               </p>
               <p className="waiting-text">State version {match.stateVersion}</p>
               <p className="waiting-text">Room {match.roomId}</p>
+              {renderOfficialMoveLog(moveLogReadState)}
             </div>
           </div>
         </div>
@@ -265,6 +288,39 @@ function OfficialConnect4MatchPage({ matchId }: { matchId: string }) {
   );
 }
 
+function renderOfficialMoveLog(state: OfficialMoveLogReadState) {
+  if (state.status === "loading") {
+    return <p className="waiting-text">{state.message}</p>;
+  }
+
+  if (state.status === "error") {
+    return <p className="waiting-text">Official move log unavailable: {state.message}</p>;
+  }
+
+  if (state.data.length === 0) {
+    return <p className="waiting-text">Waiting for official move log entries.</p>;
+  }
+
+  return (
+    <ol className="history-list-flow">
+      {state.data.map((move) => (
+        <li key={move.id} className="history-log-item">
+          <span className={`bullet-badge ${move.actorSeatIndex === 0 ? "p1-bullet" : "p2-bullet"}`}>
+            {move.sequence}
+          </span>
+          <span className="log-text-content">{formatOfficialMoveLogEntry(move)}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function formatOfficialMoveLogEntry(move: MatchMoveLogEntry) {
+  const actorLabel = move.actorSeatIndex === 0 ? "P1" : "P2";
+  const column = typeof move.payload.column === "number" ? move.payload.column + 1 : "?";
+
+  return `${actorLabel} dropped in Column ${column}`;
+}
 function getIntentErrorMessage(error: unknown) {
   if (error instanceof Error && error.message.trim().length > 0) {
     return error.message;

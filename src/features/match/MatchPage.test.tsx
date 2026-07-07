@@ -2,15 +2,27 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { MatchMoveLogEntry } from "@contracts/roomMatch";
 import type { MatchReadState, RoomMatchIntentClient, RoomMatchReadClient } from "@/firebase";
 import { createLocalConnect4Match } from "@/features/match/connect4LocalMatch";
 import { MatchPage } from "@/features/match/MatchPage";
+
+type MatchMoveLogReadState =
+  | {
+      status: "ready";
+      data: MatchMoveLogEntry[];
+    }
+  | {
+      status: "error";
+      message: string;
+    };
 
 const roomReadMocks = vi.hoisted(() => ({
   getRoomMatchIntentClient: vi.fn(),
   getRoomMatchReadClient: vi.fn(),
   submitMove: vi.fn(),
   subscribeToMatch: vi.fn(),
+  subscribeToMatchMoves: vi.fn(),
   subscribeToRoom: vi.fn(),
 }));
 
@@ -41,13 +53,20 @@ function mockRoomIntentClient() {
 }
 
 function mockRoomReadClient() {
-  const client: RoomMatchReadClient = {
+  const client = {
     subscribeToMatch: roomReadMocks.subscribeToMatch,
+    subscribeToMatchMoves: roomReadMocks.subscribeToMatchMoves,
     subscribeToRoom: roomReadMocks.subscribeToRoom,
+  } as RoomMatchReadClient & {
+    subscribeToMatchMoves(
+      matchId: string,
+      listener: (state: MatchMoveLogReadState) => void,
+    ): () => void;
   };
 
   roomReadMocks.getRoomMatchReadClient.mockReturnValue(client);
   roomReadMocks.subscribeToMatch.mockReturnValue(() => undefined);
+  roomReadMocks.subscribeToMatchMoves.mockReturnValue(() => undefined);
   roomReadMocks.subscribeToRoom.mockReturnValue(() => undefined);
 }
 
@@ -59,6 +78,24 @@ function renderMatchRoute(path: string) {
       </Routes>
     </MemoryRouter>,
   );
+}
+
+function createOfficialMoveLogEntry(
+  input: Pick<MatchMoveLogEntry, "actorSeatIndex" | "actorUid" | "id" | "payload" | "sequence">,
+): MatchMoveLogEntry {
+  return {
+    actorSeatIndex: input.actorSeatIndex,
+    actorUid: input.actorUid,
+    createdAtMs: 1_000 + input.sequence,
+    gameId: "connect-4",
+    id: input.id,
+    matchId: "match-1",
+    moveType: "drop-disc",
+    payload: input.payload,
+    sequence: input.sequence,
+    stateVersionAfter: input.sequence,
+    stateVersionBefore: input.sequence - 1,
+  };
 }
 
 function createOfficialMatchReadState(matchId = "match-1"): MatchReadState {
@@ -125,6 +162,7 @@ describe("MatchPage gameplay", () => {
     expect(screen.getByText("Local Practice Arena")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Drop disc in column 4" })).toBeEnabled();
     expect(roomReadMocks.subscribeToMatch).not.toHaveBeenCalled();
+    expect(roomReadMocks.subscribeToMatchMoves).not.toHaveBeenCalled();
   });
 
   it("subscribes non-demo match routes through the official read boundary", async () => {
@@ -184,6 +222,97 @@ describe("MatchPage gameplay", () => {
     });
     expect(
       await screen.findByText("Move submitted. Waiting for official state..."),
+    ).toBeInTheDocument();
+  });
+
+  it("subscribes official match routes to server-written move logs", async () => {
+    let matchListener: ((state: MatchReadState) => void) | null = null;
+    let moveLogListener: ((state: MatchMoveLogReadState) => void) | null = null;
+    roomReadMocks.subscribeToMatch.mockImplementation(
+      (_matchId: string, listener: (state: MatchReadState) => void) => {
+        matchListener = listener;
+
+        return () => undefined;
+      },
+    );
+    roomReadMocks.subscribeToMatchMoves.mockImplementation(
+      (_matchId: string, listener: (state: MatchMoveLogReadState) => void) => {
+        moveLogListener = listener;
+
+        return () => undefined;
+      },
+    );
+
+    renderMatchRoute("/matches/match-1");
+
+    act(() => {
+      matchListener?.(createOfficialMatchReadState("match-1"));
+      moveLogListener?.({ status: "ready", data: [] });
+    });
+
+    await waitFor(() => {
+      expect(roomReadMocks.subscribeToMatchMoves).toHaveBeenCalledWith(
+        "match-1",
+        expect.any(Function),
+      );
+    });
+    expect(await screen.findByText("Waiting for official move log entries.")).toBeInTheDocument();
+
+    act(() => {
+      moveLogListener?.({
+        status: "ready",
+        data: [
+          createOfficialMoveLogEntry({
+            actorSeatIndex: 0,
+            actorUid: "host-1",
+            id: "move-1",
+            payload: { column: 3 },
+            sequence: 1,
+          }),
+          createOfficialMoveLogEntry({
+            actorSeatIndex: 1,
+            actorUid: "guest-1",
+            id: "move-2",
+            payload: { column: 2 },
+            sequence: 2,
+          }),
+        ],
+      });
+    });
+
+    expect(await screen.findByText("P1 dropped in Column 4")).toBeInTheDocument();
+    expect(screen.getByText("P2 dropped in Column 3")).toBeInTheDocument();
+  });
+
+  it("shows official move-log read errors", async () => {
+    let matchListener: ((state: MatchReadState) => void) | null = null;
+    let moveLogListener: ((state: MatchMoveLogReadState) => void) | null = null;
+    roomReadMocks.subscribeToMatch.mockImplementation(
+      (_matchId: string, listener: (state: MatchReadState) => void) => {
+        matchListener = listener;
+
+        return () => undefined;
+      },
+    );
+    roomReadMocks.subscribeToMatchMoves.mockImplementation(
+      (_matchId: string, listener: (state: MatchMoveLogReadState) => void) => {
+        moveLogListener = listener;
+
+        return () => undefined;
+      },
+    );
+
+    renderMatchRoute("/matches/match-1");
+
+    act(() => {
+      matchListener?.(createOfficialMatchReadState("match-1"));
+      moveLogListener?.({ message: "Missing or insufficient permissions.", status: "error" });
+    });
+
+    expect(
+      await screen.findByText(
+        "Official move log unavailable: Missing or insufficient permissions.",
+      ),
     ).toBeInTheDocument();
   });
 

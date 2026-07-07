@@ -49,3 +49,4 @@
 - Completed BE-7 Waiting Room start-match flow so full rooms call `startMatch({ roomId })` and route to `/matches/{matchId}` without direct client writes.
 - Completed BE-8 Match route official reads so non-demo `/matches/{matchId}` subscribes to `matches/{matchId}` and renders read-only status/public state without client writes.
 - Completed BE-9 Match route move intent wiring so official Connect 4 board clicks call `submitMove({ matchId, payload: { column } })` through the callable client and wait for subscribed state refresh.
+- Completed BE-10 official move-log reads so `matches/{matchId}/moves` is subscribed through the read boundary, ordered by sequence, and rendered in official Match history without client writes.

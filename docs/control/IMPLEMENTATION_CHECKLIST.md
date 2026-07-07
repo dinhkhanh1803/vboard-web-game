@@ -226,3 +226,4 @@ Goal: prepare for public deploy and monetization without harming gameplay.
 Owner review: no production deploy until staging smoke test passes.
 
 - [x] BE-9 submit official Connect 4 move intent from `/matches/{matchId}` through `submitMove` callable boundary.
+- [x] BE-10 add official move-log subscription boundary and Match history rendering.

@@ -9,7 +9,7 @@ Own the realtime match screen, player panels, timer display, move log, action ba
 - PixiJS renders official public state and emits move intent only.
 - Game rules belong in `game-engine/`.
 - Official match writes belong in Cloud Functions.
-- Match listeners must target one match document, not broad collections.
+- Match listeners must target one match document and its move-log subcollection, not broad collections.
 - Non-demo match routes must read through `src/firebase/roomMatchSubscriptions.ts`.
 - Client move submissions must go through `src/firebase/roomMatchIntents.ts`.
 
@@ -21,4 +21,4 @@ Own the realtime match screen, player panels, timer display, move log, action ba
 
 ## Current Backend Integration Status
 
-Non-demo `/matches/{matchId}` routes subscribe to official match state through the read-only Firebase boundary, render Connect 4 public state, and submit Connect 4 column moves through callable `submitMove`. The next step is to subscribe to official `matches/{matchId}/moves` entries so Match history reflects server-written move logs.
+Non-demo `/matches/{matchId}` routes subscribe to official match state, subscribe to official `matches/{matchId}/moves` entries ordered by sequence, render Connect 4 public state and official Match history, and submit Connect 4 column moves through callable `submitMove`. The next backend integration need is a Firebase Auth identity boundary so local/emulator callable intents have an authenticated user.

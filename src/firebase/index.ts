@@ -21,13 +21,18 @@ export type {
   SubmitMoveIntentResult,
 } from "@/firebase/roomMatchIntents";
 export {
+  createFirestoreCollectionSubscriber,
   createFirestoreDocumentSubscriber,
   createRoomMatchReadClient,
   getRoomMatchReadClient,
 } from "@/firebase/roomMatchSubscriptions";
 export type {
+  MatchMoveLogReadState,
   MatchReadState,
+  ReadonlyCollectionSubscriber,
   ReadonlyDocumentSubscriber,
+  RoomMatchCollectionReadListener,
+  RoomMatchCollectionReadState,
   RoomMatchReadClient,
   RoomMatchReadListener,
   RoomMatchReadState,
