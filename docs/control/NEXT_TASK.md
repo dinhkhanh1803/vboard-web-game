@@ -2,11 +2,11 @@
 
 ## Current Recommended Next Step
 
-Continue the backend integration track with BE-13: make the Cloud Functions emulator expose the callable room/match endpoints as a runnable local endpoint smoke. BE-12 now proves Auth emulator anonymous users plus Firestore transaction-backed callable handlers can create, join, start, and submit one Connect 4 move.
+Continue the backend integration track with BE-14: prove the official web app flow can use the callable endpoint boundary locally. BE-13 now builds the Functions emulator entrypoint and proves `createRoom`, `joinRoom`, `startMatch`, and `submitMove` through Auth, Firestore, and Functions emulators.
 
 ## Exact First Task
 
-Add the smallest Functions emulator packaging/build path needed so `createRoom`, `joinRoom`, `startMatch`, and `submitMove` can be invoked through Firebase callable endpoints locally, then add a smoke command that uses the frontend callable client boundary against the Auth, Firestore, and Functions emulators.
+Add the smallest UI/local smoke path that signs into the Firebase Auth emulator, creates or joins a Connect 4 room from the existing frontend route boundary, starts the match, submits one official move, and reads the official match/move-log state back through the existing read boundary.
 
 ## Scope
 
@@ -16,13 +16,13 @@ Add the smallest Functions emulator packaging/build path needed so `createRoom`,
 - Keep clients submitting official room/match intent only through callable wrappers.
 - Keep clients reading room, match, and move-log documents only through Firebase read boundaries.
 - Client code must not write official room, match, result, turn, timer, ranking, or move-log state directly.
-- Avoid broad build-system refactors; add only the minimal Functions emulator build/entrypoint path required for local callable endpoint smoke.
+- Avoid adding browser automation dependencies unless the task explicitly needs them; prefer existing Vitest/React Testing Library coverage first.
 
 ## Expected Files
 
-- `functions/` for minimal emulator-build or entrypoint wiring if needed.
-- `tests/` for callable endpoint smoke coverage.
-- `package.json` for a focused smoke command if needed.
+- `src/features/lobby/` and `src/features/match/` only if the existing route flow needs small wiring fixes.
+- `src/firebase/` only if the local Auth/emulator boundary needs a focused helper.
+- `tests/` for a cross-area smoke or integration test if route-level verification is practical.
 - `docs/control/PROGRESS.md`
 
 ## Verification
@@ -30,6 +30,7 @@ Add the smallest Functions emulator packaging/build path needed so `createRoom`,
 Make these commands pass:
 
 ```bash
+npm run test:smoke:callable-endpoints
 npm run test:smoke:auth-flow
 npm run test:rules
 npm run typecheck

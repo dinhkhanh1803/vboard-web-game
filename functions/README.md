@@ -38,3 +38,9 @@ test/               local domain tests first, emulator-backed tests later
 `src/callable/roomMatchCallables.ts` contains testable handlers for `createRoom`, `joinRoom`, `startMatch`, and `submitMove`. These handlers require Firebase Auth, validate client intent payloads, and call `src/domain/roomMatchCommands.ts` for all official state transitions.
 
 `src/integrations/roomMatchFirestore.ts` adapts those handlers to Firestore transactions. It writes `rooms/{roomId}`, `matches/{matchId}`, and `matches/{matchId}/moves/{moveId}` through the Admin SDK only. Connect 4 official `publicState` is stored with the game-engine document-safe board codec so Firestore never receives nested board arrays.
+
+## Current Emulator Entrypoint
+
+`src/index.ts` exports the callable Cloud Functions used by the local Functions emulator. The root `npm run functions:build` script bundles that entrypoint into `functions/lib/index.mjs` with Vite so Firebase can load the ESM package through the `main` field in `functions/package.json`.
+
+`functions/lib/` is generated output and is ignored by git. Use `npm run test:smoke:callable-endpoints` to rebuild it and prove `createRoom`, `joinRoom`, `startMatch`, and `submitMove` through Auth, Firestore, and Functions emulators.

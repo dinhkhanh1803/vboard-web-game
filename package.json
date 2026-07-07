@@ -16,13 +16,15 @@
     "dev": "vite --host 0.0.0.0",
     "test:watch": "vitest",
     "preview": "vite preview",
-    "firebase:emulators": "firebase emulators:start",
-    "firebase:emulators:ui": "firebase emulators:start --only auth,firestore,database,functions,hosting,storage",
+    "firebase:emulators": "npm run functions:build && firebase emulators:start",
+    "firebase:emulators:ui": "npm run functions:build && firebase emulators:start --only auth,firestore,database,functions,hosting,storage",
     "firebase:deploy:preview": "firebase hosting:channel:deploy preview",
+    "functions:build": "vite build --config vite.functions.config.ts",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "test:rules": "firebase emulators:exec --project vboard-arena-local --only firestore \"vitest run tests/firebaseRules.test.ts\"",
-    "test:smoke:auth-flow": "firebase emulators:exec --project vboard-arena-local --only auth,firestore \"npm run test -- tests/authenticatedRoomMatchSmoke.emulator.test.ts\""
+    "test:smoke:auth-flow": "firebase emulators:exec --project vboard-arena-local --only auth,firestore \"npm run test -- tests/authenticatedRoomMatchSmoke.emulator.test.ts\"",
+    "test:smoke:callable-endpoints": "npm run functions:build && firebase emulators:exec --project vboard-arena-local --only auth,firestore,functions \"npm run test -- tests/roomMatchCallableEndpointSmoke.emulator.test.ts\""
   },
   "engines": {
     "node": ">=20",
