@@ -76,7 +76,7 @@ describe("App shell", () => {
     expect(screen.getByRole("heading", { name: "Battle Lobby" })).toBeInTheDocument();
     expect(screen.getByText("Find your next opponent or join a squad.")).toBeInTheDocument();
     expect(screen.getByText("Live queue: 1,204 players")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Start searching" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Start searching" })).toBeEnabled();
     expect(screen.getByRole("heading", { name: "Join by Code" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Filter rooms" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Refresh rooms" })).toBeDisabled();

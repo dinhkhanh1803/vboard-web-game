@@ -1,6 +1,16 @@
 import { useMemo, useState } from "react";
 
+import { getRoomMatchIntentClient, type RoomIntentResult } from "@/firebase";
+
 const roomCodePattern = /^VB-\d{4}$/;
+
+type RoomIntentAction = "createRoom" | "joinRoom";
+
+type RoomIntentState = {
+  action: RoomIntentAction | null;
+  kind: "idle" | "loading" | "success" | "error";
+  message: string;
+};
 
 type BattleLobbyRoom = {
   host: string;
@@ -38,11 +48,36 @@ const battleLobbyRooms: BattleLobbyRoom[] = [
   },
 ];
 
+function getIntentErrorMessage(error: unknown) {
+  if (error instanceof Error && error.message.trim().length > 0) {
+    return error.message;
+  }
+
+  return "Room action failed. Please try again.";
+}
+
+function formatCreateRoomResult(result: RoomIntentResult) {
+  return `Room ${result.roomCode} created. Waiting room ${result.roomId} is ready.`;
+}
+
+function formatJoinRoomResult(result: RoomIntentResult) {
+  return `Joined room ${result.roomCode}. Room ${result.roomId} status is ${result.status}.`;
+}
+
 export function LobbyPage() {
   const [roomCode, setRoomCode] = useState("");
+  const [roomIntentState, setRoomIntentState] = useState<RoomIntentState>({
+    action: null,
+    kind: "idle",
+    message: "",
+  });
+  const roomMatchIntentClient = useMemo(() => getRoomMatchIntentClient(), []);
   const normalizedRoomCode = roomCode.trim().toUpperCase();
   const hasRoomCode = normalizedRoomCode.length > 0;
   const isRoomCodeValid = roomCodePattern.test(normalizedRoomCode);
+  const isCreatingRoom =
+    roomIntentState.kind === "loading" && roomIntentState.action === "createRoom";
+  const isJoiningRoom = roomIntentState.kind === "loading" && roomIntentState.action === "joinRoom";
   const roomCodeStatus = useMemo(() => {
     if (!hasRoomCode) {
       return "Enter a room code to preview validation.";
@@ -54,6 +89,94 @@ export function LobbyPage() {
 
     return "Code format ready for backend wiring.";
   }, [hasRoomCode, isRoomCodeValid]);
+  const roomIntentClassName =
+    roomIntentState.kind === "error"
+      ? "battle-code-status is-error"
+      : "battle-code-status is-success";
+
+  const requireRoomIntentClient = (action: RoomIntentAction) => {
+    if (roomMatchIntentClient !== null) {
+      return roomMatchIntentClient;
+    }
+
+    setRoomIntentState({
+      action,
+      kind: "error",
+      message: "Firebase room actions are not configured for this environment.",
+    });
+
+    return null;
+  };
+
+  const handleCreateRoom = async () => {
+    const intentClient = requireRoomIntentClient("createRoom");
+
+    if (intentClient === null) {
+      return;
+    }
+
+    setRoomIntentState({
+      action: "createRoom",
+      kind: "loading",
+      message: "Creating Connect 4 room...",
+    });
+
+    try {
+      const result = await intentClient.createRoom({ gameId: "connect-4" });
+
+      setRoomIntentState({
+        action: "createRoom",
+        kind: "success",
+        message: formatCreateRoomResult(result),
+      });
+    } catch (error) {
+      setRoomIntentState({
+        action: "createRoom",
+        kind: "error",
+        message: getIntentErrorMessage(error),
+      });
+    }
+  };
+
+  const handleJoinRoom = async () => {
+    if (!isRoomCodeValid) {
+      setRoomIntentState({
+        action: "joinRoom",
+        kind: "error",
+        message: "Enter a valid room code before joining.",
+      });
+
+      return;
+    }
+
+    const intentClient = requireRoomIntentClient("joinRoom");
+
+    if (intentClient === null) {
+      return;
+    }
+
+    setRoomIntentState({
+      action: "joinRoom",
+      kind: "loading",
+      message: `Joining room ${normalizedRoomCode}...`,
+    });
+
+    try {
+      const result = await intentClient.joinRoom({ roomCode: normalizedRoomCode });
+
+      setRoomIntentState({
+        action: "joinRoom",
+        kind: "success",
+        message: formatJoinRoomResult(result),
+      });
+    } catch (error) {
+      setRoomIntentState({
+        action: "joinRoom",
+        kind: "error",
+        message: getIntentErrorMessage(error),
+      });
+    }
+  };
 
   return (
     <section className="screen battle-lobby-screen" aria-labelledby="lobby-title">
@@ -70,12 +193,20 @@ export function LobbyPage() {
             Jump straight into the action. We&apos;ll find you a perfectly matched opponent based on
             your rank and skill level in seconds.
           </p>
-          <button type="button" className="battle-primary-action" disabled>
-            <span>Start searching</span>
+          <button
+            type="button"
+            className="battle-primary-action"
+            disabled={isCreatingRoom || isJoiningRoom}
+            onClick={() => void handleCreateRoom()}
+          >
+            <span>{isCreatingRoom ? "Creating room" : "Start searching"}</span>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" />
             </svg>
           </button>
+          {roomIntentState.action === "createRoom" && roomIntentState.message.length > 0 ? (
+            <p className={roomIntentClassName}>{roomIntentState.message}</p>
+          ) : null}
         </section>
 
         <section className="battle-join-card" aria-labelledby="join-room-title">
@@ -101,9 +232,17 @@ export function LobbyPage() {
           <p className={`battle-code-status ${isRoomCodeValid ? "is-success" : "is-error"}`}>
             {roomCodeStatus}
           </p>
-          <button type="button" className="battle-secondary-action" disabled={!isRoomCodeValid}>
-            Enter arena
+          <button
+            type="button"
+            className="battle-secondary-action"
+            disabled={!isRoomCodeValid || isCreatingRoom || isJoiningRoom}
+            onClick={() => void handleJoinRoom()}
+          >
+            {isJoiningRoom ? "Entering arena" : "Enter arena"}
           </button>
+          {roomIntentState.action === "joinRoom" && roomIntentState.message.length > 0 ? (
+            <p className={roomIntentClassName}>{roomIntentState.message}</p>
+          ) : null}
         </section>
       </div>
 
