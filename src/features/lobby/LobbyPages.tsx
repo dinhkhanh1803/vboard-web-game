@@ -33,6 +33,8 @@ type WaitingRoomIntentState = {
 };
 
 type WaitingRoomReadState = RoomReadState | { status: "loading"; message: string };
+type WaitingRoomReadyState = Extract<RoomReadState, { status: "ready" }>;
+type WaitingRoomPlayerSlot = WaitingRoomReadyState["data"]["playerSlots"][number];
 type WaitingRoomIdentityState = FirebaseIdentityState | { status: "loading"; message: string };
 
 type BattleLobbyRoom = {
@@ -390,8 +392,8 @@ function getWaitingRoomPlayerSummary(state: WaitingRoomReadState) {
     return "Waiting for official player slots.";
   }
 
-  const hostSlot = state.data.playerSlots.find((slot) => slot.isHost);
-  const opponentSlot = state.data.playerSlots.find((slot) => !slot.isHost);
+  const hostSlot = getWaitingRoomSlot(state, "host");
+  const opponentSlot = getWaitingRoomSlot(state, "opponent");
   const hostName = hostSlot?.displayName ?? "Host";
   const hostReady = hostSlot?.ready ? "ready" : "not ready";
   let opponentStatus = "Opponent slot open";
@@ -403,6 +405,89 @@ function getWaitingRoomPlayerSummary(state: WaitingRoomReadState) {
   }
 
   return `${hostName} ${hostReady}. ${opponentStatus}.`;
+}
+
+function getWaitingRoomSlot(state: WaitingRoomReadState, role: "host" | "opponent") {
+  if (state.status !== "ready") {
+    return null;
+  }
+
+  const slot = state.data.playerSlots.find((playerSlot) =>
+    role === "host" ? playerSlot.isHost : !playerSlot.isHost,
+  );
+
+  return slot ?? null;
+}
+
+function getWaitingRoomSlotName(slot: WaitingRoomPlayerSlot | null, fallback: string) {
+  return slot?.displayName ?? fallback;
+}
+
+function getWaitingRoomSlotMeta(slot: WaitingRoomPlayerSlot | null) {
+  if (slot === null || slot.status === "open") {
+    return "Open seat";
+  }
+
+  return `Seat ${slot.seatIndex + 1} - ${slot.ready ? "READY" : "NOT READY"}`;
+}
+
+function isWaitingRoomSlotReady(slot: WaitingRoomPlayerSlot | null) {
+  return slot?.status === "occupied" && slot.ready;
+}
+
+type WaitingRoomPlayerCardProps = {
+  role: "host" | "opponent";
+  slot: WaitingRoomPlayerSlot | null;
+};
+
+function WaitingRoomPlayerCard({ role, slot }: WaitingRoomPlayerCardProps) {
+  const ready = isWaitingRoomSlotReady(slot);
+  const roleLabel = role === "host" ? "HOST" : "OPPONENT";
+  const fallbackName = role === "host" ? "Host" : "Opponent";
+
+  return (
+    <div className={`lobby-player-card ${role}-card`}>
+      <div className="card-badge-row">
+        <span className={`role-tag ${role}`}>{roleLabel}</span>
+      </div>
+      <div className="card-avatar-wrapper">
+        <div className="card-avatar-glow-ring">
+          <svg
+            className="avatar-svg-glow"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </div>
+        {ready ? (
+          <div className="ready-indicator-dot">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="check-svg"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+        ) : null}
+      </div>
+      <h3 className="lobby-player-name">{getWaitingRoomSlotName(slot, fallbackName)}</h3>
+      <p className="lobby-player-level">{getWaitingRoomSlotMeta(slot)}</p>
+      <button className="player-ready-btn" disabled>
+        {ready ? "READY" : "NOT READY"}
+      </button>
+    </div>
+  );
 }
 
 function canStartWaitingRoomMatch(state: WaitingRoomReadState) {
@@ -516,6 +601,9 @@ export function WaitingRoomPage() {
   const waitingRoomRawCode = getWaitingRoomRawCode(effectiveRoomReadState);
   const waitingRoomSummary = getWaitingRoomSummary(effectiveRoomReadState);
   const waitingRoomPlayerSummary = getWaitingRoomPlayerSummary(effectiveRoomReadState);
+  const hostSlot = getWaitingRoomSlot(effectiveRoomReadState, "host");
+  const opponentSlot = getWaitingRoomSlot(effectiveRoomReadState, "opponent");
+  const isOpponentOccupied = opponentSlot?.status === "occupied";
   const canStartMatch = canStartWaitingRoomMatch(effectiveRoomReadState);
   const canJoinRoom = canJoinWaitingRoom(effectiveRoomReadState, identityState);
   const isJoiningRoom = joinRoomState.kind === "loading";
@@ -734,88 +822,52 @@ export function WaitingRoomPage() {
 
           {/* Lobby Players Grid */}
           <div className="lobby-players-grid">
-            {/* Host Card */}
-            <div className="lobby-player-card host-card">
-              <div className="card-badge-row">
-                <span className="role-tag host">HOST</span>
-              </div>
-              <div className="card-avatar-wrapper">
-                <div className="card-avatar-glow-ring">
+            <WaitingRoomPlayerCard role="host" slot={hostSlot} />
+
+            {isOpponentOccupied ? (
+              <WaitingRoomPlayerCard role="opponent" slot={opponentSlot} />
+            ) : (
+              <div className="lobby-player-card matchmaking-card">
+                <div className="matchmaking-search-icon">
                   <svg
-                    className="avatar-svg-glow"
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
-                  >
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </div>
-                <div className="ready-indicator-dot">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="check-svg"
+                    className="add-user-svg"
                   >
-                    <polyline points="20 6 9 17 4 12" />
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="8.5" cy="7" r="4" />
+                    <line x1="20" y1="8" x2="20" y2="14" />
+                    <line x1="23" y1="11" x2="17" y2="11" />
                   </svg>
                 </div>
-              </div>
-              <h3 className="lobby-player-name">Player One</h3>
-              <p className="lobby-player-level">Level 42 - W/L 78%</p>
-              <button className="player-ready-btn" disabled>
-                READY
-              </button>
-            </div>
-
-            {/* Matchmaking Card */}
-            <div className="lobby-player-card matchmaking-card">
-              <div className="matchmaking-search-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="add-user-svg"
+                <h3 className="matchmaking-title">
+                  {canJoinRoom ? "Join as Opponent" : "Waiting for Opponent"}
+                </h3>
+                <p className="matchmaking-subtext">
+                  {canJoinRoom
+                    ? "You are viewing an invite link. Join to claim the open seat."
+                    : "Matchmaking in progress..."}
+                </p>
+                <button
+                  type="button"
+                  aria-label={canJoinRoom ? "Join Room" : "Invite Friends"}
+                  onClick={
+                    canJoinRoom
+                      ? () => void handleJoinWaitingRoom()
+                      : () => alert("Invite link copied to clipboard!")
+                  }
+                  className="invite-friends-btn"
+                  disabled={isJoiningRoom}
                 >
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="8.5" cy="7" r="4" />
-                  <line x1="20" y1="8" x2="20" y2="14" />
-                  <line x1="23" y1="11" x2="17" y2="11" />
-                </svg>
+                  {canJoinRoom ? (isJoiningRoom ? "JOINING ROOM" : "JOIN ROOM") : "INVITE FRIENDS"}
+                </button>
               </div>
-              <h3 className="matchmaking-title">
-                {canJoinRoom ? "Join as Opponent" : "Waiting for Opponent"}
-              </h3>
-              <p className="matchmaking-subtext">
-                {canJoinRoom
-                  ? "You are viewing an invite link. Join to claim the open seat."
-                  : "Matchmaking in progress..."}
-              </p>
-              <button
-                type="button"
-                aria-label={canJoinRoom ? "Join Room" : "Invite Friends"}
-                onClick={
-                  canJoinRoom
-                    ? () => void handleJoinWaitingRoom()
-                    : () => alert("Invite link copied to clipboard!")
-                }
-                className="invite-friends-btn"
-                disabled={isJoiningRoom}
-              >
-                {canJoinRoom ? (isJoiningRoom ? "JOINING ROOM" : "JOIN ROOM") : "INVITE FRIENDS"}
-              </button>
-            </div>
+            )}
           </div>
 
           {/* Spectators bar */}
@@ -851,7 +903,8 @@ export function WaitingRoomPage() {
           {/* Lobby Action row */}
           <div className="lobby-actions-row-bottom">
             <button
-              onClick={() => alert("Leaving waiting room.")}
+              type="button"
+              onClick={() => navigate("/lobby")}
               className="room-action-btn leave-btn"
             >
               <svg

@@ -102,6 +102,10 @@ function MatchRouteProbe() {
   return <p>Match route {matchId}</p>;
 }
 
+function LobbyRouteProbe() {
+  return <p>Lobby route</p>;
+}
+
 function renderLobbyRoute() {
   return render(
     <MemoryRouter initialEntries={["/lobby"]}>
@@ -119,6 +123,7 @@ function renderWaitingRoomRoute() {
       <Routes>
         <Route path="/rooms/:roomId" element={<WaitingRoomPage />} />
         <Route path="/matches/:matchId" element={<MatchRouteProbe />} />
+        <Route path="/lobby" element={<LobbyRouteProbe />} />
       </Routes>
     </MemoryRouter>,
   );
@@ -356,6 +361,36 @@ describe("WaitingRoomPage room reads", () => {
     expect(
       await screen.findByText("Joined room VB-1042. Room room-1 status is full."),
     ).toBeInTheDocument();
+  });
+
+  it("renders official host and opponent player slots when a room is full", async () => {
+    let roomListener: ((state: RoomReadState) => void) | null = null;
+    roomMocks.subscribeToRoom.mockImplementation(
+      (_roomId: string, listener: (state: RoomReadState) => void) => {
+        roomListener = listener;
+
+        return () => undefined;
+      },
+    );
+
+    renderWaitingRoomRoute();
+
+    act(() => {
+      roomListener?.(createReadyRoomState({ opponentOccupied: true }));
+    });
+
+    expect(await screen.findByText("Player One")).toBeInTheDocument();
+    expect(screen.getByText("Player Two")).toBeInTheDocument();
+    expect(screen.getByText("OPPONENT")).toBeInTheDocument();
+    expect(screen.queryByText("Waiting for Opponent")).not.toBeInTheDocument();
+  });
+
+  it("leaves the waiting room route back to the lobby", async () => {
+    renderWaitingRoomRoute();
+
+    fireEvent.click(screen.getByRole("button", { name: "LEAVE ROOM" }));
+
+    expect(await screen.findByText("Lobby route")).toBeInTheDocument();
   });
 
   it("starts a full room through the intent boundary and navigates to the match", async () => {

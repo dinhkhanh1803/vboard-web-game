@@ -3742,6 +3742,13 @@ body {
     var(--kg-panel-raised);
 }
 
+.lobby-player-card.opponent-card {
+  border-color: rgba(75, 190, 255, 0.35);
+  background:
+    linear-gradient(180deg, rgba(75, 190, 255, 0.05) 0%, rgba(21, 27, 53, 0) 100%),
+    var(--kg-panel-raised);
+}
+
 .card-badge-row {
   width: 100%;
   display: flex;
@@ -3762,6 +3769,11 @@ body {
   color: #160b13;
 }
 
+.role-tag.opponent {
+  background: var(--kg-secondary);
+  color: #06101a;
+}
+
 .card-avatar-wrapper {
   position: relative;
   margin-bottom: 12px;
@@ -3780,6 +3792,14 @@ body {
   box-shadow:
     inset 0 0 12px rgba(255, 90, 61, 0.15),
     0 0 20px rgba(255, 90, 61, 0.15);
+}
+
+.opponent-card .card-avatar-glow-ring {
+  border-color: var(--kg-secondary);
+  color: var(--kg-secondary);
+  box-shadow:
+    inset 0 0 12px rgba(75, 190, 255, 0.16),
+    0 0 20px rgba(75, 190, 255, 0.16);
 }
 
 .avatar-svg-glow {
