@@ -2,11 +2,11 @@
 
 ## Current Recommended Next Step
 
-Continue the backend integration track with BE-15: add a realtime two-client emulator smoke for the official Connect 4 path. BE-14 now proves the real web app routes can move from Lobby to Waiting Room to Match using guest-ready callable intent clients and read-only subscriptions.
+Continue the backend integration track with BE-16: add a completed-match realtime emulator smoke for the official Connect 4 path. BE-15 now proves two signed-in Firebase Web SDK clients can create, join, start, submit one official move through callable Functions, and observe the official match plus move-log updates through read-only subscriptions.
 
 ## Exact First Task
 
-Create the smallest Auth + Firestore + Functions emulator smoke that signs in two anonymous browser clients, creates a Connect 4 room, joins it from the second client, starts the match, subscribes to the official match and move-log documents from both clients, submits one move through the callable endpoint, and verifies both read clients observe the official state.
+Create the smallest Auth + Firestore + Functions emulator smoke that signs in two anonymous browser clients, creates and starts a Connect 4 match, submits a legal winning move sequence through callable endpoints only, keeps both clients reading through match and move-log subscriptions, and verifies both clients observe the completed official match state, winner/result, and final move log.
 
 ## Scope
 
@@ -17,11 +17,12 @@ Create the smallest Auth + Firestore + Functions emulator smoke that signs in tw
 - Keep clients reading room, match, and move-log documents only through Firebase read boundaries.
 - Client code must not write official room, match, result, turn, timer, ranking, or move-log state directly.
 - Avoid adding browser automation dependencies unless the task explicitly needs them; prefer Firebase Web SDK emulator clients and existing Vitest coverage first.
+- Keep the smoke focused on Connect 4 completion; do not wire ranking/progression writes in this step.
 
 ## Expected Files
 
-- `tests/` for the two-client emulator smoke.
-- `src/firebase/` only if the read/intent boundary needs a small reusable harness helper.
+- `tests/` for the completed-match realtime emulator smoke.
+- Reuse `tests/realtimeTwoClientRoomMatchHarness.ts` unless the harness needs a small focused extension.
 - `docs/control/PROGRESS.md`
 
 ## Verification
@@ -30,6 +31,7 @@ Make these commands pass:
 
 ```bash
 npm run test:smoke:callable-endpoints
+npm run test:smoke:realtime-two-client
 npm run test:smoke:auth-flow
 npm run test:rules
 npm run typecheck
