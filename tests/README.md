@@ -9,6 +9,7 @@ This folder owns tests that span app, functions, Firebase rules, or future emula
 - `tests/authenticatedRoomMatchSmoke.emulator.test.ts` runs only when Auth and Firestore emulator env vars exist. It signs in anonymous host/guest users through the Auth emulator, runs the room/match callable handlers against Firestore emulator transactions, and verifies the written room, match, and move log.
 - `tests/roomMatchCallableEndpointSmoke.emulator.test.ts` runs through the frontend Firebase Auth, callable intent, and read boundaries against Auth, Firestore, and Functions emulators.
 - `tests/realtimeTwoClientRoomMatchSmoke.emulator.test.ts` runs two signed-in Firebase Web SDK clients against Auth, Firestore, and Functions emulators, then verifies both read clients observe official match and move-log updates after one callable move.
+- `tests/realtimeCompletedConnect4Smoke.emulator.test.ts` runs two signed-in Firebase Web SDK clients through a full Connect 4 win sequence and verifies both read clients observe the official completed result plus final move log.
 - `tests/officialWebAppRoomMatchFlow.test.tsx` renders the real app routes and proves Lobby -> Waiting Room -> Match actions use guest-ready intent clients plus read-only subscriptions.
 
 Run all tests with:
@@ -41,6 +42,12 @@ Run the realtime two-client smoke flow with Java on `PATH`:
 npm run test:smoke:realtime-two-client
 ```
 
+Run the completed Connect 4 realtime smoke flow with Java on `PATH`:
+
+```bash
+npm run test:smoke:completed-connect4
+```
+
 The Firebase Admin SDK may print a local metadata lookup warning after emulator shutdown on Windows; the smoke result is controlled by the command exit code and Vitest pass/fail output.
 
 Run the Firebase foundation tests only with:
@@ -53,7 +60,7 @@ npm run test -- src/firebase/config.test.ts functions/test/firebaseAdmin.test.ts
 
 Near-term candidates:
 
-- Completed-match realtime tests against Auth, Firestore, and Functions emulators.
+- Server-authoritative progression writes after completed matches.
 - Production readiness smoke tests.
 
 Do not point these tests at a real Firebase project unless the owner explicitly approves that setup.

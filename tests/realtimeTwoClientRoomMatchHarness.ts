@@ -15,6 +15,7 @@ import {
   readFirebaseIdentityFromAuth,
   type RoomMatchIntentClient,
   type RoomMatchReadClient,
+  type SubmitMoveIntentResult,
 } from "@/firebase";
 
 import type { SmokeIdentity } from "./authenticatedRoomMatchSmokeFlow";
@@ -43,6 +44,12 @@ export type RealtimeTwoClientRoomMatchHarness = {
   host: RealtimeRoomMatchClientSession;
 };
 
+export type PlayConnect4ColumnsInput = {
+  columns: readonly number[];
+  harness: RealtimeTwoClientRoomMatchHarness;
+  matchId: string;
+};
+
 type SmokeSlot = "guest" | "host";
 
 type EndpointSession = RealtimeRoomMatchClientSession & {
@@ -64,6 +71,24 @@ export async function createRealtimeTwoClientRoomMatchHarness(
     guest,
     host,
   };
+}
+
+export async function playConnect4Columns(
+  input: PlayConnect4ColumnsInput,
+): Promise<SubmitMoveIntentResult[]> {
+  const submittedMoves: SubmitMoveIntentResult[] = [];
+
+  for (const [index, column] of input.columns.entries()) {
+    const actor = index % 2 === 0 ? input.harness.host : input.harness.guest;
+    const result = await actor.intentClient.submitMove({
+      matchId: input.matchId,
+      payload: { column },
+    });
+
+    submittedMoves.push(result);
+  }
+
+  return submittedMoves;
 }
 
 async function createEndpointSession(options: {

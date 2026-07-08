@@ -2,11 +2,11 @@
 
 ## Current Recommended Next Step
 
-Continue the backend integration track with BE-16: add a completed-match realtime emulator smoke for the official Connect 4 path. BE-15 now proves two signed-in Firebase Web SDK clients can create, join, start, submit one official move through callable Functions, and observe the official match plus move-log updates through read-only subscriptions.
+Continue the backend integration track with BE-17: wire completed-match progression writes behind the server-authoritative boundary. BE-16 now proves two signed-in Firebase Web SDK clients can play a Connect 4 match to completion through callable Functions and both observe the official completed result plus final move log through read-only subscriptions.
 
 ## Exact First Task
 
-Create the smallest Auth + Firestore + Functions emulator smoke that signs in two anonymous browser clients, creates and starts a Connect 4 match, submits a legal winning move sequence through callable endpoints only, keeps both clients reading through match and move-log subscriptions, and verifies both clients observe the completed official match state, winner/result, and final move log.
+Add the smallest Functions-side integration that turns a completed official match into progression write data using the existing pure `functions/src/domain/progressionCommands.ts` helper, then prove it locally with tests. Start with a focused backend/domain or integration test before wiring any client UI.
 
 ## Scope
 
@@ -14,15 +14,15 @@ Create the smallest Auth + Firestore + Functions emulator smoke that signs in tw
 - Do not deploy.
 - Keep existing local demo routes working without Firebase Auth.
 - Keep clients submitting official room/match intent only through callable wrappers.
-- Keep clients reading room, match, and move-log documents only through Firebase read boundaries.
-- Client code must not write official room, match, result, turn, timer, ranking, or move-log state directly.
-- Avoid adding browser automation dependencies unless the task explicitly needs them; prefer Firebase Web SDK emulator clients and existing Vitest coverage first.
-- Keep the smoke focused on Connect 4 completion; do not wire ranking/progression writes in this step.
+- Keep clients reading room, match, move-log, profile, leaderboard, and history documents through approved read boundaries only.
+- Client code must not write official room, match, result, ranking, profile stats, leaderboard, or match-history state directly.
+- Prefer server-side tests first; only add frontend reads after progression writes are proven locally.
 
 ## Expected Files
 
-- `tests/` for the completed-match realtime emulator smoke.
-- Reuse `tests/realtimeTwoClientRoomMatchHarness.ts` unless the harness needs a small focused extension.
+- `functions/src/integrations/` if progression writes need a Firestore adapter.
+- `functions/src/callable/` only if `submitMove` needs to invoke the progression write path after completion.
+- `functions/test/` or `tests/` for focused progression integration coverage.
 - `docs/control/PROGRESS.md`
 
 ## Verification
@@ -30,6 +30,7 @@ Create the smallest Auth + Firestore + Functions emulator smoke that signs in tw
 Make these commands pass:
 
 ```bash
+npm run test:smoke:completed-connect4
 npm run test:smoke:callable-endpoints
 npm run test:smoke:realtime-two-client
 npm run test:smoke:auth-flow

@@ -25,7 +25,8 @@
     "test:rules": "firebase emulators:exec --project vboard-arena-local --only firestore \"vitest run tests/firebaseRules.test.ts\"",
     "test:smoke:auth-flow": "firebase emulators:exec --project vboard-arena-local --only auth,firestore \"npm run test -- tests/authenticatedRoomMatchSmoke.emulator.test.ts\"",
     "test:smoke:callable-endpoints": "npm run functions:build && firebase emulators:exec --project vboard-arena-local --only auth,firestore,functions \"npm run test -- tests/roomMatchCallableEndpointSmoke.emulator.test.ts\"",
-    "test:smoke:realtime-two-client": "npm run functions:build && firebase emulators:exec --project vboard-arena-local --only auth,firestore,functions \"npm run test -- tests/realtimeTwoClientRoomMatchSmoke.emulator.test.ts\""
+    "test:smoke:realtime-two-client": "npm run functions:build && firebase emulators:exec --project vboard-arena-local --only auth,firestore,functions \"npm run test -- tests/realtimeTwoClientRoomMatchSmoke.emulator.test.ts\"",
+    "test:smoke:completed-connect4": "npm run functions:build && firebase emulators:exec --project vboard-arena-local --only auth,firestore,functions \"npm run test -- tests/realtimeCompletedConnect4Smoke.emulator.test.ts\""
   },
   "engines": {
     "node": ">=20",
