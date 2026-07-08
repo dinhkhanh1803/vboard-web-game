@@ -145,3 +145,4 @@ Use this file as the owner's control board. AI assistants should update it when 
 - [x] BE-15 add realtime two-client emulator smoke for official Connect 4 updates.
 - [x] BE-16 add completed-match realtime emulator smoke for official Connect 4 results.
 - [x] Fix official room invite copy-paste format so Waiting Room copies raw codes and Lobby accepts display-formatted invite codes.
+- [x] Fix Waiting Room invite links so non-participants can join an open room directly from `/rooms/:roomId`.

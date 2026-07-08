@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
+  getFirebaseIdentityClient,
   getGuestReadyRoomMatchIntentClient,
   getRoomMatchReadClient,
+  type FirebaseIdentityState,
   type RoomIntentResult,
   type RoomReadState,
 } from "@/firebase";
@@ -31,6 +33,7 @@ type WaitingRoomIntentState = {
 };
 
 type WaitingRoomReadState = RoomReadState | { status: "loading"; message: string };
+type WaitingRoomIdentityState = FirebaseIdentityState | { status: "loading"; message: string };
 
 type BattleLobbyRoom = {
   host: string;
@@ -361,7 +364,9 @@ function getWaitingRoomCode(state: WaitingRoomReadState) {
 }
 
 function getWaitingRoomRawCode(state: WaitingRoomReadState) {
-  return state.status === "ready" ? state.data.code : normalizeRoomCodeInput(getWaitingRoomCode(state));
+  return state.status === "ready"
+    ? state.data.code
+    : normalizeRoomCodeInput(getWaitingRoomCode(state));
 }
 
 function getWaitingRoomSummary(state: WaitingRoomReadState) {
@@ -416,13 +421,50 @@ function canStartWaitingRoomMatch(state: WaitingRoomReadState) {
   );
 }
 
+function isWaitingRoomParticipant(state: WaitingRoomReadState, uid: string | null) {
+  if (state.status !== "ready" || uid === null) {
+    return false;
+  }
+
+  return state.data.playerSlots.some((slot) => slot.uid === uid);
+}
+
+function canJoinWaitingRoom(state: WaitingRoomReadState, identityState: WaitingRoomIdentityState) {
+  if (state.status !== "ready" || state.data.status !== "open" || state.data.matchId !== null) {
+    return false;
+  }
+
+  const hasOpenSlot = state.data.playerSlots.some((slot) => slot.status === "open");
+  const uid = identityState.status === "ready" ? (identityState.user?.uid ?? null) : null;
+
+  return hasOpenSlot && !isWaitingRoomParticipant(state, uid);
+}
+
 export function WaitingRoomPage() {
   const navigate = useNavigate();
   const { roomId } = useParams<{ roomId: string }>();
   const roomMatchReadClient = useMemo(() => getRoomMatchReadClient(), []);
+  const firebaseIdentityClient = useMemo(() => getFirebaseIdentityClient(), []);
   const [roomReadState, setRoomReadState] = useState<WaitingRoomReadState>({
     message: "Loading official room state...",
     status: "loading",
+  });
+  const [identityState, setIdentityState] = useState<WaitingRoomIdentityState>(() => {
+    if (firebaseIdentityClient === null) {
+      return {
+        message: "Firebase Auth is not configured for this environment.",
+        status: "error",
+      };
+    }
+
+    return {
+      status: "ready",
+      user: firebaseIdentityClient.readCurrentUser(),
+    };
+  });
+  const [joinRoomState, setJoinRoomState] = useState<WaitingRoomIntentState>({
+    kind: "idle",
+    message: "",
   });
   const [startMatchState, setStartMatchState] = useState<WaitingRoomIntentState>({
     kind: "idle",
@@ -475,7 +517,17 @@ export function WaitingRoomPage() {
   const waitingRoomSummary = getWaitingRoomSummary(effectiveRoomReadState);
   const waitingRoomPlayerSummary = getWaitingRoomPlayerSummary(effectiveRoomReadState);
   const canStartMatch = canStartWaitingRoomMatch(effectiveRoomReadState);
+  const canJoinRoom = canJoinWaitingRoom(effectiveRoomReadState, identityState);
+  const isJoiningRoom = joinRoomState.kind === "loading";
   const isStartingMatch = startMatchState.kind === "loading";
+
+  useEffect(() => {
+    if (firebaseIdentityClient === null) {
+      return undefined;
+    }
+
+    return firebaseIdentityClient.subscribe(setIdentityState);
+  }, [firebaseIdentityClient]);
 
   useEffect(() => {
     if (!roomId || roomMatchReadClient === null) {
@@ -495,6 +547,60 @@ export function WaitingRoomPage() {
     navigator.clipboard.writeText(waitingRoomRawCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleJoinWaitingRoom = async () => {
+    if (!roomId) {
+      setJoinRoomState({
+        kind: "error",
+        message: "Waiting room route is missing a room id.",
+      });
+
+      return;
+    }
+
+    if (!canJoinRoom) {
+      setJoinRoomState({
+        kind: "error",
+        message: "This room cannot accept another player right now.",
+      });
+
+      return;
+    }
+
+    setJoinRoomState({
+      kind: "loading",
+      message: "Joining room...",
+    });
+
+    try {
+      const roomMatchIntentClient = await getGuestReadyRoomMatchIntentClient();
+
+      if (roomMatchIntentClient === null) {
+        setJoinRoomState({
+          kind: "error",
+          message: "Firebase room actions are not configured for this environment.",
+        });
+
+        return;
+      }
+
+      const result = await roomMatchIntentClient.joinRoom({ roomId });
+
+      setJoinRoomState({
+        kind: "success",
+        message: formatJoinRoomResult(result),
+      });
+      setIdentityState({
+        status: "ready",
+        user: firebaseIdentityClient?.readCurrentUser() ?? null,
+      });
+    } catch (error) {
+      setJoinRoomState({
+        kind: "error",
+        message: getIntentErrorMessage(error),
+      });
+    }
   };
 
   const handleStartMatch = async () => {
@@ -617,6 +723,9 @@ export function WaitingRoomPage() {
               <p className="code-help-text">Share code with opponent to join</p>
               <p className="code-help-text">{waitingRoomSummary}</p>
               <p className="code-help-text">{waitingRoomPlayerSummary}</p>
+              {joinRoomState.message.length > 0 ? (
+                <p className="code-help-text">{joinRoomState.message}</p>
+              ) : null}
               {startMatchState.message.length > 0 ? (
                 <p className="code-help-text">{startMatchState.message}</p>
               ) : null}
@@ -685,13 +794,26 @@ export function WaitingRoomPage() {
                   <line x1="23" y1="11" x2="17" y2="11" />
                 </svg>
               </div>
-              <h3 className="matchmaking-title">Waiting for Opponent</h3>
-              <p className="matchmaking-subtext">Matchmaking in progress...</p>
+              <h3 className="matchmaking-title">
+                {canJoinRoom ? "Join as Opponent" : "Waiting for Opponent"}
+              </h3>
+              <p className="matchmaking-subtext">
+                {canJoinRoom
+                  ? "You are viewing an invite link. Join to claim the open seat."
+                  : "Matchmaking in progress..."}
+              </p>
               <button
-                onClick={() => alert("Invite link copied to clipboard!")}
+                type="button"
+                aria-label={canJoinRoom ? "Join Room" : "Invite Friends"}
+                onClick={
+                  canJoinRoom
+                    ? () => void handleJoinWaitingRoom()
+                    : () => alert("Invite link copied to clipboard!")
+                }
                 className="invite-friends-btn"
+                disabled={isJoiningRoom}
               >
-                INVITE FRIENDS
+                {canJoinRoom ? (isJoiningRoom ? "JOINING ROOM" : "JOIN ROOM") : "INVITE FRIENDS"}
               </button>
             </div>
           </div>

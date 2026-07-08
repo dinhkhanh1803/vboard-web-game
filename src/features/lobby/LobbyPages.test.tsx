@@ -2,11 +2,18 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { MemoryRouter, Route, Routes, useParams } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { RoomMatchIntentClient, RoomMatchReadClient, RoomReadState } from "@/firebase";
+import type {
+  FirebaseIdentityClient,
+  FirebaseIdentityUser,
+  RoomMatchIntentClient,
+  RoomMatchReadClient,
+  RoomReadState,
+} from "@/firebase";
 import { LobbyPage, WaitingRoomPage } from "@/features/lobby/LobbyPages";
 
 const roomMocks = vi.hoisted(() => ({
   createRoom: vi.fn(),
+  getFirebaseIdentityClient: vi.fn(),
   getGuestReadyRoomMatchIntentClient: vi.fn(),
   getRoomMatchIntentClient: vi.fn(),
   getRoomMatchReadClient: vi.fn(),
@@ -23,6 +30,7 @@ vi.mock("@/firebase", async (importOriginal) => {
 
   return {
     ...actual,
+    getFirebaseIdentityClient: roomMocks.getFirebaseIdentityClient,
     getGuestReadyRoomMatchIntentClient: roomMocks.getGuestReadyRoomMatchIntentClient,
     getRoomMatchIntentClient: roomMocks.getRoomMatchIntentClient,
     getRoomMatchReadClient: roomMocks.getRoomMatchReadClient,
@@ -39,6 +47,34 @@ function mockRoomIntentClient() {
 
   roomMocks.getGuestReadyRoomMatchIntentClient.mockResolvedValue(client);
   roomMocks.getRoomMatchIntentClient.mockReturnValue(client);
+}
+
+function createIdentityUser(uid: string): FirebaseIdentityUser {
+  return {
+    displayName: uid,
+    email: null,
+    isAnonymous: true,
+    photoURL: null,
+    uid,
+  };
+}
+
+function mockFirebaseIdentityClient(
+  user: FirebaseIdentityUser | null = createIdentityUser("host-1"),
+) {
+  const fallbackGuest = createIdentityUser("guest-signed-in");
+  const client: FirebaseIdentityClient = {
+    readCurrentUser: vi.fn(() => user),
+    signInAsGuest: vi.fn().mockResolvedValue(user ?? fallbackGuest),
+    signOut: vi.fn().mockResolvedValue(undefined),
+    subscribe: vi.fn((listener) => {
+      listener({ status: "ready", user });
+
+      return () => undefined;
+    }),
+  };
+
+  roomMocks.getFirebaseIdentityClient.mockReturnValue(client);
 }
 
 function mockRoomReadClient() {
@@ -151,6 +187,7 @@ function createReadyRoomState(
 describe("LobbyPage backend intents", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockFirebaseIdentityClient();
     mockRoomIntentClient();
     mockRoomReadClient();
   });
@@ -235,6 +272,7 @@ describe("LobbyPage backend intents", () => {
 describe("WaitingRoomPage room reads", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockFirebaseIdentityClient();
     mockRoomIntentClient();
     mockRoomReadClient();
   });
@@ -288,6 +326,38 @@ describe("WaitingRoomPage room reads", () => {
 
     expect(writeText).toHaveBeenCalledWith("VB-1042");
   });
+  it("lets a non-participant join an open invite room from the room route", async () => {
+    mockFirebaseIdentityClient(createIdentityUser("guest-2"));
+    let roomListener: ((state: RoomReadState) => void) | null = null;
+    roomMocks.subscribeToRoom.mockImplementation(
+      (_roomId: string, listener: (state: RoomReadState) => void) => {
+        roomListener = listener;
+
+        return () => undefined;
+      },
+    );
+    roomMocks.joinRoom.mockResolvedValue({
+      roomCode: "VB-1042",
+      roomId: "room-1",
+      status: "full",
+    });
+
+    renderWaitingRoomRoute();
+
+    act(() => {
+      roomListener?.(createReadyRoomState());
+    });
+
+    fireEvent.click(await screen.findByRole("button", { name: "Join Room" }));
+
+    await waitFor(() => {
+      expect(roomMocks.joinRoom).toHaveBeenCalledWith({ roomId: "room-1" });
+    });
+    expect(
+      await screen.findByText("Joined room VB-1042. Room room-1 status is full."),
+    ).toBeInTheDocument();
+  });
+
   it("starts a full room through the intent boundary and navigates to the match", async () => {
     let roomListener: ((state: RoomReadState) => void) | null = null;
     roomMocks.subscribeToRoom.mockImplementation(

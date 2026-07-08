@@ -3,6 +3,8 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type {
+  FirebaseIdentityClient,
+  FirebaseIdentityUser,
   MatchMoveLogReadState,
   MatchReadState,
   RoomMatchIntentClient,
@@ -14,6 +16,7 @@ import { createLocalConnect4Match } from "@/features/match/connect4LocalMatch";
 
 const appFlowMocks = vi.hoisted(() => ({
   createRoom: vi.fn(),
+  getFirebaseIdentityClient: vi.fn(),
   getGuestReadyRoomMatchIntentClient: vi.fn(),
   getRoomMatchIntentClient: vi.fn(),
   getRoomMatchReadClient: vi.fn(),
@@ -26,10 +29,36 @@ const appFlowMocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@/firebase", () => ({
+  getFirebaseIdentityClient: appFlowMocks.getFirebaseIdentityClient,
   getGuestReadyRoomMatchIntentClient: appFlowMocks.getGuestReadyRoomMatchIntentClient,
   getRoomMatchIntentClient: appFlowMocks.getRoomMatchIntentClient,
   getRoomMatchReadClient: appFlowMocks.getRoomMatchReadClient,
 }));
+
+function createIdentityUser(uid: string): FirebaseIdentityUser {
+  return {
+    displayName: uid,
+    email: null,
+    isAnonymous: true,
+    photoURL: null,
+    uid,
+  };
+}
+
+function createIdentityClient(user: FirebaseIdentityUser | null): FirebaseIdentityClient {
+  const fallbackGuest = createIdentityUser("guest-signed-in");
+
+  return {
+    readCurrentUser: vi.fn(() => user),
+    signInAsGuest: vi.fn().mockResolvedValue(user ?? fallbackGuest),
+    signOut: vi.fn().mockResolvedValue(undefined),
+    subscribe: vi.fn((listener) => {
+      listener({ status: "ready", user });
+
+      return () => undefined;
+    }),
+  };
+}
 
 function renderApp(path = "/lobby") {
   return render(
@@ -157,6 +186,9 @@ describe("official web app room/match flow", () => {
     roomListener = null;
 
     const intentClient = createIntentClient();
+    appFlowMocks.getFirebaseIdentityClient.mockReturnValue(
+      createIdentityClient(createIdentityUser("host-1")),
+    );
     appFlowMocks.getGuestReadyRoomMatchIntentClient.mockResolvedValue(intentClient);
     appFlowMocks.getRoomMatchIntentClient.mockReturnValue(intentClient);
     appFlowMocks.getRoomMatchReadClient.mockReturnValue(createReadClient());

@@ -5,6 +5,7 @@
 Continue the backend integration track with BE-17: wire completed-match progression writes behind the server-authoritative boundary. BE-16 now proves two signed-in Firebase Web SDK clients can play a Connect 4 match to completion through callable Functions and both observe the official completed result plus final move log through read-only subscriptions.
 
 Latest hotfix: Waiting Room now copies raw room codes and Lobby join normalizes display-formatted invite codes before calling the backend.
+Latest hotfix: Waiting Room invite links now expose a direct Join Room action for non-participants before the room is full.
 
 ## Exact First Task
 
