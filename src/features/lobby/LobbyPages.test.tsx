@@ -190,6 +190,23 @@ describe("LobbyPage backend intents", () => {
     expect(await screen.findByText("Waiting room route room-1")).toBeInTheDocument();
   });
 
+  it("normalizes display-formatted room codes before joining", async () => {
+    roomMocks.joinRoom.mockResolvedValue({
+      roomCode: "VB-1042",
+      roomId: "room-1",
+      status: "full",
+    });
+
+    renderLobbyRoute();
+
+    fireEvent.change(screen.getByLabelText("Room code"), { target: { value: "[VB] - 1 0 4 2" } });
+    fireEvent.click(screen.getByRole("button", { name: "Enter arena" }));
+
+    await waitFor(() => {
+      expect(roomMocks.joinRoom).toHaveBeenCalledWith({ roomCode: "VB-1042" });
+    });
+    expect(await screen.findByText("Waiting room route room-1")).toBeInTheDocument();
+  });
   it("shows local errors when a callable intent fails", async () => {
     roomMocks.joinRoom.mockRejectedValue(new Error("Room code expired."));
 
@@ -246,6 +263,31 @@ describe("WaitingRoomPage room reads", () => {
     expect(screen.getByText("Player One ready. Opponent slot open.")).toBeInTheDocument();
   });
 
+  it("copies the raw room code instead of the display-formatted code", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+    let roomListener: ((state: RoomReadState) => void) | null = null;
+    roomMocks.subscribeToRoom.mockImplementation(
+      (_roomId: string, listener: (state: RoomReadState) => void) => {
+        roomListener = listener;
+
+        return () => undefined;
+      },
+    );
+
+    renderWaitingRoomRoute();
+
+    act(() => {
+      roomListener?.(createReadyRoomState());
+    });
+
+    fireEvent.click(await screen.findByRole("button", { name: "Copy Room Code" }));
+
+    expect(writeText).toHaveBeenCalledWith("VB-1042");
+  });
   it("starts a full room through the intent boundary and navigates to the match", async () => {
     let roomListener: ((state: RoomReadState) => void) | null = null;
     roomMocks.subscribeToRoom.mockImplementation(

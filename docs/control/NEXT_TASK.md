@@ -4,6 +4,8 @@
 
 Continue the backend integration track with BE-17: wire completed-match progression writes behind the server-authoritative boundary. BE-16 now proves two signed-in Firebase Web SDK clients can play a Connect 4 match to completion through callable Functions and both observe the official completed result plus final move log through read-only subscriptions.
 
+Latest hotfix: Waiting Room now copies raw room codes and Lobby join normalizes display-formatted invite codes before calling the backend.
+
 ## Exact First Task
 
 Add the smallest Functions-side integration that turns a completed official match into progression write data using the existing pure `functions/src/domain/progressionCommands.ts` helper, then prove it locally with tests. Start with a focused backend/domain or integration test before wiring any client UI.

@@ -10,6 +10,13 @@ import {
 
 const roomCodePattern = /^VB-\d{4}$/;
 
+function normalizeRoomCodeInput(value: string) {
+  const compactRoomCode = value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const match = compactRoomCode.match(/^VB(\d{4})$/);
+
+  return match ? `VB-${match[1]}` : value.trim().toUpperCase();
+}
+
 type RoomIntentAction = "createRoom" | "joinRoom";
 
 type RoomIntentState = {
@@ -85,7 +92,7 @@ export function LobbyPage() {
     kind: "idle",
     message: "",
   });
-  const normalizedRoomCode = roomCode.trim().toUpperCase();
+  const normalizedRoomCode = normalizeRoomCodeInput(roomCode);
   const hasRoomCode = normalizedRoomCode.length > 0;
   const isRoomCodeValid = roomCodePattern.test(normalizedRoomCode);
   const isCreatingRoom =
@@ -353,6 +360,10 @@ function getWaitingRoomCode(state: WaitingRoomReadState) {
   return state.status === "ready" ? formatWaitingRoomCode(state.data.code) : "[VB] - A 7 2 X";
 }
 
+function getWaitingRoomRawCode(state: WaitingRoomReadState) {
+  return state.status === "ready" ? state.data.code : normalizeRoomCodeInput(getWaitingRoomCode(state));
+}
+
 function getWaitingRoomSummary(state: WaitingRoomReadState) {
   if (state.status === "loading") {
     return state.message;
@@ -460,6 +471,7 @@ export function WaitingRoomPage() {
     return roomReadState;
   }, [roomId, roomMatchReadClient, roomReadState]);
   const waitingRoomCode = getWaitingRoomCode(effectiveRoomReadState);
+  const waitingRoomRawCode = getWaitingRoomRawCode(effectiveRoomReadState);
   const waitingRoomSummary = getWaitingRoomSummary(effectiveRoomReadState);
   const waitingRoomPlayerSummary = getWaitingRoomPlayerSummary(effectiveRoomReadState);
   const canStartMatch = canStartWaitingRoomMatch(effectiveRoomReadState);
@@ -480,7 +492,7 @@ export function WaitingRoomPage() {
   }, [effectiveRoomReadState, navigate]);
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(waitingRoomCode);
+    navigator.clipboard.writeText(waitingRoomRawCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
