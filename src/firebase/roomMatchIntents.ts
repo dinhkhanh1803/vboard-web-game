@@ -14,6 +14,7 @@ import type { FirebaseEnv } from "@/firebase/config";
 export const roomMatchCallableNames = {
   createRoom: "createRoom",
   joinRoom: "joinRoom",
+  leaveRoom: "leaveRoom",
   startMatch: "startMatch",
   submitMove: "submitMove",
 } as const;
@@ -33,6 +34,10 @@ export type CreateRoomIntentInput = {
 export type JoinRoomIntentInput = {
   roomId?: string;
   roomCode?: string;
+};
+
+export type LeaveRoomIntentInput = {
+  roomId: string;
 };
 
 export type StartMatchIntentInput = {
@@ -66,6 +71,7 @@ export type SubmitMoveIntentResult = {
 export type RoomMatchIntentClient = {
   createRoom(input: CreateRoomIntentInput): Promise<RoomIntentResult>;
   joinRoom(input: JoinRoomIntentInput): Promise<RoomIntentResult>;
+  leaveRoom(input: LeaveRoomIntentInput): Promise<RoomIntentResult>;
   startMatch(input: StartMatchIntentInput): Promise<StartMatchIntentResult>;
   submitMove(input: SubmitMoveIntentInput): Promise<SubmitMoveIntentResult>;
 };
@@ -84,6 +90,11 @@ export function createRoomMatchIntentClient(
       ),
     joinRoom: (input) =>
       invokeCallable<JoinRoomIntentInput, RoomIntentResult>(roomMatchCallableNames.joinRoom, input),
+    leaveRoom: (input) =>
+      invokeCallable<LeaveRoomIntentInput, RoomIntentResult>(
+        roomMatchCallableNames.leaveRoom,
+        input,
+      ),
     startMatch: (input) =>
       invokeCallable<StartMatchIntentInput, StartMatchIntentResult>(
         roomMatchCallableNames.startMatch,
@@ -117,6 +128,11 @@ export function createAuthenticatedRoomMatchIntentClient(
       requireIdentity();
 
       return client.joinRoom(input);
+    },
+    leaveRoom: async (input) => {
+      requireIdentity();
+
+      return client.leaveRoom(input);
     },
     startMatch: async (input) => {
       requireIdentity();

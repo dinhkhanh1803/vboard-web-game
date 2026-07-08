@@ -39,6 +39,10 @@ describe("room/match client intent boundary", () => {
         return { matchId: "match-1", stateVersion: 1, status: "active" } as Output;
       }
 
+      if (name === roomMatchCallableNames.leaveRoom) {
+        return { roomCode: "VB-1042", roomId: "room-1", status: "closed" } as Output;
+      }
+
       throw new Error(`Unexpected callable ${name}`);
     };
 
@@ -66,12 +70,18 @@ describe("room/match client intent boundary", () => {
       stateVersion: 1,
       status: "active",
     });
+    await expect(client.leaveRoom({ roomId: "room-1" })).resolves.toEqual({
+      roomCode: "VB-1042",
+      roomId: "room-1",
+      status: "closed",
+    });
 
     expect(calls).toEqual([
       { data: { gameId: "connect-4" }, name: "createRoom" },
       { data: { roomCode: "VB-1042" }, name: "joinRoom" },
       { data: { roomId: "room-1", turnDurationSec: 30 }, name: "startMatch" },
       { data: { matchId: "match-1", payload: { column: 3 } }, name: "submitMove" },
+      { data: { roomId: "room-1" }, name: "leaveRoom" },
     ]);
   });
 
@@ -83,6 +93,7 @@ describe("room/match client intent boundary", () => {
     const baseClient: RoomMatchIntentClient = {
       createRoom: vi.fn(),
       joinRoom: vi.fn(),
+      leaveRoom: vi.fn(),
       startMatch: vi.fn(),
       submitMove: vi.fn(),
     };
@@ -100,9 +111,13 @@ describe("room/match client intent boundary", () => {
     await expect(client.submitMove({ matchId: "match-1", payload: { column: 3 } })).rejects.toThrow(
       "Firebase Auth sign-in is required before room and match actions.",
     );
+    await expect(client.leaveRoom({ roomId: "room-1" })).rejects.toThrow(
+      "Firebase Auth sign-in is required before room and match actions.",
+    );
 
     expect(baseClient.createRoom).not.toHaveBeenCalled();
     expect(baseClient.joinRoom).not.toHaveBeenCalled();
+    expect(baseClient.leaveRoom).not.toHaveBeenCalled();
     expect(baseClient.startMatch).not.toHaveBeenCalled();
     expect(baseClient.submitMove).not.toHaveBeenCalled();
   });
@@ -125,6 +140,11 @@ describe("room/match client intent boundary", () => {
         roomCode: "VB-1042",
         roomId: "room-1",
         status: "full",
+      }),
+      leaveRoom: vi.fn().mockResolvedValue({
+        roomCode: "VB-1042",
+        roomId: "room-1",
+        status: "closed",
       }),
       startMatch: vi.fn().mockResolvedValue({
         matchId: "match-1",
@@ -161,6 +181,11 @@ describe("room/match client intent boundary", () => {
       stateVersion: 2,
       status: "active",
     });
+    await expect(client.leaveRoom({ roomId: "room-1" })).resolves.toEqual({
+      roomCode: "VB-1042",
+      roomId: "room-1",
+      status: "closed",
+    });
   });
 
   it("signs in as a guest before exposing a room/match intent client", async () => {
@@ -180,6 +205,7 @@ describe("room/match client intent boundary", () => {
     const intentClient: RoomMatchIntentClient = {
       createRoom: vi.fn(),
       joinRoom: vi.fn(),
+      leaveRoom: vi.fn(),
       startMatch: vi.fn(),
       submitMove: vi.fn(),
     };
@@ -211,6 +237,7 @@ describe("room/match client intent boundary", () => {
     const intentClient: RoomMatchIntentClient = {
       createRoom: vi.fn(),
       joinRoom: vi.fn(),
+      leaveRoom: vi.fn(),
       startMatch: vi.fn(),
       submitMove: vi.fn(),
     };

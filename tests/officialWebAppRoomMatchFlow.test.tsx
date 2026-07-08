@@ -21,6 +21,7 @@ const appFlowMocks = vi.hoisted(() => ({
   getRoomMatchIntentClient: vi.fn(),
   getRoomMatchReadClient: vi.fn(),
   joinRoom: vi.fn(),
+  leaveRoom: vi.fn(),
   startMatch: vi.fn(),
   submitMove: vi.fn(),
   subscribeToMatch: vi.fn(),
@@ -72,6 +73,7 @@ function createIntentClient(): RoomMatchIntentClient {
   return {
     createRoom: appFlowMocks.createRoom,
     joinRoom: appFlowMocks.joinRoom,
+    leaveRoom: appFlowMocks.leaveRoom,
     startMatch: appFlowMocks.startMatch,
     submitMove: appFlowMocks.submitMove,
   };

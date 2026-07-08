@@ -6,7 +6,7 @@ Continue the backend integration track with BE-17: wire completed-match progress
 
 Latest hotfix: Waiting Room now copies raw room codes and Lobby join normalizes display-formatted invite codes before calling the backend.
 Latest hotfix: Waiting Room invite links now expose a direct Join Room action for non-participants before the room is full.
-Latest hotfix: Waiting Room now renders official host and opponent slots when a room is full, and Leave Room returns the client to `/lobby` while a future callable can release the official slot.
+Latest hotfix: Waiting Room now uses the official `leaveRoom` callable. Guest leave releases the opponent slot so the room code can be joined again, duplicate joins return the existing room instead of `already-in-room`, and host/in-match leave closes the room so subscribers exit to Lobby.
 
 ## Exact First Task
 

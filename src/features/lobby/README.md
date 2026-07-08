@@ -17,4 +17,4 @@ Lobby create/join and Waiting Room start-match flows use the guest-ready room/ma
 
 Direct room invite routes (`/rooms/:roomId`) let a non-participant join an open room through the same callable intent boundary with `joinRoom({ roomId })`.
 
-Waiting Room renders host and opponent cards from official `playerSlots` when both seats are occupied. The current Leave Room action exits the client back to `/lobby`; releasing an occupied official slot should be added later through a server-authoritative callable.
+Waiting Room renders host and opponent cards from official `playerSlots` when both seats are occupied. Leave Room now submits the official `leaveRoom({ roomId })` intent before exiting to `/lobby`; guest leave releases the opponent slot, while host or in-match leave closes/abandons the room so subscribers leave the waiting room.

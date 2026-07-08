@@ -43,6 +43,13 @@ export type JoinServerRoomInput = {
   room: RoomDocument;
 };
 
+export type LeaveServerRoomInput = {
+  actorUid: string;
+  match?: MatchDocument | null;
+  nowMs: number;
+  room: RoomDocument;
+};
+
 export type StartServerMatchInput = {
   actorUid: string;
   matchId: string;
@@ -60,6 +67,11 @@ export type SubmitServerMoveInput = {
 };
 
 export type ServerRoomCommandResult = {
+  room: RoomDocument;
+};
+
+export type LeaveServerRoomResult = {
+  match?: MatchDocument;
   room: RoomDocument;
 };
 
@@ -96,12 +108,12 @@ export function createServerRoom(input: CreateServerRoomInput): ServerRoomComman
 }
 
 export function joinServerRoom(input: JoinServerRoomInput): ServerRoomCommandResult {
-  if (input.room.playerSlots.some((slot) => slot.uid === input.actor.uid)) {
-    throw new Error("already-in-room");
-  }
-
   if (input.nowMs > input.room.expiresAtMs) {
     throw new Error("room-expired");
+  }
+
+  if (input.room.playerSlots.some((slot) => slot.uid === input.actor.uid)) {
+    return { room: input.room };
   }
 
   if (input.room.status !== "open") {
@@ -139,6 +151,23 @@ export function joinServerRoom(input: JoinServerRoomInput): ServerRoomCommandRes
       updatedAtMs: input.nowMs,
     },
   };
+}
+
+export function leaveServerRoom(input: LeaveServerRoomInput): LeaveServerRoomResult {
+  const actorSlot = input.room.playerSlots.find((slot) => slot.uid === input.actorUid);
+
+  if (actorSlot === undefined) {
+    throw new Error("actor-not-player");
+  }
+
+  if (actorSlot.isHost || input.room.status === "in-match") {
+    const room = closeRoom(input.room, input.nowMs);
+    const match = input.match ? abandonMatch(input.match, input.nowMs) : undefined;
+
+    return match === undefined ? { room } : { match, room };
+  }
+
+  return { room: openLeavingPlayerSlot(input.room, actorSlot.seatIndex, input.nowMs) };
 }
 
 export function startServerMatch(input: StartServerMatchInput): StartServerMatchResult {
@@ -263,6 +292,73 @@ export function submitServerMove(input: SubmitServerMoveInput): SubmitServerMove
 
 function clonePlayerSlots(playerSlots: readonly RoomPlayerSlot[]): RoomPlayerSlot[] {
   return playerSlots.map((slot) => ({ ...slot }));
+}
+
+function openLeavingPlayerSlot(
+  room: RoomDocument,
+  leavingSeatIndex: number,
+  nowMs: number,
+): RoomDocument {
+  return {
+    ...room,
+    playerSlots: room.playerSlots.map((slot) =>
+      slot.seatIndex === leavingSeatIndex
+        ? {
+            ...slot,
+            avatarUrl: null,
+            displayName: null,
+            joinedAtMs: null,
+            ready: false,
+            status: "open",
+            uid: null,
+          }
+        : { ...slot },
+    ),
+    status: "open",
+    updatedAtMs: nowMs,
+  };
+}
+
+function closeRoom(room: RoomDocument, nowMs: number): RoomDocument {
+  return {
+    ...room,
+    playerSlots: room.playerSlots.map((slot) => ({
+      ...slot,
+      avatarUrl: null,
+      displayName: null,
+      joinedAtMs: null,
+      ready: false,
+      status: "open",
+      uid: null,
+    })),
+    status: "closed",
+    updatedAtMs: nowMs,
+  };
+}
+
+function abandonMatch(match: MatchDocument, nowMs: number): MatchDocument {
+  if (match.status === "completed" || match.status === "abandoned") {
+    return match;
+  }
+
+  return {
+    ...match,
+    completedAtMs: nowMs,
+    result: {
+      completedAtMs: nowMs,
+      reason: "abandoned",
+      winnerSeatIndex: null,
+      winnerUid: null,
+    },
+    status: "abandoned",
+    turn: {
+      ...match.turn,
+      activeSeatIndex: null,
+      turnDeadlineAtMs: null,
+      turnStartedAtMs: null,
+    },
+    updatedAtMs: nowMs,
+  };
 }
 
 function parseConnect4Move(payload: Record<string, unknown>): Connect4Move {

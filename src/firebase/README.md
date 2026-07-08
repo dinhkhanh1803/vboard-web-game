@@ -19,7 +19,7 @@ No feature should import Firebase SDK modules directly until there is a clear re
 
 - `roomMatchIntents.ts` is the approved frontend entrypoint for room and match write intent.
 - `getGuestReadyRoomMatchIntentClient()` signs in as an anonymous guest through the Auth boundary when needed, then returns the official callable intent client.
-- Frontend features may call `createRoom`, `joinRoom`, `startMatch`, and `submitMove` through this boundary.
+- Frontend features may call `createRoom`, `joinRoom`, `leaveRoom`, `startMatch`, and `submitMove` through this boundary.
 - The real `getRoomMatchIntentClient()` client requires a current Firebase Auth identity before sending official callable intent.
 - Frontend features must not write official `rooms`, `matches`, match result, turn, timer, ranking, or move-log state directly.
 

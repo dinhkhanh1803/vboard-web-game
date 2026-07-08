@@ -18,6 +18,7 @@ const roomMocks = vi.hoisted(() => ({
   getRoomMatchIntentClient: vi.fn(),
   getRoomMatchReadClient: vi.fn(),
   joinRoom: vi.fn(),
+  leaveRoom: vi.fn(),
   startMatch: vi.fn(),
   submitMove: vi.fn(),
   subscribeToMatch: vi.fn(),
@@ -41,6 +42,7 @@ function mockRoomIntentClient() {
   const client: RoomMatchIntentClient = {
     createRoom: roomMocks.createRoom,
     joinRoom: roomMocks.joinRoom,
+    leaveRoom: roomMocks.leaveRoom,
     startMatch: roomMocks.startMatch,
     submitMove: roomMocks.submitMove,
   };
@@ -133,7 +135,7 @@ function createReadyRoomState(
   input: {
     matchId?: string | null;
     opponentOccupied?: boolean;
-    status?: "open" | "full" | "in-match";
+    status?: "closed" | "open" | "full" | "in-match";
   } = {},
 ): RoomReadState {
   const opponentOccupied = input.opponentOccupied ?? false;
@@ -385,10 +387,38 @@ describe("WaitingRoomPage room reads", () => {
     expect(screen.queryByText("Waiting for Opponent")).not.toBeInTheDocument();
   });
 
-  it("leaves the waiting room route back to the lobby", async () => {
+  it("leaves the official waiting room through the intent boundary", async () => {
+    roomMocks.leaveRoom.mockResolvedValue({
+      roomCode: "VB-1042",
+      roomId: "room-1",
+      status: "open",
+    });
+
     renderWaitingRoomRoute();
 
     fireEvent.click(screen.getByRole("button", { name: "LEAVE ROOM" }));
+
+    await waitFor(() => {
+      expect(roomMocks.leaveRoom).toHaveBeenCalledWith({ roomId: "room-1" });
+    });
+    expect(await screen.findByText("Lobby route")).toBeInTheDocument();
+  });
+
+  it("leaves the waiting room route when the official room closes", async () => {
+    let roomListener: ((state: RoomReadState) => void) | null = null;
+    roomMocks.subscribeToRoom.mockImplementation(
+      (_roomId: string, listener: (state: RoomReadState) => void) => {
+        roomListener = listener;
+
+        return () => undefined;
+      },
+    );
+
+    renderWaitingRoomRoute();
+
+    act(() => {
+      roomListener?.(createReadyRoomState({ opponentOccupied: true, status: "closed" }));
+    });
 
     expect(await screen.findByText("Lobby route")).toBeInTheDocument();
   });

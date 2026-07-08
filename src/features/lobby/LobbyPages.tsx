@@ -555,6 +555,10 @@ export function WaitingRoomPage() {
     kind: "idle",
     message: "",
   });
+  const [leaveRoomState, setLeaveRoomState] = useState<WaitingRoomIntentState>({
+    kind: "idle",
+    message: "",
+  });
   // Chat message logs state
   const [chatInput, setChatInput] = useState("");
   const [messages, setMessages] = useState([
@@ -608,6 +612,7 @@ export function WaitingRoomPage() {
   const canJoinRoom = canJoinWaitingRoom(effectiveRoomReadState, identityState);
   const isJoiningRoom = joinRoomState.kind === "loading";
   const isStartingMatch = startMatchState.kind === "loading";
+  const isLeavingRoom = leaveRoomState.kind === "loading";
 
   useEffect(() => {
     if (firebaseIdentityClient === null) {
@@ -626,7 +631,17 @@ export function WaitingRoomPage() {
   }, [roomId, roomMatchReadClient]);
 
   useEffect(() => {
-    if (effectiveRoomReadState.status === "ready" && effectiveRoomReadState.data.matchId !== null) {
+    if (effectiveRoomReadState.status !== "ready") {
+      return;
+    }
+
+    if (effectiveRoomReadState.data.status === "closed") {
+      navigate("/lobby");
+
+      return;
+    }
+
+    if (effectiveRoomReadState.data.matchId !== null) {
       navigate(`/matches/${effectiveRoomReadState.data.matchId}`);
     }
   }, [effectiveRoomReadState, navigate]);
@@ -685,6 +700,48 @@ export function WaitingRoomPage() {
       });
     } catch (error) {
       setJoinRoomState({
+        kind: "error",
+        message: getIntentErrorMessage(error),
+      });
+    }
+  };
+
+  const handleLeaveRoom = async () => {
+    if (!roomId) {
+      setLeaveRoomState({
+        kind: "error",
+        message: "Waiting room route is missing a room id.",
+      });
+
+      return;
+    }
+
+    setLeaveRoomState({
+      kind: "loading",
+      message: "Leaving room...",
+    });
+
+    try {
+      const roomMatchIntentClient = await getGuestReadyRoomMatchIntentClient();
+
+      if (roomMatchIntentClient === null) {
+        setLeaveRoomState({
+          kind: "error",
+          message: "Firebase room actions are not configured for this environment.",
+        });
+
+        return;
+      }
+
+      await roomMatchIntentClient.leaveRoom({ roomId });
+
+      setLeaveRoomState({
+        kind: "success",
+        message: "Leaving room. Returning to lobby.",
+      });
+      navigate("/lobby");
+    } catch (error) {
+      setLeaveRoomState({
         kind: "error",
         message: getIntentErrorMessage(error),
       });
@@ -817,6 +874,9 @@ export function WaitingRoomPage() {
               {startMatchState.message.length > 0 ? (
                 <p className="code-help-text">{startMatchState.message}</p>
               ) : null}
+              {leaveRoomState.message.length > 0 ? (
+                <p className="code-help-text">{leaveRoomState.message}</p>
+              ) : null}
             </div>
           </div>
 
@@ -904,8 +964,9 @@ export function WaitingRoomPage() {
           <div className="lobby-actions-row-bottom">
             <button
               type="button"
-              onClick={() => navigate("/lobby")}
+              onClick={() => void handleLeaveRoom()}
               className="room-action-btn leave-btn"
+              disabled={isLeavingRoom}
             >
               <svg
                 className="btn-exit-icon"
@@ -919,7 +980,7 @@ export function WaitingRoomPage() {
               >
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
               </svg>
-              LEAVE ROOM
+              {isLeavingRoom ? "LEAVING ROOM" : "LEAVE ROOM"}
             </button>
 
             <button

@@ -13,6 +13,7 @@ import {
 import {
   createServerRoom,
   joinServerRoom,
+  leaveServerRoom,
   startServerMatch,
   submitServerMove,
 } from "../src/domain/roomMatchCommands";
@@ -154,15 +155,18 @@ describe("joinServerRoom", () => {
     expect(room.playerSlots[1]?.status).toBe("open");
   });
 
-  it("rejects duplicate joins and expired rooms", () => {
-    expect(() =>
-      joinServerRoom({
-        actor: host,
-        nowMs: 2_000,
-        room: createOpenRoom(),
-      }),
-    ).toThrow("already-in-room");
+  it("returns the existing room when a participant joins again", () => {
+    const room = createOpenRoom();
+    const { room: joinedRoom } = joinServerRoom({
+      actor: host,
+      nowMs: 2_000,
+      room,
+    });
 
+    expect(joinedRoom).toEqual(room);
+  });
+
+  it("rejects expired rooms", () => {
     expect(() =>
       joinServerRoom({
         actor: guest,
@@ -170,6 +174,65 @@ describe("joinServerRoom", () => {
         room: createOpenRoom(),
       }),
     ).toThrow("room-expired");
+  });
+});
+
+describe("leaveServerRoom", () => {
+  it("opens the guest slot so a waiting-room guest can rejoin by code", () => {
+    const room = createFullRoom();
+    const { room: updatedRoom } = leaveServerRoom({
+      actorUid: guest.uid,
+      nowMs: 2_500,
+      room,
+    });
+
+    expect(updatedRoom.status).toBe("open");
+    expect(updatedRoom.updatedAtMs).toBe(2_500);
+    expect(updatedRoom.playerSlots[0]).toEqual(room.playerSlots[0]);
+    expect(updatedRoom.playerSlots[1]).toEqual({
+      avatarUrl: null,
+      displayName: null,
+      isHost: false,
+      joinedAtMs: null,
+      ready: false,
+      seatIndex: 1,
+      status: "open",
+      uid: null,
+    });
+    expect(room.status).toBe("full");
+    expect(room.playerSlots[1]?.uid).toBe(guest.uid);
+  });
+
+  it("closes the waiting room for everyone when the host leaves", () => {
+    const room = createFullRoom();
+    const { room: closedRoom } = leaveServerRoom({
+      actorUid: host.uid,
+      nowMs: 2_500,
+      room,
+    });
+
+    expect(closedRoom.status).toBe("closed");
+    expect(closedRoom.playerSlots.every((slot) => slot.uid === null)).toBe(true);
+  });
+
+  it("abandons an active match when a player leaves an in-match room", () => {
+    const { room, match } = createActiveMatch();
+    const result = leaveServerRoom({
+      actorUid: guest.uid,
+      match,
+      nowMs: 3_500,
+      room,
+    });
+
+    expect(result.room.status).toBe("closed");
+    expect(result.match?.status).toBe("abandoned");
+    expect(result.match?.completedAtMs).toBe(3_500);
+    expect(result.match?.result).toEqual({
+      completedAtMs: 3_500,
+      reason: "abandoned",
+      winnerSeatIndex: null,
+      winnerUid: null,
+    });
   });
 });
 

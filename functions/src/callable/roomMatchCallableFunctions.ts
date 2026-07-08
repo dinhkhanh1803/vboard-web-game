@@ -4,6 +4,7 @@ import { createFirestoreRoomMatchCallableDeps } from "../integrations/roomMatchF
 import {
   createRoomCallableHandler,
   joinRoomCallableHandler,
+  leaveRoomCallableHandler,
   startMatchCallableHandler,
   submitMoveCallableHandler,
 } from "./roomMatchCallables";
@@ -12,5 +13,6 @@ const deps = createFirestoreRoomMatchCallableDeps();
 
 export const createRoom = onCall(createRoomCallableHandler(deps));
 export const joinRoom = onCall(joinRoomCallableHandler(deps));
+export const leaveRoom = onCall(leaveRoomCallableHandler(deps));
 export const startMatch = onCall(startMatchCallableHandler(deps));
 export const submitMove = onCall(submitMoveCallableHandler(deps));

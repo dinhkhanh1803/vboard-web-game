@@ -42,6 +42,7 @@ function mockRoomIntentClient() {
   const client: RoomMatchIntentClient = {
     createRoom: vi.fn(),
     joinRoom: vi.fn(),
+    leaveRoom: vi.fn(),
     startMatch: vi.fn(),
     submitMove: roomReadMocks.submitMove,
   };

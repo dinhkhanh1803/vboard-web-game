@@ -33,6 +33,7 @@ export type {
   CreateRoomIntentInput,
   GuestReadyRoomMatchIntentClientDeps,
   JoinRoomIntentInput,
+  LeaveRoomIntentInput,
   RoomIntentResult,
   RoomMatchCallableName,
   RoomMatchIntentClient,

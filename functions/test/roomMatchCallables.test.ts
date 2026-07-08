@@ -17,6 +17,7 @@ import {
 import {
   createRoomCallableHandler,
   joinRoomCallableHandler,
+  leaveRoomCallableHandler,
   startMatchCallableHandler,
   submitMoveCallableHandler,
   type RoomMatchCallableDeps,
@@ -221,6 +222,36 @@ describe("room/match callable handlers", () => {
       displayName: guestDisplayName,
       status: "occupied",
       uid: guestAuth.uid,
+    });
+  });
+
+  it("returns room identifiers when a participant joins again by room code", async () => {
+    const store = new FakeRoomMatchStore();
+    store.seedRoom(createFullRoom());
+
+    const result = await joinRoomCallableHandler(store)(
+      callableRequest({ roomCode: "VB-1042" }, guestAuth),
+    );
+
+    expect(store.transactionCount).toBe(1);
+    expect(result).toEqual({ roomCode: "VB-1042", roomId: "room-1", status: "full" });
+  });
+
+  it("leaves a waiting room by opening the guest slot through a transaction", async () => {
+    const store = new FakeRoomMatchStore();
+    store.seedRoom(createFullRoom());
+
+    const result = await leaveRoomCallableHandler(store)(
+      callableRequest({ roomId: "room-1" }, guestAuth),
+    );
+
+    expect(store.transactionCount).toBe(1);
+    expect(result).toEqual({ roomCode: "VB-1042", roomId: "room-1", status: "open" });
+    expect(store.rooms.get("room-1")?.status).toBe("open");
+    expect(store.rooms.get("room-1")?.playerSlots[1]).toMatchObject({
+      displayName: null,
+      status: "open",
+      uid: null,
     });
   });
 

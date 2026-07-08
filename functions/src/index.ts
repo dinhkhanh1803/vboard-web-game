@@ -1,6 +1,7 @@
 export {
   createRoom,
   joinRoom,
+  leaveRoom,
   startMatch,
   submitMove,
 } from "./callable/roomMatchCallableFunctions";

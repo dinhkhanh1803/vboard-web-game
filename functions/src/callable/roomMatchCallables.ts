@@ -1,6 +1,7 @@
 import {
   createServerRoom,
   joinServerRoom,
+  leaveServerRoom,
   startServerMatch,
   submitServerMove,
 } from "../domain/roomMatchCommands";
@@ -31,6 +32,10 @@ export type JoinRoomCallableData = {
   roomCode?: unknown;
 };
 
+export type LeaveRoomCallableData = {
+  roomId: unknown;
+};
+
 export type StartMatchCallableData = {
   roomId: unknown;
   turnDurationSec?: unknown;
@@ -48,6 +53,8 @@ export type CreateRoomCallableResult = {
 };
 
 export type JoinRoomCallableResult = CreateRoomCallableResult;
+
+export type LeaveRoomCallableResult = CreateRoomCallableResult;
 
 export type StartMatchCallableResult = {
   roomId: string;
@@ -116,6 +123,42 @@ export function joinRoomCallableHandler(deps: RoomMatchCallableDeps) {
         await transaction.updateRoom(joinedRoom);
 
         return { roomCode: joinedRoom.code, roomId: joinedRoom.id, status: joinedRoom.status };
+      }),
+    );
+  };
+}
+
+export function leaveRoomCallableHandler(deps: RoomMatchCallableDeps) {
+  return async (
+    request: RoomMatchCallableRequest<LeaveRoomCallableData>,
+  ): Promise<LeaveRoomCallableResult> => {
+    const actor = requireActor(request);
+    const data = requireObject(request.data);
+    const roomId = requireString(data.roomId, "roomId");
+
+    return runCallableOperation(async () =>
+      deps.runTransaction(async (transaction) => {
+        const room = await transaction.getRoom(roomId);
+
+        if (room === null) {
+          throw new Error("room-not-found");
+        }
+
+        const match = room.matchId === null ? null : await transaction.getMatch(room.matchId);
+        const { match: abandonedMatch, room: closedRoom } = leaveServerRoom({
+          actorUid: actor.uid,
+          match,
+          nowMs: deps.nowMs(),
+          room,
+        });
+
+        await transaction.updateRoom(closedRoom);
+
+        if (abandonedMatch !== undefined) {
+          await transaction.updateMatch(abandonedMatch);
+        }
+
+        return { roomCode: closedRoom.code, roomId: closedRoom.id, status: closedRoom.status };
       }),
     );
   };
